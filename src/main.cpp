@@ -15,7 +15,7 @@
 To run the tool, define CONVERT_SCENE. Afterward, comment it out and 
 compile again and run the renderer.*/
 
-#define CONVERT_SCENE;
+#define CONVERT_SCENE
 
 
 void ConvertScene()

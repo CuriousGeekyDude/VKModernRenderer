@@ -4,294 +4,261 @@
     <Filter Include="src">
       <UniqueIdentifier>{fa26e22e-18b7-4853-90ba-c502b182623b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\InitialValues">
+      <UniqueIdentifier>{8f7641de-a582-4415-bcee-43579924a6df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\VulkanRenderPasses">
+      <UniqueIdentifier>{07bee7b7-2659-409d-9fab-20735283fcff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\VulkanEngine">
+      <UniqueIdentifier>{18088399-195d-404d-bf9e-17daa68fd0a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utilities">
+      <UniqueIdentifier>{a6304020-94bc-4dc8-8dc7-ebfdc64a6f79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utilities\SceneConversionTool">
+      <UniqueIdentifier>{a8c652d5-a37d-402a-a984-d8265fee436a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\allocator.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\clusterizer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CompositeRenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DeferredComputeRenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DeferredForwardRenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FrameGraph.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GeometryConverter.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\indexcodec.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\indexgenerator.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\IndirectRenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MaterialLoaderAndSaver.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\overdrawanalyzer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\overdrawoptimizer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ProcessSceneMetaData.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\QuadRenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Renderbase.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneConverter.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SceneLoaderAndSaver.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\simplifier.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\spatialorder.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\spirv_reflect.c">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SpirvPipelineGenerator.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SSAORenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\stripifier.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vcacheanalyzer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vcacheoptimizer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vertexcodec.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vertexfilter.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vfetchanalyzer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\vfetchoptimizer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanClear.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanContextCreator.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanCubeRenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanEngineCore.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanImguiRenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanModelRenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanPresent.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanRenderContext.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanRenderer.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanRendererItem.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\VulkanResourceManager.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\UtilsVulkan.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="src\IndirectRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utils.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="src\DeferredComputeRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DeferredForwardRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FrameGraph.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GeometryConverter.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ProcessSceneMetaData.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MaterialLoaderAndSaver.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SceneLoaderAndSaver.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderbase.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SceneConverter.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\indexgenerator.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\indexcodec.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overdrawoptimizer.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overdrawanalyzer.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simplifier.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\spatialorder.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vcacheanalyzer.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vcacheoptimizer.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vertexcodec.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vertexfilter.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vfetchanalyzer.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vfetchoptimizer.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\stripifier.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\spirv_reflect.c">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpirvPipelineGenerator.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanContextCreator.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanEngineCore.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanRenderContext.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanRenderer.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanRendererItem.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VulkanResourceManager.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\clusterizer.cpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UtilsVulkan.cpp">
+      <Filter>src\Utilities</Filter>
     </ClCompile>
     <ClCompile Include="src\UtilsCubemap.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils.cpp">
+      <Filter>src\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\allocator.cpp">
+      <Filter>src\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\argh.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CameraStructure.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CompositeRenderer.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DeferredComputeRenderer.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DeferredForwardRenderer.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ErrorCheck.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FrameGraph.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GeometryConverter.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Hierarchy.hpp">
-      <Filter>src</Filter>
+    <ClInclude Include="src\AllInitialValues.hpp">
+      <Filter>src\InitialValues</Filter>
     </ClInclude>
     <ClInclude Include="src\IndirectRenderer.hpp">
-      <Filter>src</Filter>
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DeferredComputeRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DeferredForwardRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FrameGraph.hpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GeometryConverter.hpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClInclude>
     <ClInclude Include="src\InstanceData.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Material.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MaterialLoaderAndSaver.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Mesh.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MeshFileHeader.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\meshoptimizer.h">
-      <Filter>src</Filter>
+      <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClInclude>
     <ClInclude Include="src\ProcessSceneMetaData.hpp">
-      <Filter>src</Filter>
+      <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClInclude>
-    <ClInclude Include="src\QuadRenderer.hpp">
-      <Filter>src</Filter>
+    <ClInclude Include="src\MaterialLoaderAndSaver.hpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClInclude>
-    <ClInclude Include="src\Renderbase.hpp">
-      <Filter>src</Filter>
+    <ClInclude Include="src\Material.hpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SceneConverter.hpp">
-      <Filter>src</Filter>
+    <ClInclude Include="src\MeshFileHeader.hpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneLoaderAndSaver.hpp">
-      <Filter>src</Filter>
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderbase.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hierarchy.hpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mesh.hpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene.hpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\meshoptimizer.h">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SceneConverter.hpp">
+      <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneMetaData.hpp">
-      <Filter>src</Filter>
+      <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClInclude>
     <ClInclude Include="src\spirv.h">
-      <Filter>src</Filter>
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\spirv_reflect.h">
-      <Filter>src</Filter>
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\SpirvPipelineGenerator.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SSAORenderer.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UtilTextureProcessing.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VulkanClear.hpp">
-      <Filter>src</Filter>
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\VulkanContextCreator.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VulkanCubeRenderer.hpp">
-      <Filter>src</Filter>
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\VulkanEngineCore.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VulkanImguiRenderer.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VulkanModelRenderer.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\VulkanPresent.hpp">
-      <Filter>src</Filter>
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\VulkanRenderContext.hpp">
-      <Filter>src</Filter>
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\VulkanRenderer.hpp">
-      <Filter>src</Filter>
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\VulkanRendererItem.hpp">
-      <Filter>src</Filter>
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\VulkanResourceManager.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UtilsVulkan.h">
-      <Filter>src</Filter>
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
     <ClInclude Include="src\Camera.h">
-      <Filter>src</Filter>
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\UtilsFPS.h">
-      <Filter>src</Filter>
+    <ClInclude Include="src\CameraStructure.hpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UtilTextureProcessing.hpp">
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UtilsVulkan.h">
+      <Filter>src\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\UtilsMath.h">
-      <Filter>src</Filter>
+      <Filter>src\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="src\AllInitialValues.hpp">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\debug.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Graph.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Trackball.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EasyProfilerWrapper.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils.h">
-      <Filter>src</Filter>
+    <ClInclude Include="src\UtilsFPS.h">
+      <Filter>src\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="src\UtilsCubemap.h">
-      <Filter>src</Filter>
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils.h">
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Trackball.h">
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graph.h">
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ErrorCheck.hpp">
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EasyProfilerWrapper.h">
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\debug.h">
+      <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\argh.h">
+      <Filter>src\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
