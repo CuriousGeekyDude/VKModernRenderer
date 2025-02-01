@@ -1,0 +1,8 @@
+Package: meshoptimizer
+Version: 0.21
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 95f6a0f315e50f850f9b8ad6ea870836084a14a8673a4502d2696db94257f638
+Description: Mesh optimization library that makes meshes smaller and faster to render
+Status: install ok half-installed

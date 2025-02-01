@@ -1,0 +1,154 @@
+{
+  "$schema": "https://raw.githubusercontent.com/spdx/spdx-spec/v2.2.1/schemas/spdx-schema.json",
+  "spdxVersion": "SPDX-2.2",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "documentNamespace": "https://spdx.org/spdxdocs/glslang-x64-windows-14.3.0-e7f73ab7-18ec-40ab-99e1-dbd5f1817ddd",
+  "name": "glslang:x64-windows@14.3.0 0dc4c20525ac8aea9d7bfe9adbe98ee1c1c39b5c7186bcac4003b0aee4018233",
+  "creationInfo": {
+    "creators": [
+      "Tool: vcpkg-2024-08-01-fd884a0d390d12783076341bd43d77c3a6a15658"
+    ],
+    "created": "2025-02-01T01:54:35Z"
+  },
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "GENERATES",
+      "relatedSpdxElement": "SPDXRef-binary"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-0"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-1"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-2"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-3"
+    },
+    {
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "GENERATED_FROM",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-0",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-1",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-2",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-3",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    }
+  ],
+  "packages": [
+    {
+      "name": "glslang",
+      "SPDXID": "SPDXRef-port",
+      "versionInfo": "14.3.0",
+      "downloadLocation": "git+https://github.com/microsoft/vcpkg@e38873f484b047a06604fafc6175ae0d2285b042",
+      "homepage": "https://github.com/KhronosGroup/glslang",
+      "licenseConcluded": "Apache-2.0 AND BSD-3-Clause AND MIT AND GPL-3.0-or-later",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "description": "Khronos-reference front end for GLSL/ESSL, partial front end for HLSL, and a SPIR-V generator.",
+      "comment": "This is the port (recipe) consumed by vcpkg."
+    },
+    {
+      "name": "glslang:x64-windows",
+      "SPDXID": "SPDXRef-binary",
+      "versionInfo": "0dc4c20525ac8aea9d7bfe9adbe98ee1c1c39b5c7186bcac4003b0aee4018233",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "Apache-2.0 AND BSD-3-Clause AND MIT AND GPL-3.0-or-later",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "comment": "This is a binary package built by vcpkg."
+    },
+    {
+      "SPDXID": "SPDXRef-resource-1",
+      "name": "KhronosGroup/glslang",
+      "downloadLocation": "git+https://github.com/KhronosGroup/glslang@14.3.0",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "ce6d09cc4d98b01d162ec5a196eec017c4a5f25eaf98c6612695d911f8d136c2f7193ff8f2c07931b2e94182d2c654833adc3b645f0c225e1d07c4e6e7abfd76"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "fileName": "./C:/Users/farhan/AppData/Local/vcpkg/registries/git-trees/e38873f484b047a06604fafc6175ae0d2285b042/0001-Fix-glslangValidator-installation.patch",
+      "SPDXID": "SPDXRef-file-0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "86d67db08cb8468ecaef14d72b5fb96ccd4542a620716d16473101d6bcc58977"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/farhan/AppData/Local/vcpkg/registries/git-trees/e38873f484b047a06604fafc6175ae0d2285b042/portfile.cmake",
+      "SPDXID": "SPDXRef-file-1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "86b927aa50f92d6081e5f0e7b1c51399624aa03adecba489687962248b0047e5"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/farhan/AppData/Local/vcpkg/registries/git-trees/e38873f484b047a06604fafc6175ae0d2285b042/usage",
+      "SPDXID": "SPDXRef-file-2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "4540add6b05793ff9a10c575fb09be7b251c79e5b0aa7431529887d5d2261320"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/farhan/AppData/Local/vcpkg/registries/git-trees/e38873f484b047a06604fafc6175ae0d2285b042/vcpkg.json",
+      "SPDXID": "SPDXRef-file-3",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "d072b6aa07fec5770f743942cb4b55e9d9fe3e4236834824c260ddfd409a2ac6"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    }
+  ]
+}

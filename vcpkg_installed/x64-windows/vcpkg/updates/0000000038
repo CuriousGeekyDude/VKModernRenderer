@@ -1,0 +1,10 @@
+Package: volk
+Version: 1.3.290.0
+Depends: vcpkg-cmake, vcpkg-cmake-config, vulkan-headers
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 1a763a409fcd4eab75838bd6d127b8cedd0433d932fd697334cc9861b16dfe97
+Description: Meta loader for Vulkan API.
+    Note that the static library target volk::volk is built without platform-specific defines.
+    Use the header-only target volk::volk_headers if you require platform-specific extensions.
+Status: install ok half-installed

@@ -1,0 +1,132 @@
+{
+  "$schema": "https://raw.githubusercontent.com/spdx/spdx-spec/v2.2.1/schemas/spdx-schema.json",
+  "spdxVersion": "SPDX-2.2",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "documentNamespace": "https://spdx.org/spdxdocs/assimp-x64-windows-5.4.2-09476c98-504a-4c3a-8f31-7e2e009fab8c",
+  "name": "assimp:x64-windows@5.4.2 d3fadaa3f78c0c7a8adefcef306362fa47c0e025461b4b31de8fb495ecdc3a49",
+  "creationInfo": {
+    "creators": [
+      "Tool: vcpkg-2024-08-01-fd884a0d390d12783076341bd43d77c3a6a15658"
+    ],
+    "created": "2025-02-01T01:29:43Z"
+  },
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "GENERATES",
+      "relatedSpdxElement": "SPDXRef-binary"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-0"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-1"
+    },
+    {
+      "spdxElementId": "SPDXRef-port",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-file-2"
+    },
+    {
+      "spdxElementId": "SPDXRef-binary",
+      "relationshipType": "GENERATED_FROM",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-0",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-1",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    },
+    {
+      "spdxElementId": "SPDXRef-file-2",
+      "relationshipType": "CONTAINED_BY",
+      "relatedSpdxElement": "SPDXRef-port"
+    }
+  ],
+  "packages": [
+    {
+      "name": "assimp",
+      "SPDXID": "SPDXRef-port",
+      "versionInfo": "5.4.2",
+      "downloadLocation": "git+https://github.com/microsoft/vcpkg@205e4ca24e9ba331c232e326707c7b84e78c0720",
+      "homepage": "https://github.com/assimp/assimp",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "description": "The Open Asset import library",
+      "comment": "This is the port (recipe) consumed by vcpkg."
+    },
+    {
+      "name": "assimp:x64-windows",
+      "SPDXID": "SPDXRef-binary",
+      "versionInfo": "d3fadaa3f78c0c7a8adefcef306362fa47c0e025461b4b31de8fb495ecdc3a49",
+      "downloadLocation": "NONE",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "comment": "This is a binary package built by vcpkg."
+    },
+    {
+      "SPDXID": "SPDXRef-resource-1",
+      "name": "assimp/assimp",
+      "downloadLocation": "git+https://github.com/assimp/assimp@v5.4.2",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "checksums": [
+        {
+          "algorithm": "SHA512",
+          "checksumValue": "4bfcc3a1b5a0cf3f382560564cac67088e13c62500c3c77dcef03811e67debe72ff318f5ed145b204d5017b56cb4293f3fe14b4060ca193813cef42b12eebe9d"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "fileName": "./C:/Users/farhan/AppData/Local/vcpkg/registries/git-trees/205e4ca24e9ba331c232e326707c7b84e78c0720/build_fixes.patch",
+      "SPDXID": "SPDXRef-file-0",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "52b639ad24e4a4f5e864d6f9f0d87b1b02cd2cd8e159084023665fb691a1f259"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/farhan/AppData/Local/vcpkg/registries/git-trees/205e4ca24e9ba331c232e326707c7b84e78c0720/portfile.cmake",
+      "SPDXID": "SPDXRef-file-1",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "36dfe3b48d6f02058b9c1f21d5fdadfe293f7e4283803f14e14cf3a9a9b8326b"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    },
+    {
+      "fileName": "./C:/Users/farhan/AppData/Local/vcpkg/registries/git-trees/205e4ca24e9ba331c232e326707c7b84e78c0720/vcpkg.json",
+      "SPDXID": "SPDXRef-file-2",
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "2d6d966d4d0d0efba3164cd323b390b1de7845907d5044911a51a445b5c46307"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "copyrightText": "NOASSERTION"
+    }
+  ]
+}
