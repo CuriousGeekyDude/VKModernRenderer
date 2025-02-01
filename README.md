@@ -17,7 +17,7 @@ You need visual studio 2019 or newer along with vcpkg in order to successfully b
 
 # Restart Visual Studio:
 
-Finally restart Visual Studio and you should be able to find vcpkg appearing in Project Properties under C/C++ -> General or Linker -> General. You should turn on the usage of manifest files. If you still cannot see vcpkg in Project's properties then try to refer to the official page of Microsoft regarding this topic. After all these steps the project should build successfully and you should follow the steps discussed above.
+Finally restart Visual Studio and you should be able to find vcpkg appearing in Project Properties under C/C++ -> General or Linker -> General. You should turn on the usage of manifest files. If you still cannot see vcpkg in Project's properties then try to refer to the official page of Microsoft regarding this issue. After all these steps the project should build successfully and you should follow the steps discussed above.
 
 # Assets data
 
