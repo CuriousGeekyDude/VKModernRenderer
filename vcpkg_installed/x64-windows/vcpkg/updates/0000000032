@@ -1,0 +1,8 @@
+Package: glslang
+Version: 14.3.0
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 0dc4c20525ac8aea9d7bfe9adbe98ee1c1c39b5c7186bcac4003b0aee4018233
+Description: Khronos-reference front end for GLSL/ESSL, partial front end for HLSL, and a SPIR-V generator.
+Status: install ok half-installed

@@ -1,0 +1,239 @@
+
+{
+  "FrameGraphName": "VulkanEngine",
+
+  "RenderPasses": [
+
+    {
+      "Pipeline": "COMPUTE",
+      "Name": "DeferredCompute",
+      "Input": [],
+      "Output": [],
+      "TargetNodes": [
+
+        {
+          "Name": "DeferredForward"
+        }
+
+      ]
+    },
+
+
+
+    {
+      "Pipeline": "GRAPHIC",
+      "Name": "IndirectGbuffer",
+      "Input": [
+
+        {
+          "Name": "GBufferColor",
+          "CreateResourceOnGPU": "TRUE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 1024, 512, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
+              "Format": "VK_FORMAT_R8G8B8A8_UNORM"
+            }
+
+          ]
+
+        },
+
+
+        {
+          "Name": "GBufferPosition",
+          "CreateResourceOnGPU": "TRUE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 1024, 512, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
+              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
+            }
+
+          ]
+
+        },
+
+        {
+          "Name": "GBufferNormal",
+          "CreateResourceOnGPU": "TRUE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 1024, 512, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
+              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
+            }
+
+          ]
+        },
+
+
+        {
+          "Name": "GBufferAlbedoSpec",
+          "CreateResourceOnGPU": "TRUE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 1024, 512, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
+              "Format": "VK_FORMAT_R8G8B8A8_UNORM"
+            }
+
+          ]
+        },
+
+        {
+          "Name": "Depth",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+
+
+        {
+          "Name": "GBufferColor",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+
+            }
+
+          ]
+
+        },
+
+
+
+
+        {
+          "Name": "GBufferPosition",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+
+        },
+
+        {
+          "Name": "GBufferNormal",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        },
+
+
+        {
+          "Name": "GBufferAlbedoSpec",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        },
+
+        {
+          "Name": "Depth",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DeferredCompute"
+        }
+
+      ]
+    },
+
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DeferredForward",
+
+      "Input": [
+
+        {
+          "Name": "Swapchain",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "Swapchain",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": []
+
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+#version 460
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(set = 0, binding = 0) readonly buffer lv_tileBuffer {
+    uint lv_tileData[];
+};
+
+
+layout(set = 0, binding = 1) uniform  UniformBuffer { 
+
+mat4   inMtx; 
+vec4 cameraPos; 
+
+float scale;
+float bias;
+float zNear;
+float zFar;
+float radius;
+float attScale;
+float distScale;
+uint m_enableDeferred;
+
+} ubo;
+
+
+
+
+struct Light {
+    vec4 m_Position;
+    vec4 m_Color;
+
+    float m_linear;
+	float m_quadratic;
+    float m_radius;
+};
+
+const uint lv_totalNumLights = 64;
+const uint lv_totalNumBins = 32;
+
+layout(set = 0, binding = 2) uniform lv_lightData
+{
+    Light m_lights[lv_totalNumLights];
+    uint m_sortedLightsIndices[lv_totalNumLights];
+
+    uint m_bins[lv_totalNumBins];
+};
+
+
+
+layout(set = 0, binding = 3) uniform sampler2D lv_positions;
+layout(set = 0, binding = 4) uniform sampler2D lv_normals;
+layout(set = 0, binding = 5) uniform sampler2D lv_albedoSpecs;
+
+layout(set = 0, binding = 6) uniform writeonly image2D lv_outputImage;
+
+
+void main(){}
