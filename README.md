@@ -26,7 +26,7 @@ The link to the Sponza scene file: https://drive.google.com/drive/folders/1xiEzR
 
 # Brief explanation as to how to use the software
 
-If it is your first time running the software, then you should try to define CONVERT_SCENE macro in the main.cpp file and compile. Run the program and when it successfully returns, eliminate the macro and recompile again. The renderer is the ready to be used. 
+If it is your first time running the software, then you should try to define CONVERT_SCENE macro in the main.cpp file and compile. Run the program and when it successfully returns, eliminate the macro and recompile again. The renderer is then ready to be used. 
 
 
 
