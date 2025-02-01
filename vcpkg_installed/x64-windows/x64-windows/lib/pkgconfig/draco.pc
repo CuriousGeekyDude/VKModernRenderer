@@ -1,8 +1,0 @@
-prefix=${pcfiledir}/../..
-Name: draco
-Description: Draco geometry de(com)pression library.
-Version: 1.5.7
-Cflags: "-I${prefix}/include"
-Libs: "-L${prefix}/lib" -ldraco
-Libs.private: 
-

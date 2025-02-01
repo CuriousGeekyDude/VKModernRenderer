@@ -1,9 +1,0 @@
-Package: polyclipping
-Version: 6.4.2
-Port-Version: 12
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-windows
-Multi-Arch: same
-Abi: 2786de2a298533f8ae071b8536a4c9a4f0926f422b7be4201a0ece67d49d421b
-Description: The Clipper library performs clipping and offsetting for both lines and polygons. All four boolean clipping operations are supported - intersection, union, difference and exclusive-or. Polygons can be of any shape including self-intersecting polygons.
-Status: install ok installed

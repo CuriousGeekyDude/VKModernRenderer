@@ -6,6 +6,8 @@
 
 Binary Scene Files/
 
+vcpkg_installedA/
+
 # User-specific files
 *.rsuser
 *.suo
