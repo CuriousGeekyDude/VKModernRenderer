@@ -151,6 +151,10 @@ namespace RenderCore
 			VkMemoryPropertyFlags l_memoryProperties, const char* l_nameBuffer);
 
 
+
+		void CopyDataToLocalBuffer(VkQueue l_queue, VkCommandBuffer l_cmdBuffer,
+			const uint32_t l_bufferHandle, const void* l_dstBufferData);
+
 		VkPipeline CreateComputePipeline(VkDevice m_device, const char* l_computeShaderFilePath
 			,VkPipelineLayout pipelineLayout);
 

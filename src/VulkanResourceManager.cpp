@@ -60,6 +60,51 @@ namespace RenderCore
 
 	}
 
+
+
+	void VulkanResourceManager::CopyDataToLocalBuffer(VkQueue l_queue, VkCommandBuffer l_cmdBuffer,
+		const uint32_t l_bufferHandle, const void* l_dstBufferData)
+	{
+		using namespace ErrorCheck;
+
+
+		auto& lv_buffer = RetrieveGpuBuffer(l_bufferHandle);
+
+		auto& lv_stagingBuffer = CreateBuffer(lv_buffer.size,
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+			, "TemporaryStagingBufferForDataCopy ");
+
+
+		memcpy(lv_stagingBuffer.ptr, l_dstBufferData, lv_buffer.size);
+
+
+		VkBufferCopy lv_bufferCopy = {};
+		lv_bufferCopy.size = lv_buffer.size;
+
+		VkCommandBufferBeginInfo lv_commandBufferBegin = {};
+		lv_commandBufferBegin.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		lv_commandBufferBegin.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+		VULKAN_CHECK(vkBeginCommandBuffer(l_cmdBuffer, &lv_commandBufferBegin));
+
+		vkCmdCopyBuffer(l_cmdBuffer, lv_stagingBuffer.buffer,
+			lv_buffer.buffer,
+			1, &lv_bufferCopy);
+
+		vkEndCommandBuffer(l_cmdBuffer);
+
+		VkSubmitInfo lv_submitInfo = {};
+		lv_submitInfo.commandBufferCount = 1;
+		lv_submitInfo.pCommandBuffers = &l_cmdBuffer;
+		lv_submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+		VULKAN_CHECK(vkQueueSubmit(l_queue, 1, &lv_submitInfo, nullptr));
+
+		vkQueueWaitIdle(l_queue);
+	}
+
+
 	VulkanBuffer& VulkanResourceManager::CreateSharedBuffer(VkDeviceSize l_size, VkBufferUsageFlags l_usage,
 		VkMemoryPropertyFlags l_memoryProperties,
 		const char* l_nameBuffer)
