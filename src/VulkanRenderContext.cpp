@@ -61,6 +61,11 @@ namespace VulkanEngine
 		return m_frameGraph.value();
 	}
 
+	VulkanEngine::CpuResourceServiceProvider& VulkanRenderContext::GetCpuResourceProvider()
+	{
+		return m_cpuResourceProvider;
+	}
+
 
 	void VulkanRenderContext::UpdateUniformBuffers(uint32_t l_currentImageIndex,
 		const CameraStructure& l_cameraStructure)

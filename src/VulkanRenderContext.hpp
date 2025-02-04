@@ -58,6 +58,8 @@ namespace VulkanEngine
 
 		FrameGraph& GetFrameGraph();
 
+		VulkanEngine::CpuResourceServiceProvider& GetCpuResourceProvider();
+
 	public:
 
 		std::vector<RenderCore::VulkanRendererItem> m_offScreenRenderers;
