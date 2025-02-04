@@ -41,6 +41,9 @@ namespace RenderCore
 		LoadAllTexturesOfScene();
 		LoadBoundingBoxData(l_boundingBoxFile);
 
+		m_vulkanRenderContext.GetCpuResourceProvider().AddCpuResource("BoundingBoxData"
+			, (void*)m_boundingBoxes.data(), (uint32_t)m_boundingBoxes.size());
+
 		auto lv_meshHeader = LoadMeshData(l_meshHeaderFile);
 
 		if (0x12345678 != lv_meshHeader.m_magicValue) {
