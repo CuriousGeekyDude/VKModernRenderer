@@ -9,25 +9,15 @@ namespace MeshConverter
 {
 
 
-	void GeometryConverter::CalculateBoundingBox(const MeshConverter::Mesh& l_mesh, BoundingBox& l_box)
+	void GeometryConverter::CalculateBoundingBox(const uint32_t l_meshIndex, BoundingBox& l_box,
+												const aiMesh* l_mesh)
 	{
-		auto lv_totalNumVertices = l_mesh.m_vertexCount;
-		auto lv_firstVertexIndex = (uint32_t)(l_mesh.m_streamOffsets[0] / sizeof(float));
+		l_box.m_instanceDataIndex = l_meshIndex;
 
-		for (uint32_t i = 0; i < lv_totalNumVertices*l_mesh.m_streamCount; i += l_mesh.m_streamCount) {
+		l_box.m_min = glm::vec4{l_mesh->mAABB.mMin.x, l_mesh->mAABB.mMin.y, l_mesh->mAABB.mMin.z, 1.f};
+		l_box.m_max = glm::vec4{l_mesh->mAABB.mMax.x, l_mesh->mAABB.mMax.y, l_mesh->mAABB.mMax.z, 1.f };
 
-			auto lv_p1 = m_vertexBuffer[lv_firstVertexIndex + i];
-			auto lv_p2 = m_vertexBuffer[lv_firstVertexIndex + i + 1];
-			auto lv_p3 = m_vertexBuffer[lv_firstVertexIndex + i + 2];
 
-			glm::vec4 lv_point{lv_p1, lv_p2, lv_p3, 0.f};
-
-			l_box.m_min = glm::min(l_box.m_min, lv_point);
-			l_box.m_max = glm::max(l_box.m_max, lv_point);
-		}
-
-		l_box.m_max.w = 0.f;
-		l_box.m_min.w = 0.f;
 	}
 
 	void GeometryConverter::ConvertScene(const std::string& l_sceneFileName, const std::string& l_meshFileHeaders,
@@ -62,6 +52,7 @@ namespace MeshConverter
 			aiProcess_FindDegenerates |
 			aiProcess_FindInvalidData |
 			aiProcess_ValidateDataStructure |
+			aiProcess_GenBoundingBoxes |
 			aiProcess_GenUVCoords;
 
 		printf("Conversion of file %s has begun...", l_sceneFileName.c_str());
@@ -103,7 +94,7 @@ namespace MeshConverter
 		uint32_t lv_indexOffset{};
 		for (uint32_t i = 0; i < lv_scene->mNumMeshes; ++i) {
 			ConvertMesh(lv_scene->mMeshes[i], lv_vertexOffset, lv_indexOffset);
-			CalculateBoundingBox(m_meshes[i], m_boundingBoxes[i]);
+			CalculateBoundingBox(i, m_boundingBoxes[i], lv_scene->mMeshes[i]);
 			lv_vertexOffset += lv_scene->mMeshes[i]->mNumVertices*lv_numElementsVertexBuffer;
 			lv_indexOffset += lv_scene->mMeshes[i]->mNumFaces * 3 * lv_maxLODCount-1;
 		}
@@ -239,7 +230,7 @@ namespace MeshConverter
 			++lv_streamCount;
 		}
 
-
+		
 		const bool lv_includeTexCoordsOnly = m_includeTextureCoordinates && !(m_includeNormals || m_includeTangents);
 		const bool lv_includeTexCoordNormalsOnly = (m_includeTextureCoordinates && m_includeNormals) && !m_includeTangents;
 

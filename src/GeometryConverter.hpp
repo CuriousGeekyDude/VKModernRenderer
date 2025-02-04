@@ -26,6 +26,8 @@ namespace MeshConverter
 		{
 			glm::vec4 m_min{ std::numeric_limits<float>::max() };
 			glm::vec4 m_max{ std::numeric_limits<float>::min() };
+
+			uint32_t m_instanceDataIndex;
 		};
 
 
@@ -46,7 +48,7 @@ namespace MeshConverter
 
 	private:
 
-		void CalculateBoundingBox(const MeshConverter::Mesh&, BoundingBox& l_box);
+		void CalculateBoundingBox(const uint32_t l_meshIndex, BoundingBox& l_box, const aiMesh* l_mesh);
 
 		void GenerateMeshLODs(std::span<unsigned int> l_originalIndices, std::span<float> l_meshVertices, 
 			uint32_t l_totalNumStreams,
