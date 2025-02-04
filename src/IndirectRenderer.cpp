@@ -39,7 +39,7 @@ namespace RenderCore
 		m_materialLoaderSaver.LoadMaterialFile();
 		
 		LoadAllTexturesOfScene();
-		//LoadBoundingBoxData(l_boundingBoxFile);
+		LoadBoundingBoxData(l_boundingBoxFile);
 
 		auto lv_meshHeader = LoadMeshData(l_meshHeaderFile);
 
