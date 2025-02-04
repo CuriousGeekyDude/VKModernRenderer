@@ -135,6 +135,9 @@
     <ClCompile Include="src\CpuResourceServiceProvider.cpp">
       <Filter>src\VulkanEngine</Filter>
     </ClCompile>
+    <ClCompile Include="src\BoundingBoxWireframeRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp">
@@ -265,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="src\CpuResourceServiceProvider.hpp">
       <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BoundingBoxWireframeRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
