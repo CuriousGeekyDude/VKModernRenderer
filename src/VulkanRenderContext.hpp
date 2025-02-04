@@ -5,6 +5,7 @@
 #include "VulkanRendererItem.hpp"
 #include "VulkanResourceManager.hpp"
 #include "VulkanContextCreator.hpp"
+#include "CpuResourceServiceProvider.hpp"
 #include <vector>
 #include <cassert>
 #include "FrameGraph.hpp"
@@ -72,6 +73,7 @@ namespace VulkanEngine
 
 		VulkanEngine::VulkanContextCreator m_vulkanContextCreator;
 		RenderCore::VulkanResourceManager m_vulkanResources;
+		VulkanEngine::CpuResourceServiceProvider m_cpuResourceProvider;
 		std::optional<FrameGraph> m_frameGraph;
 
 		VulkanTexture& m_depth;

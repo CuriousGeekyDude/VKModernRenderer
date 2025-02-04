@@ -132,6 +132,9 @@
     <ClCompile Include="src\allocator.cpp">
       <Filter>src\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="src\CpuResourceServiceProvider.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp">
@@ -259,6 +262,9 @@
     </ClInclude>
     <ClInclude Include="src\argh.h">
       <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CpuResourceServiceProvider.hpp">
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
