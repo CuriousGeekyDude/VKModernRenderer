@@ -155,38 +155,31 @@ namespace RenderCore
 
 		constexpr std::array<glm::vec3, 8> lv_unitCube{
 
-			glm::vec3{0.f, 1.f, 0.f},
-			glm::vec3{1.f, 1.f, 0.f},
-			glm::vec3{0.f, 0.f, 0.f},
-			glm::vec3{1.f, 0.f, 0.f},
-			glm::vec3{1.f, 0.f, 1.f},
-			glm::vec3{1.f, 1.f, 1.f},
-			glm::vec3{0.f, 1.f, 1.f},
-			glm::vec3{0.f, 0.f, 1.f},
+			glm::vec3{0.0f, 0.0f, 0.0f},
+			glm::vec3{1.0f, 0.0f, 0.0f},
+			glm::vec3{1.0f, 1.0f, 0.0f},
+			glm::vec3{0.0f, 1.0f, 0.0f},
+			glm::vec3{0.0f, 0.0f, 1.0f},
+			glm::vec3{1.0f, 0.0f, 1.0f},
+			glm::vec3{1.0f, 1.0f, 1.0f},
+			glm::vec3{0.0f, 1.0f, 1.0f},
 		};
 
 		m_boundingBoxVertices.resize(l_boundingBoxData.m_size * 24);
 		m_boundingBoxIndices = {
 
-			0, 1, 2,
-			2, 1, 3,
-
-			1, 5, 3,
-			3, 5, 4,
-
-			5, 6, 4,
-			4, 6, 7,
-
-			6, 0, 7,
-			7, 0, 2,
-
-			//up
-			6, 1, 0,
-			6, 5, 1,
-
-			//down
-			7, 3, 2,
-			7, 4, 3
+			// Front face (z = 0)
+			0, 3, 2,  2, 1, 0,
+			// Right face (x = 1)
+			1, 2, 6,  6, 5, 1,
+			// Back face (z = 1)
+			5, 6, 7,  7, 4, 5,
+			// Left face (x = 0)
+			4, 7, 3,  3, 0, 4,
+			// Bottom face (y = 0)
+			4, 0, 1,  1, 5, 4,
+			// Top face (y = 1)
+			3, 7, 6,  6, 2, 3
 		};
 
 		auto* lv_boundingBoxData = (MeshConverter::GeometryConverter::BoundingBox*)l_boundingBoxData.m_buffer;
