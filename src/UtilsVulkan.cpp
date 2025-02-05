@@ -924,11 +924,14 @@ bool initVulkanRenderDevice3(VulkanInstance& vk, VulkanRenderDevice& vkDev, uint
 		.multiDrawIndirect = VK_TRUE,
 		.drawIndirectFirstInstance = VK_TRUE,
 		/* for OIT and general atomic operations */
+		.fillModeNonSolid = VK_TRUE,
 		.vertexPipelineStoresAndAtomics = (VkBool32)(ctxFeatures.vertexPipelineStoresAndAtomics_ ? VK_TRUE : VK_FALSE),
+
 		.fragmentStoresAndAtomics = (VkBool32)(ctxFeatures.fragmentStoresAndAtomics_ ? VK_TRUE : VK_FALSE),
 		/* for arrays of textures */
 		.shaderSampledImageArrayDynamicIndexing = VK_TRUE,
 		/* for GL <-> VK material shader compatibility */
+
 		.shaderInt64 =  VK_TRUE,
 		
 	};
@@ -1190,7 +1193,10 @@ bool createGraphicsPipeline(
 	bool dynamicScissorState,
 	int32_t customWidth,
 	int32_t customHeight,
-	uint32_t numPatchControlPoints)
+	uint32_t numPatchControlPoints,
+	const std::vector<VkVertexInputBindingDescription>& l_vtxInputBindingDescs,
+	const std::vector<VkVertexInputAttributeDescription>& l_vtxInputAttribDescs,
+	bool l_enableWireframe)
 {
 	std::vector<ShaderModule> shaderModules;
 	std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
@@ -1209,7 +1215,13 @@ bool createGraphicsPipeline(
 	}
 
 	const VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
-		.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+		.pNext = nullptr,
+		.flags = 0,
+		.vertexBindingDescriptionCount = (uint32_t)l_vtxInputBindingDescs.size(),
+		.pVertexBindingDescriptions = l_vtxInputBindingDescs.data(),
+		.vertexAttributeDescriptionCount = (uint32_t)l_vtxInputAttribDescs.size(),
+		.pVertexAttributeDescriptions = l_vtxInputAttribDescs.data()
 	};
 
 	const VkPipelineInputAssemblyStateCreateInfo inputAssembly = {
@@ -1243,7 +1255,7 @@ bool createGraphicsPipeline(
 
 	const VkPipelineRasterizationStateCreateInfo rasterizer = {
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-		.polygonMode = VK_POLYGON_MODE_FILL,
+		.polygonMode = l_enableWireframe == true ? VK_POLYGON_MODE_LINE :VK_POLYGON_MODE_FILL,
 		.cullMode = VK_CULL_MODE_NONE,
 		.frontFace = VK_FRONT_FACE_CLOCKWISE,
 		.lineWidth = 1.0f

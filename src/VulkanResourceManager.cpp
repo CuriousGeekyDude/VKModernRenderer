@@ -924,7 +924,10 @@ namespace RenderCore
 		if (false == createGraphicsPipeline(m_renderDevice, l_renderPass, l_pipelineLayout,
 			l_shaderFiles, &lv_graphicsPipeline, l_pipelineParams.m_totalNumColorAttach, l_pipelineParams.m_topology, l_pipelineParams.m_useDepth,
 			l_pipelineParams.m_useBlending, l_pipelineParams.m_dynamicScissorState, l_pipelineParams.m_width,
-			l_pipelineParams.m_height)) {
+			l_pipelineParams.m_height,0,
+			l_pipelineParams.m_vertexInputBindingDescription,
+			l_pipelineParams.m_vertexInputAttribDescription,
+			l_pipelineParams.m_enableWireframe)) {
 			PRINT_EXIT("\nFailed to create graphics pipeline.\n");
 		}
 

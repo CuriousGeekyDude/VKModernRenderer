@@ -55,6 +55,10 @@ namespace RenderCore
 			bool m_useDepth = true;
 			bool m_useBlending = true;
 			bool m_dynamicScissorState = false;
+			bool m_enableWireframe = false;
+
+			std::vector<VkVertexInputBindingDescription> m_vertexInputBindingDescription{};
+			std::vector<VkVertexInputAttributeDescription> m_vertexInputAttribDescription{};
 
 			uint32_t m_totalNumColorAttach = 0;
 		};
@@ -236,9 +240,7 @@ namespace RenderCore
 		VkPipeline& CreateGraphicsPipeline(VkRenderPass l_renderPass, VkPipelineLayout l_pipelineLayout,
 			const std::vector<const char*>& l_shaderFiles,
 			const char* l_nameGraphicsPipeline,
-			const PipelineInfo& l_pipelineParams = PipelineInfo{ .m_width = 0, .m_height = 0, 
-			.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, .m_useDepth = true, 
-			.m_useBlending = false, .m_dynamicScissorState = false });
+			const PipelineInfo& l_pipelineParams);
 
 
 
