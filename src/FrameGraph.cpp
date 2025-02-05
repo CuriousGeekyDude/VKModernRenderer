@@ -272,7 +272,7 @@ namespace VulkanEngine
 
                 std::optional<uint32_t> lv_depthResourceHandle;
                 for (size_t i = 0; i < lv_node.m_inputResourcesHandles.size(); ++i) {
-                    auto& lv_inputResource = m_frameGraphResources[i];
+                    auto& lv_inputResource = m_frameGraphResources[lv_node.m_inputResourcesHandles[i]];
 
                     if (lv_inputResource.m_resourceName == "Depth") {
                         lv_depthResourceHandle.emplace(i);
