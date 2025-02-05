@@ -144,9 +144,9 @@ namespace VulkanEngine
 		  }
 	  }
 	  m_frameGraph.value().RenderGraph(l_cmdBuffer, l_currentImageIndex);
-		BeginRenderPass(l_cmdBuffer, m_presentRenderPass.m_renderpass, l_currentImageIndex,
+		/*BeginRenderPass(l_cmdBuffer, m_presentRenderPass.m_renderpass, l_currentImageIndex,
 			lv_screenRect, m_swapchainFrameBufferDepthPresent[l_currentImageIndex]);
-		vkCmdEndRenderPass(l_cmdBuffer);
+		vkCmdEndRenderPass(l_cmdBuffer);*/
 
 
 	}

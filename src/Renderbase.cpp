@@ -25,6 +25,22 @@ namespace RenderCore
 
 
 
+	void Renderbase::SetNodeToAppropriateRenderpass
+	(const std::string& l_renderpassName,
+		Renderbase* l_renderpass)
+	{
+		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();
+
+		auto* lv_node = lv_frameGraph.RetrieveNode(l_renderpassName);
+
+		if (nullptr == lv_node) {
+			printf("Appropriate renderer was not found among the nodes of the frame graph. Exitting....\n");
+			exit(-1);
+		}
+		lv_node->m_renderer = l_renderpass;
+	}
+
+
 	void Renderbase::SetRenderPassAndFrameBuffer(const std::string& l_rendererName)
 	{
 		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();

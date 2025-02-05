@@ -123,7 +123,7 @@ void main()
 
 	//outColor = vec4(lv_lightDirDotN * lv_albedo.rgb + lv_emissiveColor.rgb, 1.f);
 
-	outColor = lv_albedo;
+	outColor = lv_albedo*0.7;
 	lv_gBufferPosition = lv_worldPos;
 	lv_gBufferNormal = vec4(lv_normalSample.xyz, 1.f);
 	lv_gBufferAlbedoSpec.rgb = lv_albedo.rgb;

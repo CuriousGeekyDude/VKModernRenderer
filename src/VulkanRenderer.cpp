@@ -20,11 +20,9 @@ namespace VulkanEngine
 			"Shaders/Indirect.vert",
 			"Shaders/Indirect.frag",
 			"Shaders/Spirv/Indirect.spv"),
-		m_deferredCompute(ctx_, "Shaders/DeferredCompute.comp",
-			"Shaders/Spirv/DeferredCompute.spv"),
-		m_deferredForward(ctx_, "Shaders/FullScreenQuad.vert",
-			"Shaders/DeferredForward.frag",
-			"Shaders/Spirv/DeferredForward.spv")
+		m_boundingBoxWireframe(ctx_,
+			"Shaders/BoundingBoxWireframe.vert", "Shaders/BoundingBoxWireframe.frag",
+			"Shaders/Spirv/BoundingBox.spv")
 		/*m_interior(ctx_, ctx_.GetOffscreenRenderPassDepth(),
 			ctx_.GetContextCreator().m_vkDev.m_graphicsCommandBuffers[0], "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorMeshFileHeader"
 		,"build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorBoundingBoxes", "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorInstanceData",
