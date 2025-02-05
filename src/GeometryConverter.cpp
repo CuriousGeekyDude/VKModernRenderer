@@ -14,8 +14,8 @@ namespace MeshConverter
 	{
 		l_box.m_instanceDataIndex = l_meshIndex;
 
-		l_box.m_min = glm::vec4{l_mesh->mAABB.mMin.x, l_mesh->mAABB.mMin.y, l_mesh->mAABB.mMin.z, 1.f};
-		l_box.m_max = glm::vec4{l_mesh->mAABB.mMax.x, l_mesh->mAABB.mMax.y, l_mesh->mAABB.mMax.z, 1.f };
+		l_box.m_min = glm::vec4{l_mesh->mAABB.mMin.x *0.01, l_mesh->mAABB.mMin.y*0.01, l_mesh->mAABB.mMin.z*0.01, 1.f};
+		l_box.m_max = glm::vec4{l_mesh->mAABB.mMax.x * 0.01, l_mesh->mAABB.mMax.y * 0.01, l_mesh->mAABB.mMax.z * 0.01, 1.f };
 
 
 	}
