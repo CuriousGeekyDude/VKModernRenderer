@@ -109,7 +109,7 @@ inline void getFrustumPlanes(const glm::mat4& mvp, std::array<glm::vec4, 6>& pla
 	planes[5] = vec4(lv_newmvp[3] - lv_newmvp[2]); // far
 }
 
-inline void getFrustumCorners(const glm::mat4& mvp, std::array<glm::vec4, 8>& points)
+inline void getFrustumCorners(const glm::mat4& mvp, std::array<glm::vec3, 8>& points)
 {
 	using glm::vec4;
 
@@ -123,8 +123,9 @@ inline void getFrustumCorners(const glm::mat4& mvp, std::array<glm::vec4, 8>& po
 	const glm::mat4 invMVP = glm::inverse(mvp);
 
 	for (int i = 0; i < 8; i++) {
-		const vec4 q = invMVP * corners[i];
-		points[i] = q / q.w;
+		vec4 q = invMVP * corners[i];
+		q = q / q.w;
+		points[i] = glm::vec3{ q.x, q.y, q.z };
 	}
 }
 
