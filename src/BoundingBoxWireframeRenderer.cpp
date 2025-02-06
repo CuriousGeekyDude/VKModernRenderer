@@ -165,18 +165,11 @@ namespace RenderCore
 		m_boundingBoxVertices.resize(l_boundingBoxData.m_size * 24);
 		m_boundingBoxIndices = {
 
-			// Front face (z = 0)
-			0, 3, 2,  2, 1, 0,
-			// Right face (x = 1)
-			1, 2, 6,  6, 5, 1,
-			// Back face (z = 1)
-			5, 6, 7,  7, 4, 5,
-			// Left face (x = 0)
-			4, 7, 3,  3, 0, 4,
-			// Bottom face (y = 0)
-			4, 0, 1,  1, 5, 4,
-			// Top face (y = 1)
-			3, 7, 6,  6, 2, 3
+			0, 1,  1, 2,  2, 3,  3, 0,
+			// Top face edges
+			4, 5,  5, 6,  6, 7,  7, 4,
+			// Vertical edges connecting top and bottom
+			0, 4,  1, 5,  2, 6,  3, 7
 		};
 
 		auto* lv_boundingBoxData = (MeshConverter::GeometryConverter::BoundingBox*)l_boundingBoxData.m_buffer;
