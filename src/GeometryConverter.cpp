@@ -14,8 +14,8 @@ namespace MeshConverter
 	{
 		l_box.m_instanceDataIndex = l_meshIndex;
 
-		l_box.m_min = glm::vec4{l_mesh->mAABB.mMin.x *0.01, l_mesh->mAABB.mMin.y*0.01, l_mesh->mAABB.mMin.z*0.01, 1.f};
-		l_box.m_max = glm::vec4{l_mesh->mAABB.mMax.x * 0.01, l_mesh->mAABB.mMax.y * 0.01, l_mesh->mAABB.mMax.z * 0.01, 1.f };
+		l_box.m_min = glm::vec4{l_mesh->mAABB.mMin.x *0.05, l_mesh->mAABB.mMin.y*0.05, l_mesh->mAABB.mMin.z*0.05, 1.f};
+		l_box.m_max = glm::vec4{l_mesh->mAABB.mMax.x * 0.05, l_mesh->mAABB.mMax.y * 0.05, l_mesh->mAABB.mMax.z * 0.05, 1.f };
 
 
 	}
@@ -239,9 +239,9 @@ namespace MeshConverter
 			i += lv_numElementsVertexBuffer, ++j) {
 			const aiVector3D& lv_pos = l_mesh->mVertices[j];
 
-			m_vertexBuffer[l_vertexOffset+i] = ((float)lv_pos.x * 0.01f);
-			m_vertexBuffer[l_vertexOffset + i + 1] = ((float)lv_pos.y * 0.01f);
-			m_vertexBuffer[l_vertexOffset + i + 2] = ((float)lv_pos.z * 0.01f);
+			m_vertexBuffer[l_vertexOffset+i] = ((float)lv_pos.x * 0.05f);
+			m_vertexBuffer[l_vertexOffset + i + 1] = ((float)lv_pos.y * 0.05f);
+			m_vertexBuffer[l_vertexOffset + i + 2] = ((float)lv_pos.z * 0.05f);
 
 
 			if (true == lv_includeTexCoordsOnly) {
