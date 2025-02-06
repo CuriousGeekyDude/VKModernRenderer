@@ -286,10 +286,7 @@ namespace RenderCore
 	{
 		IndirectUniformBuffer lv_uniformBuffer{};
 
-
-		const float lv_ratio = (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth / (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
-
-		glm::mat4 lv_mtx = glm::perspective(45.f, lv_ratio, 0.1f, 256.f)*l_cameraStructure.m_viewMatrix;
+		glm::mat4 lv_mtx = l_cameraStructure.m_projectionMatrix * l_cameraStructure.m_viewMatrix;
 
 		auto lv_camPosVec3 = l_cameraStructure.m_cameraPos;
 		lv_uniformBuffer.m_cameraPos = glm::vec4{ lv_camPosVec3.x, lv_camPosVec3.y, lv_camPosVec3.z, 1.f };

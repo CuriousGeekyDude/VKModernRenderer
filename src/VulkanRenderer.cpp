@@ -4,6 +4,7 @@
 #include "VulkanRenderer.hpp"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "CameraStructure.hpp"
 
 
@@ -50,9 +51,15 @@ namespace VulkanEngine
 
 	void VulkanRenderer::draw3D(uint32_t l_currentImageIndex)
 	{
+		const float lv_ratio = (float)ctx_.GetContextCreator().m_vkDev.m_framebufferWidth / (float)ctx_.GetContextCreator().m_vkDev.m_framebufferHeight;
+		float farPlane = 256.f;
+		float nearPlane = 0.1f;
+		auto proj = glm::perspective(45.f, lv_ratio, 0.1f, 256.f);
+
 		const CameraStructure lv_cameraStructure{
 			.m_cameraPos = camera.getPosition(),
-			.m_viewMatrix = camera.getViewMatrix()
+			.m_viewMatrix = camera.getViewMatrix(),
+			.m_projectionMatrix = proj
 		};
 
 		ctx_.UpdateRenderers(l_currentImageIndex, lv_cameraStructure);

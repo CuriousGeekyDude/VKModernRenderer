@@ -98,14 +98,11 @@ namespace RenderCore
 	void BoundingBoxWireframeRenderer::UpdateUniformBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
-		auto lv_ratio = m_vulkanRenderContext.GetContextCreator()
-			.m_vkDev.m_framebufferWidth / m_vulkanRenderContext.GetContextCreator()
-			.m_vkDev.m_framebufferHeight;
 
 		UniformBuffer lv_uniform{};
 		lv_uniform.m_cameraPos = glm::vec4{ l_cameraStructure.m_cameraPos, 1.f };
 		lv_uniform.m_viewMatrix = l_cameraStructure.m_viewMatrix;
-		lv_uniform.m_inMtx = glm::perspective<float>(45.f, lv_ratio, 0.1f, 256.f) * l_cameraStructure.m_viewMatrix;
+		lv_uniform.m_inMtx = l_cameraStructure.m_projectionMatrix * l_cameraStructure.m_viewMatrix;
 
 
 		auto& lv_uniformBufferGPU = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_uniformBufferHandles[l_currentSwapchainIndex]);
