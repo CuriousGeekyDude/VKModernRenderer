@@ -96,17 +96,25 @@ inline glm::vec3 randVec()
 	return randomVec(glm::vec3(-5, -5, -5), glm::vec3(5, 5, 5));
 }
 
-inline void getFrustumPlanes(const glm::mat4& mvp, std::array<glm::vec4, 6>& planes)
+inline void getFrustumPlanes(const glm::mat4& mvp, std::array<glm::vec3, 6>& planes)
 {
-	using glm::vec4;
-
+	using glm::vec3;
 	auto lv_newmvp = glm::transpose(mvp);
-	planes[0] = vec4(lv_newmvp[3] + lv_newmvp[0]); // left
-	planes[1] = vec4(lv_newmvp[3] - lv_newmvp[0]); // right
-	planes[2] = vec4(lv_newmvp[3] + lv_newmvp[1]); // bottom
-	planes[3] = vec4(lv_newmvp[3] - lv_newmvp[1]); // top
-	planes[4] = vec4(lv_newmvp[3] + lv_newmvp[2]); // near
-	planes[5] = vec4(lv_newmvp[3] - lv_newmvp[2]); // far
+
+	auto lv_left = lv_newmvp[3] + lv_newmvp[0];
+	auto lv_right = lv_newmvp[3] - lv_newmvp[0];
+	auto lv_bottom = lv_newmvp[3] + lv_newmvp[1];
+	auto lv_top = lv_newmvp[3] - lv_newmvp[1];
+	auto lv_near = lv_newmvp[3] + lv_newmvp[2];
+	auto lv_far = lv_newmvp[3] - lv_newmvp[2];
+
+	planes[0] = vec3(lv_left.x/lv_left.w, lv_left.y/lv_left.w, lv_left.z/lv_left.w); // left
+	planes[1] = vec3(lv_right.x/lv_right.w, lv_right.y/lv_right.w, lv_right.z/lv_right.w); // right
+	planes[2] = (1.f/lv_bottom.w)*vec3(lv_bottom.x, lv_bottom.y, lv_bottom.z); // bottom
+	planes[3] = (1.f/lv_top.w)*vec3(lv_top.x, lv_top.y, lv_top.z); // top
+	planes[4] = (1.f/lv_near.w)*vec3(lv_near.x, lv_near.y, lv_near.z); // near
+	planes[5] = (1.f/lv_far.w)*vec3(lv_far.x, lv_far.y, lv_far.z); // far
+
 }
 
 inline void getFrustumCorners(const glm::mat4& mvp, std::array<glm::vec3, 8>& points)
@@ -114,10 +122,8 @@ inline void getFrustumCorners(const glm::mat4& mvp, std::array<glm::vec3, 8>& po
 	using glm::vec4;
 
 	const vec4 corners[] = {
-		vec4(-1, -1, 0, 1), vec4(1, -1, 0, 1),
-		vec4(1,  1, 0, 1),  vec4(-1,  1, 0, 1),
-		vec4(-1, -1,  1, 1), vec4(1, -1,  1, 1),
-		vec4(1,  1,  1, 1),  vec4(-1,  1,  1, 1)
+		vec4(-1, -1, -1, 1), vec4(1, -1, -1, 1), vec4(1, 1, -1, 1), vec4(-1, 1, -1, 1),
+		vec4(-1, -1, 1, 1),  vec4(1, -1, 1, 1),  vec4(1, 1, 1, 1),  vec4(-1, 1, 1, 1)
 	};
 
 	const glm::mat4 invMVP = glm::inverse(mvp);
@@ -129,23 +135,23 @@ inline void getFrustumCorners(const glm::mat4& mvp, std::array<glm::vec3, 8>& po
 	}
 }
 
-inline bool isBoxInFrustum(const std::array<glm::vec4, 6>& frustumPlanes, 
-	const std::array<glm::vec4, 8>& frustumCorners, 
+inline bool isBoxInFrustum(const std::array<glm::vec3, 6>& frustumPlanes, 
+	const std::array<glm::vec3, 8>& frustumCorners, 
 	const MeshConverter::GeometryConverter::BoundingBox& box)
 {
 	using glm::dot;
-	using glm::vec4;
+	using glm::vec3;
 
 	for ( int i = 0; i < 6; i++ ) {
 		int r = 0;
-		r += (dot(frustumPlanes[i], vec4(box.m_min.x, box.m_min.y, box.m_min.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.m_max.x, box.m_min.y, box.m_min.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.m_min.x, box.m_max.y, box.m_min.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.m_max.x, box.m_max.y, box.m_min.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.m_min.x, box.m_min.y, box.m_max.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.m_max.x, box.m_min.y, box.m_max.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.m_min.x, box.m_max.y, box.m_max.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.m_max.x, box.m_max.y, box.m_max.z, 1.0f)) < 0.0) ? 1 : 0;
+		r += (dot(glm::vec4(frustumPlanes[i], 1.f), glm::vec4(box.m_min.x, box.m_min.y, box.m_min.z, 1.f)) < 0.0) ? 1 : 0;
+		r += (dot(glm::vec4(frustumPlanes[i], 1.f), glm::vec4(box.m_max.x, box.m_min.y, box.m_min.z, 1.f)) < 0.0) ? 1 : 0;
+		r += (dot(glm::vec4(frustumPlanes[i], 1.f), glm::vec4(box.m_min.x, box.m_max.y, box.m_min.z, 1.f)) < 0.0) ? 1 : 0;
+		r += (dot(glm::vec4(frustumPlanes[i], 1.f), glm::vec4(box.m_max.x, box.m_max.y, box.m_min.z, 1.f)) < 0.0) ? 1 : 0;
+		r += (dot(glm::vec4(frustumPlanes[i], 1.f), glm::vec4(box.m_min.x, box.m_min.y, box.m_max.z, 1.f)) < 0.0) ? 1 : 0;
+		r += (dot(glm::vec4(frustumPlanes[i], 1.f), glm::vec4(box.m_max.x, box.m_min.y, box.m_max.z, 1.f)) < 0.0) ? 1 : 0;
+		r += (dot(glm::vec4(frustumPlanes[i], 1.f), glm::vec4(box.m_min.x, box.m_max.y, box.m_max.z, 1.f)) < 0.0) ? 1 : 0;
+		r += (dot(glm::vec4(frustumPlanes[i], 1.f), glm::vec4(box.m_max.x, box.m_max.y, box.m_max.z, 1.f)) < 0.0) ? 1 : 0;
 		if (r == 8) return false;
 	}
 
