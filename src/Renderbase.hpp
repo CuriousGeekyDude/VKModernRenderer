@@ -58,6 +58,9 @@ namespace RenderCore
 
 	protected:
 
+		void SetNodeToAppropriateRenderpass(const std::string& l_renderpassName,
+			Renderbase* l_renderpass);
+
 
 		void GeneratePipelineFromSpirvBinaries(
 			const std::string& l_spirvFilePath);

@@ -4,6 +4,7 @@
 #include "VulkanRenderer.hpp"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "CameraStructure.hpp"
 
 
@@ -20,11 +21,9 @@ namespace VulkanEngine
 			"Shaders/Indirect.vert",
 			"Shaders/Indirect.frag",
 			"Shaders/Spirv/Indirect.spv"),
-		m_deferredCompute(ctx_, "Shaders/DeferredCompute.comp",
-			"Shaders/Spirv/DeferredCompute.spv"),
-		m_deferredForward(ctx_, "Shaders/FullScreenQuad.vert",
-			"Shaders/DeferredForward.frag",
-			"Shaders/Spirv/DeferredForward.spv")
+		m_boundingBoxWireframe(ctx_,
+			"Shaders/BoundingBoxWireframe.vert", "Shaders/BoundingBoxWireframe.frag",
+			"Shaders/Spirv/BoundingBox.spv")
 		/*m_interior(ctx_, ctx_.GetOffscreenRenderPassDepth(),
 			ctx_.GetContextCreator().m_vkDev.m_graphicsCommandBuffers[0], "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorMeshFileHeader"
 		,"build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorBoundingBoxes", "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorInstanceData",
@@ -52,9 +51,14 @@ namespace VulkanEngine
 
 	void VulkanRenderer::draw3D(uint32_t l_currentImageIndex)
 	{
+		const float lv_ratio = (float)ctx_.GetContextCreator().m_vkDev.m_framebufferWidth / (float)ctx_.GetContextCreator().m_vkDev.m_framebufferHeight;
+		auto proj = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.01f, 1000.f);
+
+
 		const CameraStructure lv_cameraStructure{
 			.m_cameraPos = camera.getPosition(),
-			.m_viewMatrix = camera.getViewMatrix()
+			.m_viewMatrix = camera.getViewMatrix(),
+			.m_projectionMatrix = proj
 		};
 
 		ctx_.UpdateRenderers(l_currentImageIndex, lv_cameraStructure);

@@ -224,13 +224,16 @@ bool createGraphicsPipeline(
 	const std::vector<const char*>& shaderFiles,
 	VkPipeline* pipeline,
 	uint32_t l_totalNumColorAttachments,
-	VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST /* defaults to triangles*/,
-	bool useDepth = true,
-	bool useBlending = true,
-	bool dynamicScissorState = false,
-	int32_t customWidth  = -1,
-	int32_t customHeight = -1,
-	uint32_t numPatchControlPoints = 0);
+	VkPrimitiveTopology topology,
+	bool useDepth,
+	bool useBlending,
+	bool dynamicScissorState,
+	int32_t customWidth,
+	int32_t customHeight,
+	uint32_t numPatchControlPoints,
+	const std::vector<VkVertexInputBindingDescription>& l_vtxInputBindingDescs,
+	const std::vector<VkVertexInputAttributeDescription>& l_vtxInputAttribDescs,
+	bool l_enableWireframe);
 
 VkResult createComputePipeline(VkDevice m_device, VkShaderModule computeShader, VkPipelineLayout pipelineLayout, VkPipeline* pipeline);
 

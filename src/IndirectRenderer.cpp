@@ -39,7 +39,10 @@ namespace RenderCore
 		m_materialLoaderSaver.LoadMaterialFile();
 		
 		LoadAllTexturesOfScene();
-		//LoadBoundingBoxData(l_boundingBoxFile);
+		LoadBoundingBoxData(l_boundingBoxFile);
+
+		m_vulkanRenderContext.GetCpuResourceProvider().AddCpuResource("BoundingBoxData"
+			, (void*)m_boundingBoxes.data(), (uint32_t)m_boundingBoxes.size());
 
 		auto lv_meshHeader = LoadMeshData(l_meshHeaderFile);
 
@@ -152,14 +155,9 @@ namespace RenderCore
 		GeneratePipelineFromSpirvBinaries(l_spirvFile);
 		SetRenderPassAndFrameBuffer("IndirectGbuffer");
 
+		SetNodeToAppropriateRenderpass("IndirectGbuffer", this);
+
 		auto* lv_node = lv_frameGraph.RetrieveNode("IndirectGbuffer");
-
-		if (nullptr == lv_node) {
-			printf("Indirect renderer was not found among the nodes of the frame graph. Exitting....\n");
-			exit(-1);
-		}
-		lv_node->m_renderer = this;
-
 
 		m_attachmentHandles.resize(lv_node->m_inputResourcesHandles.size() * lv_totalNumSwapchainImages);
 
@@ -167,7 +165,7 @@ namespace RenderCore
 			
 			auto lv_formattedArg = std::make_format_args(j);
 
-			std::string lv_formattedString{"GBufferColor {}"};
+			std::string lv_formattedString{"Swapchain {}"};
 			auto lv_colorMeta = lv_vulkanResourceManager.RetrieveGpuResourceMetaData(std::vformat(lv_formattedString,lv_formattedArg));
 
 			lv_formattedString = "GBufferPosition {}";
@@ -288,10 +286,7 @@ namespace RenderCore
 	{
 		IndirectUniformBuffer lv_uniformBuffer{};
 
-
-		const float lv_ratio = (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth / (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
-
-		glm::mat4 lv_mtx = glm::perspective(45.f, lv_ratio, 0.1f, 256.f)*l_cameraStructure.m_viewMatrix;
+		glm::mat4 lv_mtx = l_cameraStructure.m_projectionMatrix * l_cameraStructure.m_viewMatrix;
 
 		auto lv_camPosVec3 = l_cameraStructure.m_cameraPos;
 		lv_uniformBuffer.m_cameraPos = glm::vec4{ lv_camPosVec3.x, lv_camPosVec3.y, lv_camPosVec3.z, 1.f };
@@ -459,8 +454,7 @@ namespace RenderCore
 
 		uint32_t lv_totalNumAttachmentsPerFrameBuffer = 5;
 
-		auto& lv_mainColorAttach = lv_vulkanResourceManager
-			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex]);
+
 		auto& lv_posColorAttach = lv_vulkanResourceManager
 			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex + 1]);
 		auto& lv_normalColorAttach = lv_vulkanResourceManager
@@ -473,8 +467,8 @@ namespace RenderCore
 		if (false == lv_firstTimeFillingBuffer) {
 
 
-			transitionImageLayoutCmd(l_commandBuffer, lv_mainColorAttach.image.image, lv_mainColorAttach.format,
-				lv_mainColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			/*transitionImageLayoutCmd(l_commandBuffer, lv_mainColorAttach.image.image, lv_mainColorAttach.format,
+				lv_mainColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);*/
 			transitionImageLayoutCmd(l_commandBuffer, lv_posColorAttach.image.image, lv_posColorAttach.format,
 				lv_posColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 			transitionImageLayoutCmd(l_commandBuffer, lv_normalColorAttach.image.image, lv_normalColorAttach.format,
@@ -484,7 +478,7 @@ namespace RenderCore
 			transitionImageLayoutCmd(l_commandBuffer, lv_depthAttach.image.image, lv_depthAttach.format,
 				lv_depthAttach.Layout, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
-			lv_mainColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			//lv_mainColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			lv_posColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			lv_normalColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 			lv_albedoSpecColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
@@ -496,7 +490,7 @@ namespace RenderCore
 			sizeof(VkDrawIndirectCommand));
 		vkCmdEndRenderPass(l_commandBuffer);
 
-		lv_mainColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		//lv_mainColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_posColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_normalColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_albedoSpecColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

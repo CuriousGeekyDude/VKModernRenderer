@@ -6,6 +6,8 @@
 #include <glm/ext.hpp>
 
 #include <vector>
+#include <array>
+#include "GeometryConverter.hpp"
 
 using glm::vec3;
 using glm::vec4;
@@ -94,64 +96,88 @@ inline glm::vec3 randVec()
 	return randomVec(glm::vec3(-5, -5, -5), glm::vec3(5, 5, 5));
 }
 
-inline void getFrustumPlanes(glm::mat4 mvp, glm::vec4* planes)
+inline void getFrustumPlanes(glm::mat4 viewProj, std::array<vec4, 6>& planes)
 {
-	using glm::vec4;
-
-	mvp = glm::transpose(mvp);
-	planes[0] = vec4(mvp[3] + mvp[0]); // left
-	planes[1] = vec4(mvp[3] - mvp[0]); // right
-	planes[2] = vec4(mvp[3] + mvp[1]); // bottom
-	planes[3] = vec4(mvp[3] - mvp[1]); // top
-	planes[4] = vec4(mvp[3] + mvp[2]); // near
-	planes[5] = vec4(mvp[3] - mvp[2]); // far
+	viewProj = glm::transpose(viewProj);
+	planes[0] = vec4(viewProj[3] + viewProj[0]); // left
+	planes[1] = vec4(viewProj[3] - viewProj[0]); // right
+	planes[2] = vec4(viewProj[3] + viewProj[1]); // bottom
+	planes[3] = vec4(viewProj[3] - viewProj[1]); // top
+	planes[4] = vec4(viewProj[3] + viewProj[2]); // near
+	planes[5] = vec4(viewProj[3] - viewProj[2]); // far
 }
 
-inline void getFrustumCorners(glm::mat4 mvp, glm::vec4* points)
+inline void getFrustumCorners(const glm::mat4& mvp, std::array<glm::vec3, 8>& points)
 {
 	using glm::vec4;
 
 	const vec4 corners[] = {
-		vec4(-1, -1, -1, 1), vec4(1, -1, -1, 1),
-		vec4(1,  1, -1, 1),  vec4(-1,  1, -1, 1),
-		vec4(-1, -1,  1, 1), vec4(1, -1,  1, 1),
-		vec4(1,  1,  1, 1),  vec4(-1,  1,  1, 1)
+		vec4(-1, -1, -1, 1), vec4(1, -1, -1, 1), vec4(1, 1, -1, 1), vec4(-1, 1, -1, 1),
+		vec4(-1, -1, 1, 1),  vec4(1, -1, 1, 1),  vec4(1, 1, 1, 1),  vec4(-1, 1, 1, 1)
 	};
 
 	const glm::mat4 invMVP = glm::inverse(mvp);
 
-	for (int i = 0; i != 8; i++) {
-		const vec4 q = invMVP * corners[i];
-		points[i] = q / q.w;
+	for (int i = 0; i < 8; i++) {
+		vec4 q = invMVP * corners[i];
+		q = q / q.w;
+		points[i] = glm::vec3{ q.x, q.y, q.z };
 	}
 }
 
-inline bool isBoxInFrustum(glm::vec4* frustumPlanes, glm::vec4* frustumCorners, const BoundingBox& box)
+
+inline bool isBoxInFrustum(const std::array<glm::vec4,6>& frustumPlanes
+	, const std::array<glm::vec3,8>& frustumCorners
+	, const MeshConverter::GeometryConverter::BoundingBox& box)
 {
 	using glm::dot;
-	using glm::vec4;
 
-	for ( int i = 0; i < 6; i++ ) {
+	for (int i = 0; i < 6; i++) {
 		int r = 0;
-		r += (dot(frustumPlanes[i], vec4(box.min_.x, box.min_.y, box.min_.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.max_.x, box.min_.y, box.min_.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.min_.x, box.max_.y, box.min_.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.max_.x, box.max_.y, box.min_.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.min_.x, box.min_.y, box.max_.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.max_.x, box.min_.y, box.max_.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.min_.x, box.max_.y, box.max_.z, 1.0f)) < 0.0) ? 1 : 0;
-		r += (dot(frustumPlanes[i], vec4(box.max_.x, box.max_.y, box.max_.z, 1.0f)) < 0.0) ? 1 : 0;
-		if (r == 8) return false;
+		r += (dot(frustumPlanes[i], vec4(box.m_min.x, box.m_min.y, box.m_min.z, 1.0f)) < 0.0) ? 1 : 0;
+		r += (dot(frustumPlanes[i], vec4(box.m_max.x, box.m_min.y, box.m_min.z, 1.0f)) < 0.0) ? 1 : 0;
+		r += (dot(frustumPlanes[i], vec4(box.m_min.x, box.m_max.y, box.m_min.z, 1.0f)) < 0.0) ? 1 : 0;
+		r += (dot(frustumPlanes[i], vec4(box.m_max.x, box.m_max.y, box.m_min.z, 1.0f)) < 0.0) ? 1 : 0;
+		r += (dot(frustumPlanes[i], vec4(box.m_min.x, box.m_min.y, box.m_max.z, 1.0f)) < 0.0) ? 1 : 0;
+		r += (dot(frustumPlanes[i], vec4(box.m_max.x, box.m_min.y, box.m_max.z, 1.0f)) < 0.0) ? 1 : 0;
+		r += (dot(frustumPlanes[i], vec4(box.m_min.x, box.m_max.y, box.m_max.z, 1.0f)) < 0.0) ? 1 : 0;
+		r += (dot(frustumPlanes[i], vec4(box.m_max.x, box.m_max.y, box.m_max.z, 1.0f)) < 0.0) ? 1 : 0;
+		if (r == 8)
+			return false;
 	}
 
 	// check frustum outside/inside box
 	int r = 0;
-	r = 0; for (int i = 0; i < 8; i++) r += ((frustumCorners[i].x > box.max_.x) ? 1 : 0); if (r == 8) return false;
-	r = 0; for (int i = 0; i < 8; i++) r += ((frustumCorners[i].x < box.min_.x) ? 1 : 0); if (r == 8) return false;
-	r = 0; for (int i = 0; i < 8; i++) r += ((frustumCorners[i].y > box.max_.y) ? 1 : 0); if (r == 8) return false;
-	r = 0; for (int i = 0; i < 8; i++) r += ((frustumCorners[i].y < box.min_.y) ? 1 : 0); if (r == 8) return false;
-	r = 0; for (int i = 0; i < 8; i++) r += ((frustumCorners[i].z > box.max_.z) ? 1 : 0); if (r == 8) return false;
-	r = 0; for (int i = 0; i < 8; i++) r += ((frustumCorners[i].z < box.min_.z) ? 1 : 0); if (r == 8) return false;
+	r = 0;
+	for (int i = 0; i < 8; i++)
+		r += ((frustumCorners[i].x > box.m_max.x) ? 1 : 0);
+	if (r == 8)
+		return false;
+	r = 0;
+	for (int i = 0; i < 8; i++)
+		r += ((frustumCorners[i].x < box.m_min.x) ? 1 : 0);
+	if (r == 8)
+		return false;
+	r = 0;
+	for (int i = 0; i < 8; i++)
+		r += ((frustumCorners[i].y > box.m_max.y) ? 1 : 0);
+	if (r == 8)
+		return false;
+	r = 0;
+	for (int i = 0; i < 8; i++)
+		r += ((frustumCorners[i].y < box.m_min.y) ? 1 : 0);
+	if (r == 8)
+		return false;
+	r = 0;
+	for (int i = 0; i < 8; i++)
+		r += ((frustumCorners[i].z > box.m_max.z) ? 1 : 0);
+	if (r == 8)
+		return false;
+	r = 0;
+	for (int i = 0; i < 8; i++)
+		r += ((frustumCorners[i].z < box.m_min.z) ? 1 : 0);
+	if (r == 8)
+		return false;
 
 	return true;
 }

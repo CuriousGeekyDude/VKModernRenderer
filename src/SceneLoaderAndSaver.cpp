@@ -67,8 +67,8 @@ namespace SceneLoaderAndSaver
 		}
 
 		lv_tempMap.resize(2*lv_totalNumMeshes);
-
-		if (2*lv_totalNumMeshes != fread(lv_tempMap.data(), sizeof(uint32_t), 2*lv_totalNumMeshes, lv_sceneFile)) {
+		auto lv_result = fread(lv_tempMap.data(), sizeof(uint32_t), 2 * lv_totalNumMeshes, lv_sceneFile);
+		if (2*lv_totalNumMeshes != lv_result) {
 			printf("Problem loading map data from the opened scene file.\n");
 			exit(EXIT_FAILURE);
 		}

@@ -6,8 +6,7 @@
 #include "IndirectRenderer.hpp"
 //#include "SSAORenderer.hpp"
 #include <optional>
-#include "DeferredComputeRenderer.hpp"
-#include "DeferredForwardRenderer.hpp"
+#include "BoundingBoxWireframeRenderer.hpp"
 #include "FrameGraph.hpp"
 
 namespace VulkanEngine
@@ -24,8 +23,7 @@ namespace VulkanEngine
 
 	private:
 		RenderCore::IndirectRenderer m_indirectGbuffer;
-		RenderCore::DeferredComputeRenderer m_deferredCompute;
-		RenderCore::DeferredForwardRenderer m_deferredForward;
+		RenderCore::BoundingBoxWireframeRenderer m_boundingBoxWireframe;
 
 
 	};

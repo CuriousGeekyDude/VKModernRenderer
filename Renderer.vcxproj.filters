@@ -33,9 +33,6 @@
     <ClCompile Include="src\DeferredForwardRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="src\FrameGraph.cpp">
-      <Filter>src\Utilities\SceneConversionTool</Filter>
-    </ClCompile>
     <ClCompile Include="src\GeometryConverter.cpp">
       <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClCompile>
@@ -132,6 +129,15 @@
     <ClCompile Include="src\allocator.cpp">
       <Filter>src\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="src\CpuResourceServiceProvider.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BoundingBoxWireframeRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FrameGraph.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp">
@@ -145,9 +151,6 @@
     </ClInclude>
     <ClInclude Include="src\DeferredForwardRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FrameGraph.hpp">
-      <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClInclude>
     <ClInclude Include="src\GeometryConverter.hpp">
       <Filter>src\Utilities\SceneConversionTool</Filter>
@@ -259,6 +262,15 @@
     </ClInclude>
     <ClInclude Include="src\argh.h">
       <Filter>src\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CpuResourceServiceProvider.hpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BoundingBoxWireframeRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FrameGraph.hpp">
+      <Filter>src\VulkanEngine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
