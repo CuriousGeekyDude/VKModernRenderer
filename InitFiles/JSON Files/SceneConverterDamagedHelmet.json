@@ -1,0 +1,13 @@
+[
+  {
+    "input_scene": "Assets/DamagedHelmet/glTF/DamagedHelmet.gltf",
+    "output_mesh": "InitFiles/Binary Scene Files/DamagedHelmetMeshFileHeader",
+    "output_scene": "InitFiles/Binary Scene Files/DamagedHelmetSceneFile",
+    "output_materials": "InitFiles/Binary Scene Files/DamagedHelmetMaterialFile",
+    "output_boundingBoxes": "InitFiles/Binary Scene Files/DamagedHelmetBoundingBoxes",
+    "output_instanceData": "InitFiles/Binary Scene Files/DamagedHelmetInstanceData",
+    "scale": 0.01,
+    "calculate_LODs": true,
+    "merge_instances": true
+  }
+]

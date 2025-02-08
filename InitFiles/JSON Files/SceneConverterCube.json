@@ -1,0 +1,13 @@
+[
+  {
+    "input_scene": "Assets/Cube/glTF/Cube.gltf",
+    "output_mesh": "InitFiles/Binary Scene Files/CubeMeshFileHeader",
+    "output_scene": "InitFiles/Binary Scene Files/CubeSceneFile",
+    "output_materials": "InitFiles/Binary Scene Files/CubeMaterialFile",
+    "output_boundingBoxes": "InitFiles/Binary Scene Files/CubeBoundingBoxes",
+    "output_instanceData": "InitFiles/Binary Scene Files/CubeInstanceData",
+    "scale": 0.01,
+    "calculate_LODs": true,
+    "merge_instances": true
+  }
+]
