@@ -14,6 +14,9 @@ vec4 cameraPos;
 } ubo;
 
 
+layout(set = 0, binding = 1) readonly buffer wireframeObjectIDs {uint Ids[]; } lv_wireFrameIDs;
+
+
 layout(location = 0) out vec4 outColor;
 
 

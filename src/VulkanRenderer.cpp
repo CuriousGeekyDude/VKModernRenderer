@@ -52,9 +52,8 @@ namespace VulkanEngine
 	void VulkanRenderer::draw3D(uint32_t l_currentImageIndex)
 	{
 		const float lv_ratio = (float)ctx_.GetContextCreator().m_vkDev.m_framebufferWidth / (float)ctx_.GetContextCreator().m_vkDev.m_framebufferHeight;
-		float farPlane = 256.f;
-		float nearPlane = 0.1f;
-		auto proj = glm::perspective(45.f, lv_ratio, 0.1f, 256.f);
+		auto proj = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.01f, 1000.f);
+
 
 		const CameraStructure lv_cameraStructure{
 			.m_cameraPos = camera.getPosition(),

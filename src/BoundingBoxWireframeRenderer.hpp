@@ -4,6 +4,7 @@
 #include "Renderbase.hpp"
 #include "CpuResourceServiceProvider.hpp"
 #include <vector>
+#include <array>
 #include <glm/glm.hpp>
 
 
@@ -25,6 +26,17 @@ namespace RenderCore
 			glm::vec4	m_cameraPos;
 		};
 
+
+		struct DebugViewFrustum
+		{
+			std::array<glm::vec3, 8> m_debugViewFrustumCorners;
+			std::array<glm::vec4, 6> m_debugViewFrustumPlanes;
+			std::array<uint16_t, 24> m_indexBuffer;
+			glm::mat4 m_viewMatrix;
+			glm::mat4 m_projectionMatrix;
+			
+		};
+
 	public:
 		BoundingBoxWireframeRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator,
 			const char* l_vertexShaderPath, const char* l_fragmentShaderPath,
@@ -44,7 +56,7 @@ namespace RenderCore
 
 		void UpdateDescriptorSets() override;
 		
-
+		void ApplyDebugCPUFrustumCulling();
 
 
 
@@ -54,9 +66,15 @@ namespace RenderCore
 		std::vector<uint16_t> m_boundingBoxIndices{};
 		uint32_t m_vertexBufferGpuHandle;
 		uint32_t m_indexBufferGpuHandle;
+		uint32_t m_debugViewFrustumIndexGpuHandle;
+		uint32_t m_debugViewFrustumVertexGpuHandle;
+		uint32_t m_colorIndicesOfWireframesGpuHandle;
+		std::vector<uint32_t> m_colorIndicesOfWireframes;
 		std::vector<uint32_t> m_uniformBufferHandles;
 		std::vector<uint32_t> m_depthTextureHandles;
 		std::vector<uint32_t> m_swapchainHandles;
+		DebugViewFrustum m_debugViewFrustum;
+		
 	};
 
 }
