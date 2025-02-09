@@ -176,7 +176,7 @@ namespace RenderCore
 		}
 	}
 
-	void BoundingBoxWireframeRenderer::UpdateUniformBuffers(const uint32_t l_currentSwapchainIndex,
+	void BoundingBoxWireframeRenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
 

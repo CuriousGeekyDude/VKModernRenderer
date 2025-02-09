@@ -92,7 +92,7 @@ namespace RenderCore
 			uint32_t l_currentSwapchainIndex) override;
 
 
-		virtual void UpdateUniformBuffers(const uint32_t l_currentSwapchainIndex,
+		virtual void UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 			const VulkanEngine::CameraStructure& l_cameraStructure) override;
 	protected:
 

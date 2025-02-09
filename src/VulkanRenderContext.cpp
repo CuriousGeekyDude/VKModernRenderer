@@ -67,7 +67,7 @@ namespace VulkanEngine
 	}
 
 
-	void VulkanRenderContext::UpdateUniformBuffers(uint32_t l_currentImageIndex,
+	void VulkanRenderContext::UpdateBuffers(uint32_t l_currentImageIndex,
 		const CameraStructure& l_cameraStructure)
 	{
 		m_frameGraph.value().UpdateNodes(l_currentImageIndex, l_cameraStructure);
@@ -78,7 +78,7 @@ namespace VulkanEngine
 		const CameraStructure& l_cameraStructure)
 	{
 
-		UpdateUniformBuffers(L_currentImageIndex, l_cameraStructure);
+		UpdateBuffers(L_currentImageIndex, l_cameraStructure);
 		
 		for (auto& l_renderers : m_offScreenRenderers) {
 			l_renderers.m_rendererBase.UpdateStorageBuffers(L_currentImageIndex);

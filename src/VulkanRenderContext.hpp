@@ -67,7 +67,7 @@ namespace VulkanEngine
 
 	private:
 
-		void UpdateUniformBuffers(uint32_t L_currentImageIndex, const CameraStructure& l_cameraStructure);
+		void UpdateBuffers(uint32_t L_currentImageIndex, const CameraStructure& l_cameraStructure);
 
 	private:
 

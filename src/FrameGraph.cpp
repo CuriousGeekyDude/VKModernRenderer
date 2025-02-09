@@ -503,7 +503,7 @@ namespace VulkanEngine
     void FrameGraphNode::UpdateUniformBuffer(const uint32_t l_currentSwapchainIndex,
         const VulkanEngine::CameraStructure& l_cameraStructure)
     {
-        m_renderer->UpdateUniformBuffers(l_currentSwapchainIndex, l_cameraStructure);
+        m_renderer->UpdateBuffers(l_currentSwapchainIndex, l_cameraStructure);
     }
 
     void FrameGraphNode::FillCommandBuffer(VkCommandBuffer l_cmdBuffer,

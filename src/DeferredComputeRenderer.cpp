@@ -339,7 +339,7 @@ namespace RenderCore
 	}*/
 
 
-	void DeferredComputeRenderer::UpdateUniformBuffers(const uint32_t l_currentSwapchainIndex,
+	void DeferredComputeRenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
 

@@ -61,7 +61,7 @@ namespace RenderCore
 
 
 
-	void DeferredForwardRenderer::UpdateUniformBuffers(const uint32_t l_currentSwapchainIndex,
+	void DeferredForwardRenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
 

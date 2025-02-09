@@ -281,7 +281,7 @@ namespace RenderCore
 
 
 
-	void IndirectRenderer::UpdateUniformBuffers(const uint32_t l_currentSwapchainIndex,
+	void IndirectRenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
 		IndirectUniformBuffer lv_uniformBuffer{};

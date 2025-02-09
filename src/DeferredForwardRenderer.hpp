@@ -16,7 +16,7 @@ namespace RenderCore
 			const char* l_spirvPath);
 
 
-		virtual void UpdateUniformBuffers(const uint32_t l_currentSwapchainIndex,
+		virtual void UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 			const VulkanEngine::CameraStructure& l_cameraStructure) override;
 
 
