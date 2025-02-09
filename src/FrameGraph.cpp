@@ -500,7 +500,7 @@ namespace VulkanEngine
 
 
 
-    void FrameGraphNode::UpdateUniformBuffer(const uint32_t l_currentSwapchainIndex,
+    void FrameGraphNode::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
         const VulkanEngine::CameraStructure& l_cameraStructure)
     {
         m_renderer->UpdateBuffers(l_currentSwapchainIndex, l_cameraStructure);
@@ -529,7 +529,7 @@ namespace VulkanEngine
         for (auto l_nodeHandle : m_nodeHandles) {
             auto& lv_node = m_nodes[l_nodeHandle];
 
-            lv_node.UpdateUniformBuffer(l_currentSwapchainIndex, l_cameraStructure);
+            lv_node.UpdateBuffers(l_currentSwapchainIndex, l_cameraStructure);
         }
     }
 

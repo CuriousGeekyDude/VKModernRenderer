@@ -55,7 +55,7 @@ namespace VulkanEngine
 
 	struct FrameGraphNode
 	{
-		void UpdateUniformBuffer(const uint32_t l_currentSwapchainIndex,
+		void UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 			const VulkanEngine::CameraStructure& l_cameraStructure);
 
 		void FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
