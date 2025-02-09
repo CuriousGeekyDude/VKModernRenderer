@@ -8,6 +8,8 @@
 #include <format>
 #include <string>
 #include "CameraStructure.hpp"
+#include "UtilsMath.h"
+
 
 namespace RenderCore
 {
@@ -33,6 +35,8 @@ namespace RenderCore
 		auto lv_totalNumSwapchains = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_swapchainImages.size();
 		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();
 
+		const float lv_ratio = (float)lv_contextCreator.m_vkDev.m_framebufferWidth / (float)lv_contextCreator.m_vkDev.m_framebufferHeight;
+		m_cameraFrustum.m_projectionMatrix = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.01f, 1000.f);
 
 		LoadInstanceData(l_instanceDataFile);
 		m_instanceBufferSize = m_totalNumInstances * sizeof(InstanceData);
@@ -284,6 +288,8 @@ namespace RenderCore
 	void IndirectRenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
+		auto& lv_indirectBufferGpu = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_indirectBufferHandles[l_currentSwapchainIndex]);
+
 		IndirectUniformBuffer lv_uniformBuffer{};
 
 		glm::mat4 lv_mtx = l_cameraStructure.m_projectionMatrix * l_cameraStructure.m_viewMatrix;
@@ -300,6 +306,14 @@ namespace RenderCore
 		lv_uniformBuffer.attScale = 1.3f;
 		lv_uniformBuffer.m_enableDeferred = (uint32_t)1;
 
+
+		m_cameraFrustum.m_viewMatrix = l_cameraStructure.m_viewMatrix;
+		getFrustumCorners(lv_mtx, m_cameraFrustum.m_debugViewFrustumCorners);
+		getFrustumPlanes(lv_mtx, m_cameraFrustum.m_debugViewFrustumPlanes);
+		UpdateIndirectBuffer(l_currentSwapchainIndex);
+		UpdateInstanceBuffer(l_currentSwapchainIndex);
+		UpdateTransformationsBuffer(l_currentSwapchainIndex);
+
 		memcpy(m_uniformBuffers[l_currentSwapchainIndex].ptr, &lv_uniformBuffer, sizeof(IndirectUniformBuffer));
 	}
 
@@ -307,9 +321,7 @@ namespace RenderCore
 
 	void IndirectRenderer::UpdateStorageBuffers(uint32_t l_currentSwapchainIndex)
 	{
-		UpdateInstanceBuffer(l_currentSwapchainIndex);
-		UpdateIndirectBuffer(l_currentSwapchainIndex);
-		UpdateTransformationsBuffer(l_currentSwapchainIndex);
+		
 	}
 
 	void IndirectRenderer::UpdateTransformationsBuffer(uint32_t l_currentSwapchainIndex)
@@ -430,12 +442,18 @@ namespace RenderCore
 		auto& lv_indirectBuffer = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_indirectBufferHandles[l_currentSwapchainIndex]);
 		VkDrawIndirectCommand* lv_drawStructure = (VkDrawIndirectCommand*)lv_indirectBuffer.ptr;
 
+		m_totalNumVisibleMeshes = 0;
+
 		for (uint32_t i = 0; i < m_outputInstanceData.size(); ++i) {
 			auto j = m_outputInstanceData[i].m_meshIndex;
 			lv_drawStructure[i].vertexCount = m_meshes[j].CalculateLODNumberOfIndices(m_outputInstanceData[i].m_lod);
 			lv_drawStructure[i].firstInstance = i;
 			lv_drawStructure[i].firstVertex = 0U;
-			lv_drawStructure[i].instanceCount = 1U;
+			lv_drawStructure[i].instanceCount = (true == isBoxInFrustum
+			(m_cameraFrustum.m_debugViewFrustumPlanes, 
+				m_cameraFrustum.m_debugViewFrustumCorners, m_boundingBoxes[j])) ? 1 : 0;
+
+			m_totalNumVisibleMeshes += lv_drawStructure[i].instanceCount;
 		}
 
 	}

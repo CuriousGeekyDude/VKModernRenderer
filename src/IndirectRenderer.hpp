@@ -45,6 +45,15 @@ namespace RenderCore
 
 		};
 
+		struct CameraViewFrustum
+		{
+			std::array<glm::vec3, 8> m_debugViewFrustumCorners;
+			std::array<glm::vec4, 6> m_debugViewFrustumPlanes;
+			glm::mat4 m_viewMatrix;
+			glm::mat4 m_projectionMatrix;
+
+		};
+
 	public:
 
 		IndirectRenderer(VulkanEngine::VulkanRenderContext& l_vkRenderContext,
@@ -126,6 +135,9 @@ namespace RenderCore
 		std::vector<uint32_t> m_instanceBufferHandles{};
 		std::vector<uint32_t> m_indirectBufferHandles{};
 
+
+		CameraViewFrustum m_cameraFrustum;
+		uint32_t m_totalNumVisibleMeshes{ 0 };
 
 		std::vector<uint32_t> m_attachmentHandles;
 		std::vector<uint32_t> m_textureHandlesOfScene;
