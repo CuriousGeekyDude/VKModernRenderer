@@ -518,7 +518,10 @@ namespace VulkanEngine
     {
         for (auto l_nodeHandle : m_nodeHandles) {
             auto& lv_node = m_nodes[l_nodeHandle];
-            lv_node.FillCommandBuffer(l_cmdBuffer, l_currentSwapchainIndex);
+
+            if (true == lv_node.m_enabled) {
+                lv_node.FillCommandBuffer(l_cmdBuffer, l_currentSwapchainIndex);
+            }
         }
     }
 
@@ -529,7 +532,9 @@ namespace VulkanEngine
         for (auto l_nodeHandle : m_nodeHandles) {
             auto& lv_node = m_nodes[l_nodeHandle];
 
-            lv_node.UpdateBuffers(l_currentSwapchainIndex, l_cameraStructure);
+            if (true == lv_node.m_enabled) {
+                lv_node.UpdateBuffers(l_currentSwapchainIndex, l_cameraStructure);
+            }
         }
     }
 
