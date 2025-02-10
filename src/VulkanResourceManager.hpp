@@ -271,6 +271,24 @@ namespace RenderCore
 		VkDescriptorSetLayout RetrieveGpuDescriptorSetLayout(const uint32_t l_handle);
 		VkDescriptorPool RetrieveGpuDescriptorPool(const uint32_t l_handle);
 
+		VulkanBuffer& RetrieveGpuBuffer
+		(const std::string& l_bufferBaseName, const uint32_t l_index);
+		VulkanTexture& RetrieveGpuTexture
+		(const std::string& l_textureBaseName, const uint32_t l_index);
+		VkFramebuffer RetrieveGpuFramebuffer
+		(const std::string& l_framebufferBaseName, const uint32_t l_index);
+		VkRenderPass RetrieveGpuRenderpass
+		(const std::string& l_renderpassBaseName, const uint32_t l_index);
+		VkPipelineLayout RetrieveGpuPipelineLayout
+		(const std::string& l_pipelineLayoutBaseName, const uint32_t l_index);
+		VkPipeline	RetrieveGpuPipeline
+		(const std::string& l_pipelineBaseName, const uint32_t l_index);
+		VkDescriptorSetLayout RetrieveGpuDescriptorSetLayout
+		(const std::string& l_dsSetLayoutBaseName, const uint32_t l_index);
+		VkDescriptorPool RetrieveGpuDescriptorPool
+		(const std::string& l_descriptorPoolBaseName, const uint32_t l_index);
+
+
 		uint32_t AddVulkanBuffer(const VulkanBuffer& l_buffer);
 		uint32_t AddVulkanTexture(const VulkanTexture& l_texture);
 		uint32_t AddVulkanFramebuffer(VkFramebuffer l_framebuffer);

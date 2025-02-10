@@ -436,6 +436,163 @@ namespace RenderCore
 	}
 
 
+
+	VulkanBuffer& VulkanResourceManager::RetrieveGpuBuffer
+	(const std::string& l_bufferBaseName, const uint32_t l_index)
+	{
+		auto lv_formatedArg = std::make_format_args(l_index);
+		std::string lv_formattedString{ l_bufferBaseName + " {}" };
+
+		auto lv_bufferMeta = RetrieveGpuResourceMetaData(std::vformat(lv_formattedString, lv_formatedArg).c_str());
+
+		if (lv_bufferMeta.m_vkDataType == VulkanDataType::m_invalid) {
+			printf("Gpu buffer was not found. Exitting....");
+			exit(-1);
+		}
+
+		auto& lv_bufferGpu = RetrieveGpuBuffer(lv_bufferMeta.m_resourceHandle);
+
+		return lv_bufferGpu;
+	}
+
+	VulkanTexture& VulkanResourceManager::RetrieveGpuTexture
+	(const std::string& l_textureBaseName, const uint32_t l_index)
+	{
+		auto lv_formatedArg = std::make_format_args(l_index);
+		std::string lv_formattedString{ l_textureBaseName + " {}" };
+
+		auto lv_textureMeta = RetrieveGpuResourceMetaData
+		(std::vformat(lv_formattedString, lv_formatedArg).c_str());
+
+		if (lv_textureMeta.m_vkDataType == VulkanDataType::m_invalid) {
+			printf("Gpu texture was not found. Exitting....");
+			exit(-1);
+		}
+
+		auto& lv_textureGpu = RetrieveGpuTexture(lv_textureMeta.m_resourceHandle);
+
+		return lv_textureGpu;
+	}
+
+	VkFramebuffer VulkanResourceManager::RetrieveGpuFramebuffer
+	(const std::string& l_framebufferBaseName, const uint32_t l_index)
+	{
+		auto lv_formatedArg = std::make_format_args(l_index);
+		std::string lv_formattedString{ l_framebufferBaseName + " {}" };
+
+		auto lv_framebufferMeta = RetrieveGpuResourceMetaData
+		(std::vformat(lv_formattedString, lv_formatedArg).c_str());
+
+		if (lv_framebufferMeta.m_vkDataType == VulkanDataType::m_invalid) {
+			printf("Gpu framebuffer was not found. Exitting....");
+			exit(-1);
+		}
+
+		auto lv_framebufferGpu = RetrieveGpuFramebuffer(lv_framebufferMeta.m_resourceHandle);
+
+		return lv_framebufferGpu;
+	}
+
+	VkRenderPass VulkanResourceManager::RetrieveGpuRenderpass
+	(const std::string& l_renderpassBaseName, const uint32_t l_index)
+	{
+		auto lv_formatedArg = std::make_format_args(l_index);
+		std::string lv_formattedString{ l_renderpassBaseName + " {}" };
+
+		auto lv_renderpassMeta = RetrieveGpuResourceMetaData
+		(std::vformat(lv_formattedString, lv_formatedArg).c_str());
+
+		if (lv_renderpassMeta.m_vkDataType == VulkanDataType::m_invalid) {
+			printf("Gpu renderpass was not found. Exitting....");
+			exit(-1);
+		}
+
+		auto lv_renderpassGpu = RetrieveGpuRenderpass(lv_renderpassMeta.m_resourceHandle);
+
+		return lv_renderpassGpu;
+	}
+
+	VkPipelineLayout VulkanResourceManager::RetrieveGpuPipelineLayout
+	(const std::string& l_pipelineLayoutBaseName, const uint32_t l_index)
+	{
+		auto lv_formatedArg = std::make_format_args(l_index);
+		std::string lv_formattedString{ l_pipelineLayoutBaseName + " {}" };
+
+		auto lv_pipelineLayoutMeta = RetrieveGpuResourceMetaData
+		(std::vformat(lv_formattedString, lv_formatedArg).c_str());
+
+		if (lv_pipelineLayoutMeta.m_vkDataType == VulkanDataType::m_invalid) {
+			printf("Gpu pipeline layout was not found. Exitting....");
+			exit(-1);
+		}
+
+		auto lv_pipelineLayoutGpu = RetrieveGpuPipelineLayout(lv_pipelineLayoutMeta.m_resourceHandle);
+
+		return lv_pipelineLayoutGpu;
+	}
+
+	VkPipeline VulkanResourceManager::RetrieveGpuPipeline
+	(const std::string& l_pipelineBaseName, const uint32_t l_index)
+	{
+		auto lv_formatedArg = std::make_format_args(l_index);
+		std::string lv_formattedString{ l_pipelineBaseName + " {}" };
+
+		auto lv_pipelineMeta = RetrieveGpuResourceMetaData
+		(std::vformat(lv_formattedString, lv_formatedArg).c_str());
+
+		if (lv_pipelineMeta.m_vkDataType == VulkanDataType::m_invalid) {
+			printf("Gpu pipeline was not found. Exitting....");
+			exit(-1);
+		}
+
+		auto lv_pipelineGpu = RetrieveGpuPipeline(lv_pipelineMeta.m_resourceHandle);
+
+		return lv_pipelineGpu;
+	}
+
+	VkDescriptorSetLayout VulkanResourceManager::RetrieveGpuDescriptorSetLayout
+	(const std::string& l_dsSetLayoutBaseName, const uint32_t l_index)
+	{
+		auto lv_formatedArg = std::make_format_args(l_index);
+		std::string lv_formattedString{ l_dsSetLayoutBaseName + " {}" };
+
+		auto lv_descriptorSetLayoutMeta = RetrieveGpuResourceMetaData
+		(std::vformat(lv_formattedString, lv_formatedArg).c_str());
+
+		if (lv_descriptorSetLayoutMeta.m_vkDataType == VulkanDataType::m_invalid) {
+			printf("Gpu descriptor set layout was not found. Exitting....");
+			exit(-1);
+		}
+
+		auto lv_descriptorSetLayoutGpu = RetrieveGpuDescriptorSetLayout
+		(lv_descriptorSetLayoutMeta.m_resourceHandle);
+
+		return lv_descriptorSetLayoutGpu;
+	}
+
+	VkDescriptorPool VulkanResourceManager::RetrieveGpuDescriptorPool
+	(const std::string& l_descriptorPoolBaseName, const uint32_t l_index)
+	{
+		auto lv_formatedArg = std::make_format_args(l_index);
+		std::string lv_formattedString{ l_descriptorPoolBaseName + " {}" };
+
+		auto lv_descriptorPoolMeta = RetrieveGpuResourceMetaData
+		(std::vformat(lv_formattedString, lv_formatedArg).c_str());
+
+		if (lv_descriptorPoolMeta.m_vkDataType == VulkanDataType::m_invalid) {
+			printf("Gpu descriptor pool was not found. Exitting....");
+			exit(-1);
+		}
+
+		auto lv_descriptorPoolGpu = RetrieveGpuDescriptorPool
+		(lv_descriptorPoolMeta.m_resourceHandle);
+
+		return lv_descriptorPoolGpu;
+	}
+
+
+
+
 	VulkanBuffer& VulkanResourceManager::RetrieveGpuBuffer(const uint32_t l_handle)
 	{
 		return m_buffers.at(l_handle);
