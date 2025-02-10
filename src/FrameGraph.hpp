@@ -73,6 +73,7 @@ namespace VulkanEngine
 		std::string m_nodeNames;
 		std::string m_pipelineType;
 		uint32_t m_nodeIndex;
+		bool m_enabled{ true };
 	};
 
 
