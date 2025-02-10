@@ -63,7 +63,7 @@ namespace RenderCore
 
 
 	void VulkanResourceManager::CopyDataToLocalBuffer(VkQueue l_queue, VkCommandBuffer l_cmdBuffer,
-		const uint32_t l_bufferHandle, const void* l_dstBufferData)
+		const uint32_t l_bufferHandle, const void* l_bufferData)
 	{
 		using namespace ErrorCheck;
 
@@ -76,7 +76,7 @@ namespace RenderCore
 			, "TemporaryStagingBufferForDataCopy ");
 
 
-		memcpy(lv_stagingBuffer.ptr, l_dstBufferData, lv_buffer.size);
+		memcpy(lv_stagingBuffer.ptr, l_bufferData, lv_buffer.size);
 
 
 		VkBufferCopy lv_bufferCopy = {};

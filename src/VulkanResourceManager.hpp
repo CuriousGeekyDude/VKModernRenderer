@@ -157,7 +157,7 @@ namespace RenderCore
 
 
 		void CopyDataToLocalBuffer(VkQueue l_queue, VkCommandBuffer l_cmdBuffer,
-			const uint32_t l_bufferHandle, const void* l_dstBufferData);
+			const uint32_t l_bufferHandle, const void* l_bufferData);
 
 		VkPipeline CreateComputePipeline(VkDevice m_device, const char* l_computeShaderFilePath
 			,VkPipelineLayout pipelineLayout);

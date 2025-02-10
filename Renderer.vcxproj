@@ -173,6 +173,7 @@
     <ClCompile Include="src\CpuResourceServiceProvider.cpp" />
     <ClCompile Include="src\DeferredComputeRenderer.cpp" />
     <ClCompile Include="src\DeferredForwardRenderer.cpp" />
+    <ClCompile Include="src\DeferredLightningRenderer.cpp" />
     <ClCompile Include="src\FrameGraph.cpp" />
     <ClCompile Include="src\GeometryConverter.cpp" />
     <ClCompile Include="src\indexcodec.cpp" />
@@ -222,6 +223,7 @@
     <ClInclude Include="src\debug.h" />
     <ClInclude Include="src\DeferredComputeRenderer.hpp" />
     <ClInclude Include="src\DeferredForwardRenderer.hpp" />
+    <ClInclude Include="src\DeferredLightningRenderer.hpp" />
     <ClInclude Include="src\EasyProfilerWrapper.h" />
     <ClInclude Include="src\ErrorCheck.hpp" />
     <ClInclude Include="src\FrameGraph.hpp" />
