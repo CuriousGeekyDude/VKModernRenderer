@@ -153,6 +153,8 @@ namespace RenderCore
 			lv_pipelineInfo);
 
 
+		lv_node->m_enabled = false;
+
 	}
 
 
