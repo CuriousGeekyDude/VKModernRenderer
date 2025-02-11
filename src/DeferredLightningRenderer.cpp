@@ -64,23 +64,23 @@ namespace RenderCore
 		(sizeof(Light) * m_totalNumLights, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 			, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 			, "LightStorageBufferDeferredRenderpass");
-		m_vertexBufferGpuHandle = lv_vkResManager.CreateBufferWithHandle
+		/*m_vertexBufferGpuHandle = lv_vkResManager.CreateBufferWithHandle
 		(sizeof(glm::vec4) * 8*m_totalNumLights, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, "VertexBufferDeferredRenderpass");
 		m_indicesBufferGpuHandle = lv_vkResManager.CreateBufferWithHandle
 		(sizeof(uint16_t)*36, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-		,"IndexBufferDeferredRenderpass");
+		,"IndexBufferDeferredRenderpass");*/
 		m_uniformBufferGpuHandle = lv_vkResManager.CreateBufferWithHandle
 		(sizeof(UniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 			, "UniformBufferDeferredRenderpass");
 
-		lv_vkResManager.CopyDataToLocalBuffer(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainQueue2,
+		/*lv_vkResManager.CopyDataToLocalBuffer(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainQueue2,
 			m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainCommandBuffer1[0], m_vertexBufferGpuHandle
 		, lv_vertexBuffer.data());
 		lv_vkResManager.CopyDataToLocalBuffer(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainQueue2,
 			m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainCommandBuffer1[0], m_indicesBufferGpuHandle
-			, lv_indexBuffer.data());
+			, lv_indexBuffer.data());*/
 		
 
 		auto& lv_lightGpu = lv_vkResManager.RetrieveGpuBuffer(m_lightBufferGpuHandle);
@@ -91,8 +91,9 @@ namespace RenderCore
 		SetNodeToAppropriateRenderpass("DeferredLightning", this);
 		UpdateDescriptorSets();
 
+		
 
-		VkVertexInputBindingDescription lv_vtxBindingDesc{};
+		/*VkVertexInputBindingDescription lv_vtxBindingDesc{};
 		lv_vtxBindingDesc.binding = 0;
 		lv_vtxBindingDesc.stride = sizeof(glm::vec4);
 		lv_vtxBindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
@@ -107,7 +108,7 @@ namespace RenderCore
 		lv_secondAttribDesc.binding = 0;
 		lv_secondAttribDesc.location = 1;
 		lv_secondAttribDesc.offset = sizeof(glm::vec3);
-		lv_secondAttribDesc.format = VK_FORMAT_R32_SFLOAT;
+		lv_secondAttribDesc.format = VK_FORMAT_R32_SFLOAT;*/
 
 		auto* lv_node = lv_frameGraph.RetrieveNode("DeferredLightning");
 		VulkanResourceManager::PipelineInfo lv_pipeInfo{};
@@ -119,9 +120,9 @@ namespace RenderCore
 		lv_pipeInfo.m_useBlending = false;
 		lv_pipeInfo.m_useDepth = true;
 		lv_pipeInfo.m_totalNumColorAttach = lv_node->m_outputResourcesHandles.size() - 1;
-		lv_pipeInfo.m_vertexInputBindingDescription.push_back(lv_vtxBindingDesc);
+		/*lv_pipeInfo.m_vertexInputBindingDescription.push_back(lv_vtxBindingDesc);
 		lv_pipeInfo.m_vertexInputAttribDescription.push_back(lv_firstAttribDesc);
-		lv_pipeInfo.m_vertexInputAttribDescription.push_back(lv_secondAttribDesc);
+		lv_pipeInfo.m_vertexInputAttribDescription.push_back(lv_secondAttribDesc);*/
 
 		m_graphicsPipeline = lv_vkResManager.CreateGraphicsPipeline(m_renderPass, m_pipelineLayout
 			, {l_vtxShader, l_fragShader},"GraphicsPipelineDeferredLightning", lv_pipeInfo);
@@ -260,8 +261,8 @@ namespace RenderCore
 		auto& lv_gbufferNormalGpu = lv_vkResManager.RetrieveGpuTexture("GBufferNormal", l_currentSwapchainIndex);
 		auto& lv_gbufferAlbedoSpecGpu = lv_vkResManager.RetrieveGpuTexture("GBufferAlbedoSpec", l_currentSwapchainIndex);
 		auto lv_framebuffer = lv_vkResManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);
-		auto& lv_vertexBuffer = lv_vkResManager.RetrieveGpuBuffer(m_vertexBufferGpuHandle);
-		auto& lv_indexBuffer = lv_vkResManager.RetrieveGpuBuffer(m_indicesBufferGpuHandle);
+		/*auto& lv_vertexBuffer = lv_vkResManager.RetrieveGpuBuffer(m_vertexBufferGpuHandle);
+		auto& lv_indexBuffer = lv_vkResManager.RetrieveGpuBuffer(m_indicesBufferGpuHandle);*/
 		auto& lv_depth = lv_vkResManager.RetrieveGpuTexture("Depth", l_currentSwapchainIndex);
 
 		transitionImageLayoutCmd(l_cmdBuffer, lv_gbufferPosGpu.image.image
@@ -282,14 +283,12 @@ namespace RenderCore
 		lv_gbufferAlbedoSpecGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_depth.Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-		VkDeviceSize lv_offset{ 0 };
+		/*VkDeviceSize lv_offset{ 0 };
 		vkCmdBindVertexBuffers(l_cmdBuffer, 0, 1, &lv_vertexBuffer.buffer, &lv_offset);
-		vkCmdBindIndexBuffer(l_cmdBuffer, lv_indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+		vkCmdBindIndexBuffer(l_cmdBuffer, lv_indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);*/
 
 		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1);
-		for (uint32_t i = 0; i < m_totalNumLights; ++i) {
-			vkCmdDrawIndexed(l_cmdBuffer, 36, 1, 0, 8 * i, 0);
-		}
+		vkCmdDraw(l_cmdBuffer, 6, 1, 0, 0);
 		vkCmdEndRenderPass(l_cmdBuffer);
 
 

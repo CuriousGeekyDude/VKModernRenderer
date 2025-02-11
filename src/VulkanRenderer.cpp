@@ -24,6 +24,10 @@ namespace VulkanEngine
 		m_boundingBoxWireframe(ctx_,
 			"Shaders/BoundingBoxWireframe.vert", "Shaders/BoundingBoxWireframe.frag",
 			"Shaders/Spirv/BoundingBox.spv")
+		,m_deferredLightning(ctx_
+		,"Shaders/FullScreenQuad.vert"
+		,"Shaders/DeferredLightning.frag"
+		,"Shaders/Spirv/DeferredLightning.spv")
 		/*m_interior(ctx_, ctx_.GetOffscreenRenderPassDepth(),
 			ctx_.GetContextCreator().m_vkDev.m_graphicsCommandBuffers[0], "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorMeshFileHeader"
 		,"build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorBoundingBoxes", "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorInstanceData",

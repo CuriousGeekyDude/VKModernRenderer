@@ -463,8 +463,6 @@ namespace RenderCore
 		uint32_t l_currentSwapchainIndex)
 	{
 
-		static bool lv_firstTimeFillingBuffer = true;
-
 		auto& lv_vulkanResourceManager = m_vulkanRenderContext.GetResourceManager();
 		auto lv_framebuffer = lv_vulkanResourceManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);
 		auto& lv_indirectBuffer = lv_vulkanResourceManager.RetrieveGpuBuffer(m_indirectBufferHandles[l_currentSwapchainIndex]);
@@ -482,26 +480,25 @@ namespace RenderCore
 		auto& lv_depthAttach = lv_vulkanResourceManager
 			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex + 4]);
 
-		if (false == lv_firstTimeFillingBuffer) {
 
 
-			/*transitionImageLayoutCmd(l_commandBuffer, lv_mainColorAttach.image.image, lv_mainColorAttach.format,
-				lv_mainColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);*/
-			transitionImageLayoutCmd(l_commandBuffer, lv_posColorAttach.image.image, lv_posColorAttach.format,
-				lv_posColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-			transitionImageLayoutCmd(l_commandBuffer, lv_normalColorAttach.image.image, lv_normalColorAttach.format,
-				lv_normalColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-			transitionImageLayoutCmd(l_commandBuffer, lv_albedoSpecColorAttach.image.image, lv_albedoSpecColorAttach.format,
-				lv_albedoSpecColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-			transitionImageLayoutCmd(l_commandBuffer, lv_depthAttach.image.image, lv_depthAttach.format,
-				lv_depthAttach.Layout, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+		/*transitionImageLayoutCmd(l_commandBuffer, lv_mainColorAttach.image.image, lv_mainColorAttach.format,
+			lv_mainColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);*/
+		transitionImageLayoutCmd(l_commandBuffer, lv_posColorAttach.image.image, lv_posColorAttach.format,
+			lv_posColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		transitionImageLayoutCmd(l_commandBuffer, lv_normalColorAttach.image.image, lv_normalColorAttach.format,
+			lv_normalColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		transitionImageLayoutCmd(l_commandBuffer, lv_albedoSpecColorAttach.image.image, lv_albedoSpecColorAttach.format,
+			lv_albedoSpecColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		transitionImageLayoutCmd(l_commandBuffer, lv_depthAttach.image.image, lv_depthAttach.format,
+			lv_depthAttach.Layout, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
-			//lv_mainColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			lv_posColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			lv_normalColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			lv_albedoSpecColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-			lv_depthAttach.Layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
-		}
+		//lv_mainColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		lv_posColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		lv_normalColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		lv_albedoSpecColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		lv_depthAttach.Layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		
 
 		BeginRenderPass(m_renderPass, lv_framebuffer, l_commandBuffer, l_currentSwapchainIndex, m_attachmentHandles.size());
 		vkCmdDrawIndirect(l_commandBuffer, lv_indirectBuffer.buffer, 0, m_totalNumInstances,
@@ -514,7 +511,6 @@ namespace RenderCore
 		lv_albedoSpecColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_depthAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-		lv_firstTimeFillingBuffer = false;
 	}
 
 

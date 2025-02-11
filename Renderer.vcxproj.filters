@@ -138,6 +138,9 @@
     <ClCompile Include="src\FrameGraph.cpp">
       <Filter>src\VulkanEngine</Filter>
     </ClCompile>
+    <ClCompile Include="src\DeferredLightningRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp">
@@ -271,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="src\FrameGraph.hpp">
       <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DeferredLightningRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
