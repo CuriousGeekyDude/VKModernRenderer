@@ -80,8 +80,9 @@ namespace RenderCore
 				std::format(" descriptorSet {} ", i).c_str()));
 		}
 
-
-		m_pipelineLayout = lv_vkResManager.CreatePipelineLayout(m_descriptorSetLayout, " pipelineLayout ");
+		std::string lv_pipelineLayoutName{l_spirvFilePath + " pipelineLayout"};
+		m_pipelineLayout = lv_vkResManager.CreatePipelineLayout
+		(m_descriptorSetLayout, lv_pipelineLayoutName.c_str());
 
 
 	}
