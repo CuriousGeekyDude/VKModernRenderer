@@ -170,9 +170,83 @@
 
         {
           "Name": "BoundingBoxWireframe"
+        },
+        {
+          "Name": "DeferredLightning"
         }
 
       ]
+    },
+
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DeferredLightning",
+
+      "Input": [
+
+        {
+          "Name": "Swapchain",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        },
+
+        {
+          "Name": "Depth",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "Swapchain",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        },
+
+        {
+          "Name": "Depth",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": []
+
     },
 
 
