@@ -14,6 +14,7 @@ layout(location = 0) out vec4 lv_gbufferTangent;
 layout(location = 1) out vec4 lv_gBufferPosition;
 layout(location = 2) out vec4 lv_gBufferNormal;
 layout(location = 3) out vec4 lv_gBufferAlbedoSpec;
+layout(location = 4) out vec4 lv_gbufferNormalVertex;
 
 uint lv_ambientOcclusionMapIncluded = 4;
 uint lv_normalMapIncluded = 64;
@@ -70,26 +71,6 @@ layout(binding = 5) readonly buffer MaterialDataBuffer { MaterialData matData[];
 layout(binding = 6) uniform sampler2D lv_textures[256];
 
 
-void RunAlphaTest(float alpha, float alphaThreshold) 
-{
-  if (alphaThreshold == 0.0) return;
- 
- mat4 thresholdMatrix = 
- mat4(1.0 /17.0,  9.0/17.0,  3.0/17.0, 11.0/17.0,
-    13.0/17.0,  5.0/17.0, 15.0/17.0,  7.0/17.0,
-    4.0/17.0, 12.0/17.0,  2.0/17.0, 10.0/17.0,
-    16.0/17.0,  8.0/17.0, 14.0/17.0,  6.0/17.0);
-
-  int x = int(mod(gl_FragCoord.x, 4.0));
-  int y = int(mod(gl_FragCoord.y, 4.0));
-  alpha = clamp(alpha - 0.5 * thresholdMatrix[x][y], 0.0, 1.0);
-
-  if (alpha < alphaThreshold) discard;
-}
-
-
-
-
 
 void main()
 {
@@ -109,23 +90,12 @@ void main()
 		lv_albedo = texture(lv_textures[nonuniformEXT(lv_matData.m_albedoMap)], uvw.xy);
 	}
 
-	//RunAlphaTest(lv_albedo.a, lv_matData.m_alphaTest);
 
-	//if (length(lv_normalSample) > 0.5) {
-		//lv_n = perturbNormal(lv_n,normalize(ubo.cameraPos.xyz-lv_worldPos.xyz),lv_normalSample,uvw);
-	//}
-
-
-	//vec3 lv_lightDir = normalize(vec3(-1.f, -1.f, 0.1f));
-
-	//float lv_lightDirDotN = clamp( dot(lv_normalSample, lv_lightDir), 0.3, 1.0 );
-
-
-	//outColor = vec4(lv_lightDirDotN * lv_albedo.rgb + lv_emissiveColor.rgb, 1.f);
 
 	lv_gbufferTangent = lv_tangent;
 	lv_gBufferPosition = lv_worldPos;
 	lv_gBufferNormal = vec4(lv_normalSample.xyz, 1.f);
 	lv_gBufferAlbedoSpec.rgb = pow(lv_albedo.rgb, vec3(2.2f));
 	lv_gBufferAlbedoSpec.a = lv_matData.m_specular.r;
+	lv_gbufferNormalVertex = vec4(lv_n, 1.f);
 }
