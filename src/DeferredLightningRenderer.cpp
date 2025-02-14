@@ -121,7 +121,7 @@ namespace RenderCore
 		lv_bufferInfos[1].offset = 0;
 		lv_bufferInfos[1].range = VK_WHOLE_SIZE;
 
-		for (size_t i = 0, j = 0; i < lv_imageInfos.size(); i+=4, ++j) {
+		for (size_t i = 0, j = 0; i < lv_imageInfos.size(); i+=5, ++j) {
 			
 			auto& lv_gbufferPosGpu = lv_vkResManager.RetrieveGpuTexture("GBufferPosition", j);
 			auto& lv_gbufferNormalGpu = lv_vkResManager.RetrieveGpuTexture("GBufferNormal", j);
@@ -312,11 +312,11 @@ namespace RenderCore
 	(std::array<glm::vec4, m_totalNumLights>& l_positionData)
 	{
 		for (uint32_t i = 0; i < 16; ++i) {
-			l_positionData[i] = glm::vec4{ -60.f + (float)12*i, 32.f, 15.f, (float)i };
+			l_positionData[i] = glm::vec4{ -60.f + (float)12*i, 0.5f, 6.f, (float)i };
 		}
 
 		for (uint32_t i = 0; i < 16; ++i) {
-			l_positionData[i + 16] = glm::vec4{ -60.f + (float)12*i, 32.f, -4.f, (float)i };
+			l_positionData[i + 16] = glm::vec4{ -60.f + (float)12*i, 0.5f, -6.f, (float)i };
 		}
 	}
 
