@@ -51,7 +51,7 @@ void main()
 	uint refIdx = dd.indexOffset + gl_VertexIndex;
 	ImDrawVert v = sbo.data[ibo.data[refIdx] + dd.vertexOffset];
 
-	uvw = vec3(v.u, v.v, 1.f);
+	uvw = vec3(-v.u, -v.v, 1.f);
 	lv_matIndex = dd.material;
 	lv_worldPos = vec4(v.x, v.y, v.z, 1.0);
 
