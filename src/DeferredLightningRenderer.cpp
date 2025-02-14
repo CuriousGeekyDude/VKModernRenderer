@@ -64,51 +64,24 @@ namespace RenderCore
 		(sizeof(Light) * m_totalNumLights, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT
 			, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 			, "LightStorageBufferDeferredRenderpass");
-		/*m_vertexBufferGpuHandle = lv_vkResManager.CreateBufferWithHandle
-		(sizeof(glm::vec4) * 8*m_totalNumLights, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, "VertexBufferDeferredRenderpass");
-		m_indicesBufferGpuHandle = lv_vkResManager.CreateBufferWithHandle
-		(sizeof(uint16_t)*36, VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
-		,"IndexBufferDeferredRenderpass");*/
+		auto& lv_lightGpu = lv_vkResManager.RetrieveGpuBuffer(m_lightBufferGpuHandle);
+		memcpy(lv_lightGpu.ptr, lv_lightData.data(), lv_lightData.size() * sizeof(Light));
+		
+
 		m_uniformBufferGpuHandle = lv_vkResManager.CreateBufferWithHandle
 		(sizeof(UniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 			, "UniformBufferDeferredRenderpass");
-
-		/*lv_vkResManager.CopyDataToLocalBuffer(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainQueue2,
-			m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainCommandBuffer1[0], m_vertexBufferGpuHandle
-		, lv_vertexBuffer.data());
-		lv_vkResManager.CopyDataToLocalBuffer(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainQueue2,
-			m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainCommandBuffer1[0], m_indicesBufferGpuHandle
-			, lv_indexBuffer.data());*/
 		
 
-		auto& lv_lightGpu = lv_vkResManager.RetrieveGpuBuffer(m_lightBufferGpuHandle);
-		memcpy(lv_lightGpu.ptr, lv_lightData.data(), lv_lightData.size()*sizeof(Light));
+		
 
 		GeneratePipelineFromSpirvBinaries(l_spvPath);
 		SetRenderPassAndFrameBuffer("DeferredLightning");
 		SetNodeToAppropriateRenderpass("DeferredLightning", this);
 		UpdateDescriptorSets();
 
-		
-
-		/*VkVertexInputBindingDescription lv_vtxBindingDesc{};
-		lv_vtxBindingDesc.binding = 0;
-		lv_vtxBindingDesc.stride = sizeof(glm::vec4);
-		lv_vtxBindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-		VkVertexInputAttributeDescription lv_firstAttribDesc{};
-		lv_firstAttribDesc.binding = 0;
-		lv_firstAttribDesc.format = VK_FORMAT_R32G32B32_SFLOAT;
-		lv_firstAttribDesc.location = 0;
-		lv_firstAttribDesc.offset = 0;
-
-		VkVertexInputAttributeDescription lv_secondAttribDesc{};
-		lv_secondAttribDesc.binding = 0;
-		lv_secondAttribDesc.location = 1;
-		lv_secondAttribDesc.offset = sizeof(glm::vec3);
-		lv_secondAttribDesc.format = VK_FORMAT_R32_SFLOAT;*/
+	
 
 		auto* lv_node = lv_frameGraph.RetrieveNode("DeferredLightning");
 		VulkanResourceManager::PipelineInfo lv_pipeInfo{};
@@ -120,9 +93,7 @@ namespace RenderCore
 		lv_pipeInfo.m_useBlending = false;
 		lv_pipeInfo.m_useDepth = true;
 		lv_pipeInfo.m_totalNumColorAttach = lv_node->m_outputResourcesHandles.size() - 1;
-		/*lv_pipeInfo.m_vertexInputBindingDescription.push_back(lv_vtxBindingDesc);
-		lv_pipeInfo.m_vertexInputAttribDescription.push_back(lv_firstAttribDesc);
-		lv_pipeInfo.m_vertexInputAttribDescription.push_back(lv_secondAttribDesc);*/
+		
 
 		m_graphicsPipeline = lv_vkResManager.CreateGraphicsPipeline(m_renderPass, m_pipelineLayout
 			, {l_vtxShader, l_fragShader},"GraphicsPipelineDeferredLightning", lv_pipeInfo);
