@@ -46,7 +46,7 @@ void main()
 	vec4 lv_worldPos = vec4(texture(lv_gbufferPos, lv_uv).xyz, 1.f);
     vec4 lv_viewPos = lv_cameraUniform.m_viewMatrix * lv_worldPos;
 	vec3 lv_albedo = texture(lv_gbufferAlbedoSpec, lv_uv).rgb;
-    vec3 lv_lightning = lv_albedo*0.1;
+    vec3 lv_lightning = lv_albedo*0.001f;
     vec3 lv_fragPos = texture(lv_gbufferPos, lv_uv).rgb;
     vec3 lv_normal = texture(lv_gbufferNormal, lv_uv).rgb;
     float lv_specular = texture(lv_gbufferAlbedoSpec, lv_uv).a;
@@ -75,7 +75,8 @@ void main()
 
 	}
 
-
-    lv_finalColor = vec4(lv_lightning, 1.f);
+    //lv_finalColor = vec4(lv_lightning, 1.f);
+    lv_finalColor.rgb = pow(lv_lightning, vec3(1.f/2.2f));
+    lv_finalColor.a = 1.f;
 
 }
