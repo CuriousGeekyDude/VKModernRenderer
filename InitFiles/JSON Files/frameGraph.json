@@ -60,22 +60,6 @@
         },
 
         {
-          "Name": "GBufferNormalVertex",
-          "CreateResourceOnGPU": "TRUE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 1024, 512, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        },
-
-
-        {
           "Name": "GBufferAlbedoSpec",
           "CreateResourceOnGPU": "TRUE",
           "TextureInfo": [
@@ -85,6 +69,22 @@
               "Resolution": [ 1024, 512, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
               "Format": "VK_FORMAT_R16G16B16A16_SFLOAT"
+            }
+
+          ]
+        },
+
+
+        {
+          "Name": "GBufferNormalVertex",
+          "CreateResourceOnGPU": "TRUE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 1024, 512, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
+              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
             }
 
           ]
@@ -154,8 +154,9 @@
           ]
         },
 
+
         {
-          "Name": "GBufferNormalVertex",
+          "Name": "GBufferAlbedoSpec",
           "CreateResourceOnGPU": "FALSE",
           "TextureInfo": [
 
@@ -169,7 +170,7 @@
 
 
         {
-          "Name": "GBufferAlbedoSpec",
+          "Name": "GBufferNormalVertex",
           "CreateResourceOnGPU": "FALSE",
           "TextureInfo": [
 
