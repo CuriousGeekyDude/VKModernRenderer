@@ -38,6 +38,27 @@ layout(set = 0, binding = 2) uniform sampler2D lv_gbufferPos;
 layout(set = 0, binding = 3) uniform sampler2D lv_gbufferNormal;
 layout(set = 0, binding = 4) uniform sampler2D lv_gbufferAlbedoSpec;
 layout(set = 0, binding = 5) uniform sampler2D lv_gbufferTangent;
+layout(set = 0, binding = 6) uniform sampler2D lv_gbufferNormalVertex;
+
+
+
+
+vec3 NormalSampleToWorldSpace(vec3 l_sampledNormal, vec3 l_normalVertex, vec3 l_tangent)
+{
+    vec3 lv_normalT = 2.f * l_sampledNormal - 1.f;
+
+    vec3 N = l_normalVertex;
+    vec3 T = normalize(l_tangent - dot(l_tangent, N)*N);
+    vec3 B = cross(N, T);
+
+    mat3 TBN = mat3(T, B, N);
+
+    return TBN*lv_normalT;
+    
+}
+
+
+
 
 
 void main()
@@ -47,9 +68,9 @@ void main()
 	vec4 lv_worldPos = vec4(texture(lv_gbufferPos, lv_uv).xyz, 1.f);
     vec4 lv_viewPos = lv_cameraUniform.m_viewMatrix * lv_worldPos;
 	vec3 lv_albedo = texture(lv_gbufferAlbedoSpec, lv_uv).rgb;
-    vec3 lv_lightning = lv_albedo*0.001f;
+    vec3 lv_lightning = lv_albedo*0.0009f;
     vec3 lv_fragPos = texture(lv_gbufferPos, lv_uv).rgb;
-    vec3 lv_normal = texture(lv_gbufferNormal, lv_uv).rgb;
+    vec3 lv_normal = NormalSampleToWorldSpace(texture(lv_gbufferNormal, lv_uv).rgb, texture(lv_gbufferNormalVertex, lv_uv).rgb, texture(lv_gbufferTangent, lv_uv).rgb);
     float lv_specular = texture(lv_gbufferAlbedoSpec, lv_uv).a;
     vec3 lv_dir = normalize(lv_cameraUniform.m_cameraPos.xyz - lv_fragPos);
 
