@@ -257,6 +257,7 @@ namespace RenderCore
 	{
 		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
 
+		auto& lv_gbufferTangentGpu = lv_vkResManager.RetrieveGpuTexture("GBufferTangent", l_currentSwapchainIndex);
 		auto& lv_gbufferPosGpu = lv_vkResManager.RetrieveGpuTexture("GBufferPosition", l_currentSwapchainIndex);
 		auto& lv_gbufferNormalGpu = lv_vkResManager.RetrieveGpuTexture("GBufferNormal", l_currentSwapchainIndex);
 		auto& lv_gbufferAlbedoSpecGpu = lv_vkResManager.RetrieveGpuTexture("GBufferAlbedoSpec", l_currentSwapchainIndex);
@@ -265,6 +266,10 @@ namespace RenderCore
 		auto& lv_indexBuffer = lv_vkResManager.RetrieveGpuBuffer(m_indicesBufferGpuHandle);*/
 		auto& lv_depth = lv_vkResManager.RetrieveGpuTexture("Depth", l_currentSwapchainIndex);
 
+
+		transitionImageLayoutCmd(l_cmdBuffer, lv_gbufferTangentGpu.image.image
+			, lv_gbufferTangentGpu.format, lv_gbufferTangentGpu.Layout
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		transitionImageLayoutCmd(l_cmdBuffer, lv_gbufferPosGpu.image.image
 								,lv_gbufferPosGpu.format, lv_gbufferPosGpu.Layout
 								,VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -278,6 +283,7 @@ namespace RenderCore
 			, lv_depth.format, lv_depth.Layout
 			, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
+		lv_gbufferTangentGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_gbufferPosGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_gbufferNormalGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_gbufferAlbedoSpecGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
