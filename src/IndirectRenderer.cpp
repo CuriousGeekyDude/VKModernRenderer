@@ -169,7 +169,7 @@ namespace RenderCore
 			
 			auto lv_formattedArg = std::make_format_args(j);
 
-			std::string lv_formattedString{"Swapchain {}"};
+			std::string lv_formattedString{"GBufferTangent {}"};
 			auto lv_colorMeta = lv_vulkanResourceManager.RetrieveGpuResourceMetaData(std::vformat(lv_formattedString,lv_formattedArg));
 
 			lv_formattedString = "GBufferPosition {}";
@@ -470,7 +470,8 @@ namespace RenderCore
 
 		uint32_t lv_totalNumAttachmentsPerFrameBuffer = 5;
 
-
+		auto& lv_tangentAttach = lv_vulkanResourceManager
+			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex]);
 		auto& lv_posColorAttach = lv_vulkanResourceManager
 			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex + 1]);
 		auto& lv_normalColorAttach = lv_vulkanResourceManager
@@ -482,8 +483,8 @@ namespace RenderCore
 
 
 
-		/*transitionImageLayoutCmd(l_commandBuffer, lv_mainColorAttach.image.image, lv_mainColorAttach.format,
-			lv_mainColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);*/
+		transitionImageLayoutCmd(l_commandBuffer, lv_tangentAttach.image.image, lv_tangentAttach.format,
+			lv_tangentAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		transitionImageLayoutCmd(l_commandBuffer, lv_posColorAttach.image.image, lv_posColorAttach.format,
 			lv_posColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		transitionImageLayoutCmd(l_commandBuffer, lv_normalColorAttach.image.image, lv_normalColorAttach.format,
@@ -493,7 +494,7 @@ namespace RenderCore
 		transitionImageLayoutCmd(l_commandBuffer, lv_depthAttach.image.image, lv_depthAttach.format,
 			lv_depthAttach.Layout, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
-		//lv_mainColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		lv_tangentAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		lv_posColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		lv_normalColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		lv_albedoSpecColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
@@ -505,7 +506,7 @@ namespace RenderCore
 			sizeof(VkDrawIndirectCommand));
 		vkCmdEndRenderPass(l_commandBuffer);
 
-		//lv_mainColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lv_tangentAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_posColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_normalColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_albedoSpecColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
