@@ -165,7 +165,7 @@ namespace RenderCore
 
 		m_attachmentHandles.resize(lv_node->m_inputResourcesHandles.size() * lv_totalNumSwapchainImages);
 
-		for (size_t i = 0, j = 0; i < 5*lv_totalNumSwapchainImages; i+=5, ++j) {
+		for (size_t i = 0, j = 0; i < 5*lv_totalNumSwapchainImages; i+=6, ++j) {
 			
 			auto lv_formattedArg = std::make_format_args(j);
 
@@ -181,6 +181,9 @@ namespace RenderCore
 			lv_formattedString = "GBufferAlbedoSpec {}";
 			auto lv_albedoSpecMeta = lv_vulkanResourceManager.RetrieveGpuResourceMetaData(std::vformat(lv_formattedString, lv_formattedArg));
 
+			lv_formattedString = "GBufferNormalVertex {}";
+			auto lv_normalVertexMeta = lv_vulkanResourceManager.RetrieveGpuResourceMetaData(std::vformat(lv_formattedString, lv_formattedArg));
+
 			lv_formattedString = "Depth {}";
 			auto lv_depthMeta = lv_vulkanResourceManager.RetrieveGpuResourceMetaData(std::vformat(lv_formattedString, lv_formattedArg));
 
@@ -188,7 +191,8 @@ namespace RenderCore
 			m_attachmentHandles[i+1] = lv_posMeta.m_resourceHandle;
 			m_attachmentHandles[i+2] = lv_normalMeta.m_resourceHandle;
 			m_attachmentHandles[i+3] = lv_albedoSpecMeta.m_resourceHandle;
-			m_attachmentHandles[i+4] = lv_depthMeta.m_resourceHandle;
+			m_attachmentHandles[i+4] = lv_normalVertexMeta.m_resourceHandle;
+			m_attachmentHandles[i + 5] = lv_depthMeta.m_resourceHandle;
 		}
 
 
@@ -468,7 +472,7 @@ namespace RenderCore
 		auto& lv_indirectBuffer = lv_vulkanResourceManager.RetrieveGpuBuffer(m_indirectBufferHandles[l_currentSwapchainIndex]);
 
 
-		uint32_t lv_totalNumAttachmentsPerFrameBuffer = 5;
+		uint32_t lv_totalNumAttachmentsPerFrameBuffer = 6;
 
 		auto& lv_tangentAttach = lv_vulkanResourceManager
 			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex]);
@@ -478,9 +482,10 @@ namespace RenderCore
 			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex + 2]);
 		auto& lv_albedoSpecColorAttach = lv_vulkanResourceManager
 			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex + 3]);
-		auto& lv_depthAttach = lv_vulkanResourceManager
+		auto& lv_normalVertexColorAttach = lv_vulkanResourceManager
 			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex + 4]);
-
+		auto& lv_depthAttach = lv_vulkanResourceManager
+			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex + 5]);
 
 
 		transitionImageLayoutCmd(l_commandBuffer, lv_tangentAttach.image.image, lv_tangentAttach.format,
@@ -491,6 +496,8 @@ namespace RenderCore
 			lv_normalColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		transitionImageLayoutCmd(l_commandBuffer, lv_albedoSpecColorAttach.image.image, lv_albedoSpecColorAttach.format,
 			lv_albedoSpecColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		transitionImageLayoutCmd(l_commandBuffer, lv_normalVertexColorAttach.image.image, lv_normalVertexColorAttach.format,
+			lv_normalVertexColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		transitionImageLayoutCmd(l_commandBuffer, lv_depthAttach.image.image, lv_depthAttach.format,
 			lv_depthAttach.Layout, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
@@ -498,6 +505,7 @@ namespace RenderCore
 		lv_posColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		lv_normalColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		lv_albedoSpecColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		lv_normalVertexColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		lv_depthAttach.Layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
 		
 
@@ -510,6 +518,7 @@ namespace RenderCore
 		lv_posColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_normalColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_albedoSpecColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lv_normalVertexColorAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_depthAttach.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 	}
