@@ -1077,7 +1077,11 @@ SwapchainSupportDetails querySwapchainSupport(VkPhysicalDevice m_device, VkSurfa
 
 VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats)
 {
-	return { VK_FORMAT_B8G8R8A8_UNORM };
+	VkSurfaceFormatKHR lv_surface;
+	lv_surface.format = VK_FORMAT_B8G8R8A8_SRGB;
+	lv_surface.colorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
+
+	return lv_surface;
 }
 
 VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes)
