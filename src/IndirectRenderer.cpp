@@ -165,7 +165,7 @@ namespace RenderCore
 
 		m_attachmentHandles.resize(lv_node->m_inputResourcesHandles.size() * lv_totalNumSwapchainImages);
 
-		for (size_t i = 0, j = 0; i < 5*lv_totalNumSwapchainImages; i+=6, ++j) {
+		for (size_t i = 0, j = 0; i < 6*lv_totalNumSwapchainImages; i+=6, ++j) {
 			
 			auto lv_formattedArg = std::make_format_args(j);
 
