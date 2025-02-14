@@ -10,7 +10,7 @@ layout(location = 2) in vec3 lv_normal;
 layout(location = 3) in vec4 lv_worldPos;
 layout(location = 4) in vec4 lv_tangent;
 
-layout(location = 0) out vec4 outColor;
+layout(location = 0) out vec4 lv_gbufferTangent;
 layout(location = 1) out vec4 lv_gBufferPosition;
 layout(location = 2) out vec4 lv_gBufferNormal;
 layout(location = 3) out vec4 lv_gBufferAlbedoSpec;
@@ -123,7 +123,7 @@ void main()
 
 	//outColor = vec4(lv_lightDirDotN * lv_albedo.rgb + lv_emissiveColor.rgb, 1.f);
 
-	outColor = lv_albedo;
+	lv_gbufferTangent = lv_tangent;
 	lv_gBufferPosition = lv_worldPos;
 	lv_gBufferNormal = vec4(lv_normalSample.xyz, 1.f);
 	lv_gBufferAlbedoSpec.rgb = pow(lv_albedo.rgb, vec3(2.2f));

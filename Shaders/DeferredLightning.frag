@@ -37,6 +37,7 @@ layout(set = 0, binding = 1) readonly buffer LightData {Light lights[];} lv_ligh
 layout(set = 0, binding = 2) uniform sampler2D lv_gbufferPos;
 layout(set = 0, binding = 3) uniform sampler2D lv_gbufferNormal;
 layout(set = 0, binding = 4) uniform sampler2D lv_gbufferAlbedoSpec;
+layout(set = 0, binding = 5) uniform sampler2D lv_gbufferTangent;
 
 
 void main()
