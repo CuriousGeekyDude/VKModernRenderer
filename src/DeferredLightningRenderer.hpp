@@ -68,7 +68,6 @@ namespace RenderCore
 
 	private:
 
-		std::vector<uint32_t> m_textureSamplerGpuHandles;
 		uint32_t m_uniformBufferGpuHandle;
 		uint32_t m_lightBufferGpuHandle;
 		uint32_t m_vertexBufferGpuHandle;
