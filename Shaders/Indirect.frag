@@ -126,6 +126,6 @@ void main()
 	outColor = lv_albedo;
 	lv_gBufferPosition = lv_worldPos;
 	lv_gBufferNormal = vec4(lv_normalSample.xyz, 1.f);
-	lv_gBufferAlbedoSpec.rgb = lv_albedo.rgb;
+	lv_gBufferAlbedoSpec.rgb = pow(lv_albedo.rgb, vec3(2.2f));
 	lv_gBufferAlbedoSpec.a = lv_matData.m_specular.r;
 }
