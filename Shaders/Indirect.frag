@@ -83,7 +83,7 @@ void main()
 	vec3 lv_normalSample = lv_n;
 
 	if(0 != (lv_matData.m_flags & lv_normalMapIncluded)) {
-		lv_normalSample = normalize(texture(lv_textures[nonuniformEXT(lv_matData.m_normalMap)], uvw.xy).xyz);
+		lv_normalSample = texture(lv_textures[nonuniformEXT(lv_matData.m_normalMap)], uvw.xy).xyz;
 	}
 
 	if(0 != (lv_matData.m_flags & lv_albedoMapIncluded)) {
