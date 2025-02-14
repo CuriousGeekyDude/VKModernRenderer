@@ -51,11 +51,11 @@ void main()
 	uint refIdx = dd.indexOffset + gl_VertexIndex;
 	ImDrawVert v = sbo.data[ibo.data[refIdx] + dd.vertexOffset];
 
-	uvw = vec3(-v.u, -v.v, 1.f);
+	uvw = vec3(v.u, v.v, 1.f);
 	lv_matIndex = dd.material;
 	lv_worldPos = vec4(v.x, v.y, v.z, 1.0);
 
-	lv_normal = vec3(v.nx, -v.ny, v.nz);
+	lv_normal = vec3(v.nx, v.ny, v.nz);
 	lv_tangent = vec4(v.tx, v.ty, v.tz, v.tw);
 
 //	mat4 xfrm(1.0); // = transpose(drawDataBuffer.data[gl_BaseInstance].xfrm);
