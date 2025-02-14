@@ -59,6 +59,21 @@
           ]
         },
 
+        {
+          "Name": "GBufferNormalVertex",
+          "CreateResourceOnGPU": "TRUE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 1024, 512, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
+              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
+            }
+
+          ]
+        },
+
 
         {
           "Name": "GBufferAlbedoSpec",
@@ -128,6 +143,19 @@
 
         {
           "Name": "GBufferNormal",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        },
+
+        {
+          "Name": "GBufferNormalVertex",
           "CreateResourceOnGPU": "FALSE",
           "TextureInfo": [
 
