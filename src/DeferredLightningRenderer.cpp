@@ -298,11 +298,11 @@ namespace RenderCore
 	(std::array<glm::vec4, m_totalNumLights>& l_positionData)
 	{
 		for (uint32_t i = 0; i < 16; ++i) {
-			l_positionData[i] = glm::vec4{ -12.f + (float)i, 1.f, 1.5f, (float)i };
+			l_positionData[i] = glm::vec4{ -60.f + (float)12*i, 32.f, 15.f, (float)i };
 		}
 
-		for (uint32_t i = 16; i < m_totalNumLights; ++i) {
-			l_positionData[i] = glm::vec4{ -12.f + (float)i, 1.f, -2.f, (float)i };
+		for (uint32_t i = 0; i < 16; ++i) {
+			l_positionData[i + 16] = glm::vec4{ -60.f + (float)12*i, 32.f, -4.f, (float)i };
 		}
 	}
 
