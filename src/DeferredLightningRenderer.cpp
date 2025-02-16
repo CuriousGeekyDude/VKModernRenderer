@@ -311,12 +311,12 @@ namespace RenderCore
 	void DeferredLightningRenderer::InitializePositionData
 	(std::array<glm::vec4, m_totalNumLights>& l_positionData)
 	{
-		for (uint32_t i = 0; i < 16; ++i) {
-			l_positionData[i] = glm::vec4{ -60.f + (float)12*i, 0.5f, 6.f, (float)i };
+		for (uint32_t i = 0; i < 8; ++i) {
+			l_positionData[i] = glm::vec4{ -45.f + (float)12*i, 0.5f, 4.f, (float)i };
 		}
 
-		for (uint32_t i = 0; i < 16; ++i) {
-			l_positionData[i + 16] = glm::vec4{ -60.f + (float)12*i, 0.5f, -6.f, (float)i };
+		for (uint32_t i = 0; i < 8; ++i) {
+			l_positionData[i + 8] = glm::vec4{ -45.f + (float)12*i, 0.5f, -6.f, (float)i };
 		}
 	}
 
@@ -325,7 +325,6 @@ namespace RenderCore
 	, const std::array<glm::vec4, m_totalNumLights>& l_positionData)
 	{
 		for (uint32_t i = 0; i < m_totalNumLights; ++i) {
-			
 			l_lightBuffer[i].m_position = l_positionData[i];
 			l_lightBuffer[i].m_position.w = 1.f;
 		}

@@ -29,7 +29,7 @@ struct Light
 };
 
 
-uint m_totalNumLights = 32;
+uint m_totalNumLights = 16;
 
 layout(set = 0, binding = 1) readonly buffer LightData {Light lights[];} lv_lights;
 
@@ -98,6 +98,9 @@ void main()
 	}
 
     //lv_finalColor = vec4(lv_lightning, 1.f);
+
+    lv_lightning = vec3(1.f) - exp(-lv_lightning*2.5f);
+
     lv_finalColor.rgb = pow(lv_lightning, vec3(1.f/2.2f));
     lv_finalColor.a = 1.f;
 
