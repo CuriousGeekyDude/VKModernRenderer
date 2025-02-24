@@ -167,6 +167,7 @@ namespace RenderCore
 
 		VulkanTexture& CreateTextureForOffscreenFrameBuffer(const std::string& l_nameTexture,
 			VkFormat l_colorFormat = VK_FORMAT_B8G8R8A8_UNORM,
+			uint32_t l_width = 1024, uint32_t l_height = 512,
 			VkFilter l_minFilter = VK_FILTER_LINEAR,
 			VkFilter l_maxFilter = VK_FILTER_LINEAR,
 			VkSamplerAddressMode l_addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
@@ -175,12 +176,16 @@ namespace RenderCore
 		//Same as CreateTextureForOffscreenFrameBuffer() except this one returns the handle
 		uint32_t CreateTexture(const char* l_nameTexture,
 			VkFormat l_colorFormat = VK_FORMAT_B8G8R8A8_UNORM,
+			uint32_t l_width = 1024, uint32_t l_height = 512,
 			VkFilter l_minFilter = VK_FILTER_LINEAR,
 			VkFilter l_maxFilter = VK_FILTER_LINEAR,
 			VkSamplerAddressMode l_addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 
 		VulkanTexture& LoadTexture2D(const std::string& l_textureFileName);
+
+
+
 
 		uint32_t LoadTexture2DWithHandle(const std::string& l_textureFileName);
 

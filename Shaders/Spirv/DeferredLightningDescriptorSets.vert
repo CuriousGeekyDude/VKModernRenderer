@@ -29,7 +29,7 @@ struct Light
 };
 
 
-uint m_totalNumLights = 32;
+uint m_totalNumLights = 16;
 
 layout(set = 0, binding = 1) readonly buffer LightData {Light lights[];} lv_lights;
 
@@ -39,6 +39,7 @@ layout(set = 0, binding = 3) uniform sampler2D lv_gbufferNormal;
 layout(set = 0, binding = 4) uniform sampler2D lv_gbufferAlbedoSpec;
 layout(set = 0, binding = 5) uniform sampler2D lv_gbufferTangent;
 layout(set = 0, binding = 6) uniform sampler2D lv_gbufferNormalVertex;
+layout(set = 0, binding = 7) uniform sampler2D lv_occlusionFactor;
 
 
 void main()

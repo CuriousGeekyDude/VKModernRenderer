@@ -9,6 +9,7 @@
 #include "BoundingBoxWireframeRenderer.hpp"
 #include "FrameGraph.hpp"
 #include "DeferredLightningRenderer.hpp"
+#include "SSAORenderer.hpp"
 
 
 namespace VulkanEngine
@@ -25,7 +26,8 @@ namespace VulkanEngine
 
 	private:
 		RenderCore::IndirectRenderer m_indirectGbuffer;
-		RenderCore::BoundingBoxWireframeRenderer m_boundingBoxWireframe;
+		//RenderCore::BoundingBoxWireframeRenderer m_boundingBoxWireframe;
+		RenderCore::SSAORenderer m_ssao;
 		RenderCore::DeferredLightningRenderer m_deferredLightning;
 
 	};

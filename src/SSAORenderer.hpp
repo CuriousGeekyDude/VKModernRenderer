@@ -2,35 +2,51 @@
 
 
 
-//#include "CompositeRenderer.hpp"
-//#include "QuadRenderer.hpp"
-#include <optional>
 
+#include "Renderbase.hpp"
 
 namespace RenderCore
 {
-	class SSAORenderer : public CompositeRenderer
+
+	class SSAORenderer : public Renderbase
 	{
+
+		struct UniformBufferMatrices
+		{
+			glm::mat4   m_viewMatrix;
+			glm::mat4   m_projectionMatrix;
+		};
+
+		struct UniformBufferSSAOOffsets
+		{
+			glm::vec4 m_offsets[64];
+		};
+
 	public:
 
-		SSAORenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator,
-			const RenderCore::VulkanResourceManager::RenderPass& l_renderpass,
-			std::vector<VulkanTexture>& l_inputColorAttachment,
-			std::vector<VulkanTexture>& l_depths,
-			const std::vector<VkFramebuffer>& l_outputFrameBuffers);
+		SSAORenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator
+					, const char* l_vtxShader
+					, const char* l_fragShader
+					, const char* l_spvPath);
 
 
-		virtual void FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
+
+		void UpdateDescriptorSets() override;
+
+		void FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
 			uint32_t l_currentSwapchainIndex) override;
 
-
+		void UpdateBuffers(const uint32_t l_currentSwapchainIndex,
+			const VulkanEngine::CameraStructure& l_cameraStructure) override;
 
 	private:
 
-		VulkanTexture m_samplingTex;
-		std::vector<VulkanTexture> m_ssaoTex, m_ssaoBlurXTex, m_ssaoBlurYTex;
-		std::vector<VulkanTexture*> m_inputAndDepthAttachments;
 
-		std::optional<QuadRenderer> m_ssaoQuadRenderer, m_ssaoBlurXQuadRenderer, m_ssaoBlurYQuadRenderer, m_ssaoFinalQuadRenderer;
+		uint32_t m_gpuOffsetsHandle;
+		uint32_t m_gpuRandomRotationsTextureHandle;
+		uint32_t m_gpuUniformBufferHandle;
+
+
 	};
+
 }

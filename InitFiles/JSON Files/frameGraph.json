@@ -198,12 +198,9 @@
       ],
 
       "TargetNodes": [
-
+        
         {
-          "Name": "BoundingBoxWireframe"
-        },
-        {
-          "Name": "DeferredLightning"
+          "Name": "SSAO"
         }
 
       ]
@@ -280,35 +277,23 @@
 
     },
 
-
     {
       "Pipeline": "GRAPHIC",
 
-      "Name": "BoundingBoxWireframe",
+      "Name": "SSAO",
 
       "Input": [
 
         {
-          "Name": "Swapchain",
-          "CreateResourceOnGPU": "FALSE",
+          "Name": "OcclusionFactor",
+          "CreateResourceOnGPU": "TRUE",
           "TextureInfo": [
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
-            }
-
-          ]
-        },
-
-        {
-          "Name": "Depth",
-          "CreateResourceOnGPU": "FALSE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+              "Resolution": [ 1024, 512, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
+              "Format": "VK_FORMAT_R32_SFLOAT"
             }
 
           ]
@@ -319,26 +304,12 @@
       "Output": [
 
         {
-          "Name": "Swapchain",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_PRESENT_SRC_KHR",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        },
-
-        {
-          "Name": "Depth",
+          "Name": "OcclusionFactor",
           "CreateResourceOnGPU": "FALSE",
           "TextureInfo": [
 
             {
-              "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
               "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
             }
 
@@ -347,7 +318,13 @@
 
       ],
 
-      "TargetNodes": []
+      "TargetNodes": [
+
+        {
+          "Name": "DeferredLightning"
+        }
+
+      ]
 
     }
   ]

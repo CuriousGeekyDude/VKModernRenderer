@@ -20,10 +20,12 @@ namespace VulkanEngine
 			"InitFiles/Binary Scene Files/SponzaSceneFile",
 			"Shaders/Indirect.vert",
 			"Shaders/Indirect.frag",
-			"Shaders/Spirv/Indirect.spv"),
-		m_boundingBoxWireframe(ctx_,
+			"Shaders/Spirv/Indirect.spv")
+		/*m_boundingBoxWireframe(ctx_,
 			"Shaders/BoundingBoxWireframe.vert", "Shaders/BoundingBoxWireframe.frag",
-			"Shaders/Spirv/BoundingBox.spv")
+			"Shaders/Spirv/BoundingBox.spv")*/
+		,m_ssao(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/SSAO.frag"
+			   , "Shaders/Spirv/SSAO.spv")
 		,m_deferredLightning(ctx_
 		,"Shaders/FullScreenQuad.vert"
 		,"Shaders/DeferredLightning.frag"

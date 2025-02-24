@@ -191,6 +191,7 @@
     <ClCompile Include="src\spatialorder.cpp" />
     <ClCompile Include="src\SpirvPipelineGenerator.cpp" />
     <ClCompile Include="src\spirv_reflect.c" />
+    <ClCompile Include="src\SSAORenderer.cpp" />
     <ClCompile Include="src\stripifier.cpp" />
     <ClCompile Include="src\Utils.cpp" />
     <ClCompile Include="src\UtilsCubemap.cpp" />
@@ -246,6 +247,7 @@
     <ClInclude Include="src\spirv.h" />
     <ClInclude Include="src\SpirvPipelineGenerator.hpp" />
     <ClInclude Include="src\spirv_reflect.h" />
+    <ClInclude Include="src\SSAORenderer.hpp" />
     <ClInclude Include="src\Trackball.h" />
     <ClInclude Include="src\Utils.h" />
     <ClInclude Include="src\UtilsCubemap.h" />

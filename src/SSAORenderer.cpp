@@ -1,261 +1,276 @@
 
 
 
+
 #include "SSAORenderer.hpp"
-#include <format>
+#include "CameraStructure.hpp"
+#include <random>
+#include <array>
 
 
 namespace RenderCore
 {
-	SSAORenderer::SSAORenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator,
-		const RenderCore::VulkanResourceManager::RenderPass& l_renderpass,
-		std::vector<VulkanTexture>& l_inputColorAttachment,
-		std::vector<VulkanTexture>& l_depths,
-		const std::vector<VkFramebuffer>& l_outputFrameBuffers)
-		:CompositeRenderer(l_vkContextCreator, l_renderpass),
-		m_samplingTex(l_vkContextCreator.GetResourceManager().LoadTexture2D("data/rot_texture.bmp"))
 
+
+	SSAORenderer::SSAORenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator
+		, const char* l_vtxShader
+		, const char* l_fragShader
+		, const char* l_spvPath)
+		
+		:Renderbase(l_vkContextCreator)
 	{
-		auto lv_totalNumSwapChains = l_vkContextCreator.GetContextCreator().m_vkDev.m_swapchainImages.size();
-		auto& lv_uniformBuffers = l_vkContextCreator.GetResourceManager().GetUniformBuffers();
-		m_framebufferHandles = l_outputFrameBuffers;
-		std::vector<const char*> lv_shaders{2};
-		lv_shaders[0] = "data/shaders/chapter08/VK02_Quad.vert";
+
+		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
+		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();
+		auto lv_totalNumSwapChains = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_swapchainImages.size();
+
+		std::uniform_real_distribution<float> lv_randomFloats(0.f, 1.f);
+		std::default_random_engine lv_randomEngine;
+
+		constexpr uint32_t lv_sizeArrayOffsets = 64;
+		UniformBufferSSAOOffsets lv_offsets;
 
 
-		std::vector<VkFramebuffer> lv_framebuffersOfSomeRenderer{lv_totalNumSwapChains};
-		m_ssaoTex.resize(lv_totalNumSwapChains);
-		m_ssaoBlurXTex.resize(lv_totalNumSwapChains);
-		m_ssaoBlurYTex.resize(lv_totalNumSwapChains);
+		//Make sure l_a is smaller than l_b 
+		auto Lerp = [](float l_a, float l_b, float l_x) -> float
+			{
+				return (1.f - l_x) * l_a + l_x * l_b;
+			};
+
+		for (size_t i = 0; i < lv_sizeArrayOffsets; ++i) {
+
+			lv_offsets.m_offsets[i].x = lv_randomFloats(lv_randomEngine) * 2.f - 1.f;
+			lv_offsets.m_offsets[i].y = lv_randomFloats(lv_randomEngine) * 2.f - 1.f;
+			lv_offsets.m_offsets[i].z = lv_randomFloats(lv_randomEngine);
+			lv_offsets.m_offsets[i].w = 0.f;
 
 
-		for (size_t j = 0; j < lv_totalNumSwapChains; ++j) {
-			m_inputAndDepthAttachments.push_back(&l_inputColorAttachment[j]);
-			m_inputAndDepthAttachments.push_back(&l_depths[j]);
+			lv_offsets.m_offsets[i] = glm::normalize(lv_offsets.m_offsets[i]);
+			lv_offsets.m_offsets[i] *= lv_randomFloats(lv_randomEngine);
+
+
+			float lv_downScale = 1.f / 64.f;
+			lv_downScale = Lerp(0.1f, 1.f, lv_downScale * lv_downScale);
+			lv_offsets.m_offsets[i] *= lv_downScale;
 		}
 
 
-		for (size_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			m_ssaoTex[i] = l_vkContextCreator.GetResourceManager()
-				.CreateTextureForOffscreenFrameBuffer(std::format(" ssaoTex-SSAO {} ", i));
-			m_ssaoBlurXTex[i] = l_vkContextCreator.GetResourceManager()
-				.CreateTextureForOffscreenFrameBuffer(std::format(" ssaoBlurXTex-SSAO {} ", i));
-			m_ssaoBlurYTex[i] = l_vkContextCreator.GetResourceManager()
-				.CreateTextureForOffscreenFrameBuffer(std::format(" ssaoBlurYTex-SSAO {} ", i));
+		m_gpuOffsetsHandle = lv_vkResManager.CreateBufferWithHandle(sizeof(lv_offsets)
+											,VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
+											,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
+											, "SSAOOffsetsBuffer");
+		lv_vkResManager.CopyDataToLocalBuffer(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainQueue2,
+			m_vulkanRenderContext.GetContextCreator().m_vkDev.m_mainCommandBuffer1[0]
+			, m_gpuOffsetsHandle, lv_offsets.m_offsets);
+
+
+		std::array<glm::vec4, 16> lv_randomRotations{};
+		for (size_t i = 0; i < lv_randomRotations.size(); ++i) {
+			lv_randomRotations[i].x = lv_randomFloats(lv_randomEngine) * 2.f - 1.f;
+			lv_randomRotations[i].y = lv_randomFloats(lv_randomEngine) * 2.f - 1.f;
+			lv_randomRotations[i].z = 0.f;
+			lv_randomRotations[i].w = 0.f;
 		}
 
-		std::vector<VulkanResourceManager::BufferResourceShader> lv_uniformBufferShaderResources{};
-		for (size_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			VulkanResourceManager::BufferResourceShader lv_uniformBufferShaderResource{};
-			lv_uniformBufferShaderResource.m_buffer = lv_uniformBuffers[i];
-			lv_uniformBufferShaderResource.m_descriptorInfo.m_shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-			lv_uniformBufferShaderResource.m_descriptorInfo.m_type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			lv_uniformBufferShaderResource.m_offset = 0;
-			lv_uniformBufferShaderResource.m_size = lv_uniformBuffers[0].size;
+		m_gpuRandomRotationsTextureHandle = lv_vkResManager.CreateTexture("RandomRotationsSSAO", VK_FORMAT_R32G32B32A32_SFLOAT, 4, 4);
+		auto& lv_randomRotationGpuTexture = lv_vkResManager.RetrieveGpuTexture(m_gpuRandomRotationsTextureHandle);
 
-			lv_uniformBufferShaderResources.push_back(lv_uniformBufferShaderResource);
-		}
+		assert(true == updateTextureImage(m_vulkanRenderContext.GetContextCreator().m_vkDev
+			, lv_randomRotationGpuTexture.image.image, lv_randomRotationGpuTexture.image.imageMemory
+			, 4, 4, lv_randomRotationGpuTexture.format, 1, lv_randomRotations.data(), lv_randomRotationGpuTexture.Layout));
 
-		std::vector<VulkanResourceManager::DescriptorSetResources> lv_descriptorSetRes{lv_totalNumSwapChains};
-
-		std::vector<VulkanResourceManager::TextureResourceShader> lv_textureShaderResources{2*lv_totalNumSwapChains};
-
-		for (size_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			lv_textureShaderResources[2*i] = VulkanResourceManager::TextureResourceShader{
-				.m_descriptorInfo = {.m_type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, .m_shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT},
-				.m_texture = l_depths[i]};
-			lv_textureShaderResources[2 * i].m_texture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_textureShaderResources[2*i+1] = VulkanResourceManager::TextureResourceShader{
-				.m_descriptorInfo = {.m_type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, .m_shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT},
-				.m_texture = m_samplingTex };
-		}
-
-		for (size_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			lv_descriptorSetRes[i].m_buffers.push_back(lv_uniformBufferShaderResources[i]);
-			lv_descriptorSetRes[i].m_textures.push_back(lv_textureShaderResources[2*i]);
-			lv_descriptorSetRes[i].m_textures.push_back(lv_textureShaderResources[2*i+1]);
-
-		}
-		
-
-		
-		VulkanResourceManager::RenderPass lv_ssaoQuadRenderPass(l_vkContextCreator.GetContextCreator().m_vkDev, false, 
-			RenderPassCreateInfo{.clearColor_ = true, .clearDepth_ = false, 
-			.flags_ = eRenderPassBit_First_ColorAttach_ColorAttach});
-		VulkanResourceManager::PipelineInfo lv_ssaoQuadPipelineInfo
-		{.m_width = l_vkContextCreator.GetContextCreator().m_vkDev.m_framebufferWidth,
-		.m_height = l_vkContextCreator.GetContextCreator().m_vkDev.m_framebufferHeight,
-		.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST ,
-		.m_useDepth = false, .m_useBlending = false, .m_dynamicScissorState = false};
-
-		for (size_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			lv_framebuffersOfSomeRenderer[i] = l_vkContextCreator.GetResourceManager()
-				.CreateFrameBuffer(lv_ssaoQuadRenderPass, std::vector<VulkanTexture>{m_ssaoTex[i]}
-			, std::format(" ssaoTex-Framebuffer-SSAO {} ", i).c_str());
-		}
-		lv_shaders[1] = "data/shaders/chapter08/VK02_SSAO.frag";
-		m_ssaoQuadRenderer.emplace(l_vkContextCreator, "SSAO ", lv_ssaoQuadRenderPass, lv_ssaoQuadPipelineInfo,
-			lv_framebuffersOfSomeRenderer, &m_ssaoTex,
-			lv_descriptorSetRes, lv_shaders);
-		
-		lv_textureShaderResources.clear();
-		lv_descriptorSetRes.clear();
-		lv_descriptorSetRes.resize(lv_totalNumSwapChains);
-		lv_textureShaderResources.resize(lv_totalNumSwapChains);
-
-		for (size_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			lv_textureShaderResources[i] = VulkanResourceManager::TextureResourceShader{ .m_descriptorInfo = 
-				{.m_type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, .m_shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT},
-				.m_texture = m_ssaoTex[i]};
-			lv_textureShaderResources[i].m_texture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		}
-
-		for (size_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			lv_descriptorSetRes[i].m_buffers.push_back(lv_uniformBufferShaderResources[i]);
-			lv_descriptorSetRes[i].m_textures.push_back(lv_textureShaderResources[i]);
-		}
-
-		VulkanResourceManager::RenderPass lv_blurXQuadRenderPass(l_vkContextCreator.GetContextCreator().m_vkDev, false,
-			RenderPassCreateInfo{ .clearColor_ = true, .clearDepth_ = false, 
-			.flags_ = eRenderPassBit_First_ColorAttach_ColorAttach });
-		VulkanResourceManager::PipelineInfo lv_blurXQuadPipelineInfo{ .m_width 
-			= l_vkContextCreator.GetContextCreator().m_vkDev.m_framebufferWidth,
-		.m_height = l_vkContextCreator.GetContextCreator().m_vkDev.m_framebufferHeight,
-		.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST ,
-		.m_useDepth = false, .m_useBlending = false, .m_dynamicScissorState = false };
-
-
-		for (uint32_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			lv_framebuffersOfSomeRenderer[i] = l_vkContextCreator.GetResourceManager()
-				.CreateFrameBuffer(lv_blurXQuadRenderPass, std::vector<VulkanTexture>{m_ssaoBlurXTex[i]},
-					std::format(" ssaoBlurXTex-Framebuffer-SSAO {} ", i).c_str());
-		}
-
-		lv_shaders[1] = "data/shaders/chapter08/VK02_SSAOBlurX.frag";
-		m_ssaoBlurXQuadRenderer.emplace(l_vkContextCreator, "SSAO ", lv_blurXQuadRenderPass, lv_blurXQuadPipelineInfo,
-			lv_framebuffersOfSomeRenderer, &m_ssaoBlurXTex, lv_descriptorSetRes, lv_shaders);
+		m_gpuUniformBufferHandle = lv_vkResManager.CreateBufferWithHandle(sizeof(UniformBufferMatrices)
+												   , VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
+												   , VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
+												   , "UniformBufferMatricesSSAO");
 
 		
-
-		lv_textureShaderResources.clear();
-		lv_descriptorSetRes.clear();
-		lv_descriptorSetRes.resize(lv_totalNumSwapChains);
-		lv_textureShaderResources.resize(lv_totalNumSwapChains);
-
+		GeneratePipelineFromSpirvBinaries(l_spvPath);
+		SetRenderPassAndFrameBuffer("SSAO");
+		SetNodeToAppropriateRenderpass("SSAO", this);
+		UpdateDescriptorSets();
 
 
-		for (size_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			lv_textureShaderResources[i] = VulkanResourceManager::TextureResourceShader{ .m_descriptorInfo =
-				{.m_type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, .m_shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT},
-				.m_texture = m_ssaoBlurXTex[i] };
-			lv_textureShaderResources[i].m_texture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		}
+		auto* lv_node = lv_frameGraph.RetrieveNode("SSAO");
+		VulkanResourceManager::PipelineInfo lv_pipeInfo{};
+		lv_pipeInfo.m_dynamicScissorState = false;
+		lv_pipeInfo.m_enableWireframe = false;
+		lv_pipeInfo.m_height = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
+		lv_pipeInfo.m_width = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth;
+		lv_pipeInfo.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		lv_pipeInfo.m_useBlending = false;
+		lv_pipeInfo.m_useDepth = false;
+		lv_pipeInfo.m_totalNumColorAttach = lv_node->m_outputResourcesHandles.size();
 
-		for (size_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			lv_descriptorSetRes[i].m_buffers.push_back(lv_uniformBufferShaderResources[i]);
-			lv_descriptorSetRes[i].m_textures.push_back(lv_textureShaderResources[i]);
-		}
+		m_graphicsPipeline = lv_vkResManager.CreateGraphicsPipeline(m_renderPass, m_pipelineLayout
+			, { l_vtxShader, l_fragShader }, "SSAOGraphicsPipeline", lv_pipeInfo);
 
-		VulkanResourceManager::RenderPass lv_blurYQuadRenderPass(l_vkContextCreator.GetContextCreator().m_vkDev, false,
-			RenderPassCreateInfo{ .clearColor_ = true, .clearDepth_ = false, 
-			.flags_ = eRenderPassBit_First_ColorAttach_ColorAttach });
-		VulkanResourceManager::PipelineInfo lv_blurYQuadPipelineInfo{ .m_width 
-			= l_vkContextCreator.GetContextCreator().m_vkDev.m_framebufferWidth,
-		.m_height = l_vkContextCreator.GetContextCreator().m_vkDev.m_framebufferHeight,
-		.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST ,
-		.m_useDepth = false, .m_useBlending = false, .m_dynamicScissorState = false };
-
-
-		for (uint32_t i = 0; i < lv_totalNumSwapChains; ++i) {
-			lv_framebuffersOfSomeRenderer[i] = l_vkContextCreator.GetResourceManager()
-				.CreateFrameBuffer(lv_blurXQuadRenderPass, std::vector<VulkanTexture>{m_ssaoBlurYTex[i]}
-				,std::format(" ssaoBlurYTex-Framebuffer-SSAO {} ",i).c_str());
-		}
-
-		lv_shaders[1] = "data/shaders/chapter08/VK02_SSAOBlurY.frag";
-		m_ssaoBlurYQuadRenderer.emplace(l_vkContextCreator, "SSAO ", lv_blurYQuadRenderPass, lv_blurYQuadPipelineInfo,
-			lv_framebuffersOfSomeRenderer, &m_ssaoBlurYTex,lv_descriptorSetRes,lv_shaders);
-
-
-		lv_textureShaderResources.clear();
-		lv_descriptorSetRes.clear();
-		lv_descriptorSetRes.resize(lv_totalNumSwapChains);
-		lv_textureShaderResources.resize(2*lv_totalNumSwapChains);
-
-		for (size_t i = 0, j = 0; i < lv_textureShaderResources.size() && j < lv_totalNumSwapChains; i += 2, ++j) {
-			lv_textureShaderResources[i].m_descriptorInfo = { .m_type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-			.m_shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT };
-			lv_textureShaderResources[i].m_texture = l_inputColorAttachment[j];
-			lv_textureShaderResources[i].m_texture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-			lv_textureShaderResources[i + 1].m_descriptorInfo = { .m_type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-			.m_shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT };
-			lv_textureShaderResources[i + 1].m_texture = m_ssaoBlurYTex[j];
-			lv_textureShaderResources[i+1].m_texture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		}
-
-		for (size_t i = 0; i < lv_totalNumSwapChains; ++i) {
-
-			lv_descriptorSetRes[i].m_buffers.push_back(lv_uniformBufferShaderResources[i]);
-			lv_descriptorSetRes[i].m_textures.push_back(lv_textureShaderResources[2*i]);
-			lv_descriptorSetRes[i].m_textures.push_back(lv_textureShaderResources[2 * i+1]);
-			
-		}
-
-	
-		VulkanResourceManager::PipelineInfo lv_ssaoFinalQuadPipelineInfo{ 
-			.m_width = l_vkContextCreator.GetContextCreator().m_vkDev.m_framebufferWidth,
-		.m_height = l_vkContextCreator.GetContextCreator().m_vkDev.m_framebufferHeight,
-		.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST ,
-		.m_useDepth = false, .m_useBlending = false, .m_dynamicScissorState = false };
-
-
-		lv_shaders[1] = "data/shaders/chapter08/VK02_SSAOFinal.frag";
-		m_ssaoFinalQuadRenderer.emplace(l_vkContextCreator, "SSAO ", m_vulkanRenderContext.GetOffscreenRenderPassNoDepth(), lv_ssaoFinalQuadPipelineInfo,
-			m_vulkanRenderContext.GetSwapchainFramebufferNoDepth(), nullptr, lv_descriptorSetRes, lv_shaders);
-
-
-		m_renderers.emplace_back(m_ssaoQuadRenderer.value(), true, false);
-		m_renderers.emplace_back(m_ssaoBlurXQuadRenderer.value(), true, false);
-		m_renderers.emplace_back(m_ssaoBlurYQuadRenderer.value(), true, false);
-		m_renderers.emplace_back(m_ssaoFinalQuadRenderer.value(), true, false);
 
 
 	}
 
-	void SSAORenderer::FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
-		uint32_t l_currentSwapchainIndex)
+
+
+	void SSAORenderer::UpdateDescriptorSets()
 	{
 
-		transitionImageLayoutCmd(l_cmdBuffer, m_inputAndDepthAttachments[2 * l_currentSwapchainIndex]->image.image,
-			m_inputAndDepthAttachments[2 * l_currentSwapchainIndex]->format,
-			m_inputAndDepthAttachments[2 * l_currentSwapchainIndex]->Layout,
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		m_inputAndDepthAttachments[2 * l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		auto lv_totalNumSwapchains = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_swapchainImages.size();
+		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
 
-		transitionImageLayoutCmd(l_cmdBuffer, m_inputAndDepthAttachments[2 * l_currentSwapchainIndex + 1]->image.image,
-			m_inputAndDepthAttachments[2 * l_currentSwapchainIndex + 1]->format,
-			m_inputAndDepthAttachments[2 * l_currentSwapchainIndex + 1]->Layout,
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		m_inputAndDepthAttachments[2 * l_currentSwapchainIndex + 1]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		auto& lv_offsetBufferGpu = lv_vkResManager.RetrieveGpuBuffer(m_gpuOffsetsHandle);
+		auto& lv_uniformBufferGpu = lv_vkResManager.RetrieveGpuBuffer(m_gpuUniformBufferHandle);
+
+		std::array<VkDescriptorBufferInfo, 2> lv_bufferDescriptors{};
+
+		lv_bufferDescriptors[0].buffer = lv_uniformBufferGpu.buffer;
+		lv_bufferDescriptors[0].offset = 0;
+		lv_bufferDescriptors[0].range = VK_WHOLE_SIZE;
+
+		lv_bufferDescriptors[1].buffer = lv_offsetBufferGpu.buffer;
+		lv_bufferDescriptors[1].offset = 0;
+		lv_bufferDescriptors[1].range = VK_WHOLE_SIZE;
 
 
+		std::vector<VkDescriptorImageInfo> lv_imageDescriptors{};
+		lv_imageDescriptors.resize(lv_totalNumSwapchains * 3);
 
-		CompositeRenderer::FillCommandBuffer(l_cmdBuffer, l_currentSwapchainIndex);
+
+		auto& lv_randomRotationTexture = lv_vkResManager.RetrieveGpuTexture(m_gpuRandomRotationsTextureHandle);
+		for (size_t i = 0, j = 0; i < lv_imageDescriptors.size(); i += 3, ++j) {
+
+			auto& lv_gpuPosTexture = lv_vkResManager.RetrieveGpuTexture("GBufferPosition", (uint32_t)j);
+			auto& lv_gpuNormalVertexTexture = lv_vkResManager.RetrieveGpuTexture("GBufferNormalVertex", (uint32_t)j);
+
+			lv_imageDescriptors[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			lv_imageDescriptors[i].imageView = lv_gpuPosTexture.image.imageView;
+			lv_imageDescriptors[i].sampler = lv_gpuPosTexture.sampler;
+
+			lv_imageDescriptors[i + 1].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			lv_imageDescriptors[i + 1].imageView = lv_gpuNormalVertexTexture.image.imageView;
+			lv_imageDescriptors[i + 1].sampler = lv_gpuNormalVertexTexture.sampler;
+
+			lv_imageDescriptors[i + 2].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			lv_imageDescriptors[i + 2].imageView = lv_randomRotationTexture.image.imageView;
+			lv_imageDescriptors[i + 2].sampler = lv_randomRotationTexture.sampler;
 
 
+		}
 
-		transitionImageLayoutCmd(l_cmdBuffer, m_inputAndDepthAttachments[2*l_currentSwapchainIndex]->image.image,
-			m_inputAndDepthAttachments[2 * l_currentSwapchainIndex]->format,
-			m_inputAndDepthAttachments[2 * l_currentSwapchainIndex]->Layout,
-			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-		m_inputAndDepthAttachments[2 * l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		
-		transitionImageLayoutCmd(l_cmdBuffer, m_inputAndDepthAttachments[2 * l_currentSwapchainIndex + 1]->image.image,
-			m_inputAndDepthAttachments[2 * l_currentSwapchainIndex + 1]->format,
-			m_inputAndDepthAttachments[2 * l_currentSwapchainIndex + 1]->Layout,
-			VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-		m_inputAndDepthAttachments[2 * l_currentSwapchainIndex+1]->Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		std::vector<VkWriteDescriptorSet> lv_writes{};
+		lv_writes.resize(5 * lv_totalNumSwapchains);
+
+		for (size_t i = 0, j = 0; i < lv_writes.size(); i += 5, ++j) {
+
+			lv_writes[i].descriptorCount = 1;
+			lv_writes[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			lv_writes[i].dstArrayElement = 0;
+			lv_writes[i].dstBinding = 0;
+			lv_writes[i].dstSet = m_descriptorSets[j];
+			lv_writes[i].pBufferInfo = &lv_bufferDescriptors[0];
+			lv_writes[i].pImageInfo = nullptr;
+			lv_writes[i].pNext = nullptr;
+			lv_writes[i].pTexelBufferView = nullptr;
+			lv_writes[i].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+
+			lv_writes[i+1].descriptorCount = 1;
+			lv_writes[i+1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			lv_writes[i+1].dstArrayElement = 0;
+			lv_writes[i+1].dstBinding = 1;
+			lv_writes[i+1].dstSet = m_descriptorSets[j];
+			lv_writes[i+1].pBufferInfo = &lv_bufferDescriptors[1];
+			lv_writes[i+1].pImageInfo = nullptr;
+			lv_writes[i+1].pNext = nullptr;
+			lv_writes[i+1].pTexelBufferView = nullptr;
+			lv_writes[i+1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+
+
+			lv_writes[i + 2].descriptorCount = 1;
+			lv_writes[i + 2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			lv_writes[i + 2].dstArrayElement = 0;
+			lv_writes[i + 2].dstBinding = 2;
+			lv_writes[i + 2].dstSet = m_descriptorSets[j];
+			lv_writes[i + 2].pBufferInfo = nullptr;
+			lv_writes[i + 2].pImageInfo = &lv_imageDescriptors[3*j];
+			lv_writes[i + 2].pNext = nullptr;
+			lv_writes[i + 2].pTexelBufferView = nullptr;
+			lv_writes[i + 2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+
+			lv_writes[i + 3].descriptorCount = 1;
+			lv_writes[i + 3].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			lv_writes[i + 3].dstArrayElement = 0;
+			lv_writes[i + 3].dstBinding = 3;
+			lv_writes[i + 3].dstSet = m_descriptorSets[j];
+			lv_writes[i + 3].pBufferInfo = nullptr;
+			lv_writes[i + 3].pImageInfo = &lv_imageDescriptors[3 * j + 1];
+			lv_writes[i + 3].pNext = nullptr;
+			lv_writes[i + 3].pTexelBufferView = nullptr;
+			lv_writes[i + 3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+
+			lv_writes[i + 4].descriptorCount = 1;
+			lv_writes[i + 4].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			lv_writes[i + 4].dstArrayElement = 0;
+			lv_writes[i + 4].dstBinding = 4;
+			lv_writes[i + 4].dstSet = m_descriptorSets[j];
+			lv_writes[i + 4].pBufferInfo = nullptr;
+			lv_writes[i + 4].pImageInfo = &lv_imageDescriptors[3 * j + 2];
+			lv_writes[i + 4].pNext = nullptr;
+			lv_writes[i + 4].pTexelBufferView = nullptr;
+			lv_writes[i + 4].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+
+		}
+
+		vkUpdateDescriptorSets(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_device, lv_writes.size(), lv_writes.data(), 0, nullptr);
 
 	}
+
+
+
+	void SSAORenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
+		const VulkanEngine::CameraStructure& l_cameraStructure)
+	{
+		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
+
+		UniformBufferMatrices lv_uniformBuffer;
+		lv_uniformBuffer.m_projectionMatrix = l_cameraStructure.m_projectionMatrix;
+		lv_uniformBuffer.m_viewMatrix = l_cameraStructure.m_viewMatrix;
+
+		memcpy(lv_vkResManager.RetrieveGpuBuffer(m_gpuUniformBufferHandle).ptr, &lv_uniformBuffer, sizeof(UniformBufferMatrices));
+	}
+
+	void SSAORenderer::FillCommandBuffer(VkCommandBuffer l_cmdBuffer, uint32_t l_currentSwapchainIndex)
+	{
+		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
+
+
+		auto lv_framebuffer = lv_vkResManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);
+		auto& lv_gpuPosTexture = lv_vkResManager.RetrieveGpuTexture("GBufferPosition", l_currentSwapchainIndex);
+		auto& lv_gpuNormalVertexTexture = lv_vkResManager.RetrieveGpuTexture("GBufferNormal", l_currentSwapchainIndex);
+		auto& lv_gpuRotationTexture = lv_vkResManager.RetrieveGpuTexture(m_gpuRandomRotationsTextureHandle);
+		auto& lv_gpuOcclusionTexture = lv_vkResManager.RetrieveGpuTexture("OcclusionFactor", l_currentSwapchainIndex);
+
+		transitionImageLayoutCmd(l_cmdBuffer, lv_gpuPosTexture.image.image
+								, lv_gpuPosTexture.format, lv_gpuPosTexture.Layout
+								, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		transitionImageLayoutCmd(l_cmdBuffer, lv_gpuNormalVertexTexture.image.image
+			, lv_gpuNormalVertexTexture.format, lv_gpuNormalVertexTexture.Layout
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		transitionImageLayoutCmd(l_cmdBuffer, lv_gpuRotationTexture.image.image
+			, lv_gpuRotationTexture.format, lv_gpuRotationTexture.Layout
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		transitionImageLayoutCmd(l_cmdBuffer, lv_gpuOcclusionTexture.image.image
+			, lv_gpuOcclusionTexture.format, lv_gpuOcclusionTexture.Layout
+			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		lv_gpuPosTexture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lv_gpuNormalVertexTexture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lv_gpuRotationTexture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lv_gpuOcclusionTexture.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1);
+		vkCmdDraw(l_cmdBuffer, 6, 1, 0, 0);
+		vkCmdEndRenderPass(l_cmdBuffer);
+
+		lv_gpuOcclusionTexture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+	}
+
 }

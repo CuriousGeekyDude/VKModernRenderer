@@ -211,6 +211,7 @@ namespace RenderCore
 	VulkanTexture& 
 		VulkanResourceManager::CreateTextureForOffscreenFrameBuffer(const std::string& l_nameTexture,
 		VkFormat l_colorFormat, 
+		uint32_t l_width, uint32_t l_height,
 		VkFilter l_minFilter,
 		VkFilter l_maxFilter,
 		VkSamplerAddressMode l_addressMode)
@@ -219,8 +220,8 @@ namespace RenderCore
 
 		VulkanTexture lv_textureToCreate{};
 		lv_textureToCreate.format = l_colorFormat;
-		lv_textureToCreate.height = m_renderDevice.m_framebufferHeight;
-		lv_textureToCreate.width = m_renderDevice.m_framebufferWidth;
+		lv_textureToCreate.height = l_height;
+		lv_textureToCreate.width = l_width;
 		lv_textureToCreate.depth = 1U;
 
 		if (false == createOffscreenImage(m_renderDevice, lv_textureToCreate.image.image,
@@ -426,11 +427,12 @@ namespace RenderCore
 
 	uint32_t VulkanResourceManager::CreateTexture(const char* l_nameTexture,
 		VkFormat l_colorFormat,
+		uint32_t l_width , uint32_t l_height,
 		VkFilter l_minFilter,
 		VkFilter l_maxFilter,
 		VkSamplerAddressMode l_addressMode)
 	{
-		CreateTextureForOffscreenFrameBuffer(l_nameTexture, l_colorFormat, l_minFilter, l_maxFilter, l_addressMode);
+		CreateTextureForOffscreenFrameBuffer(l_nameTexture, l_colorFormat, l_width, l_height, l_minFilter, l_maxFilter, l_addressMode);
 
 		return (uint32_t)m_textures.size()-1;
 	}

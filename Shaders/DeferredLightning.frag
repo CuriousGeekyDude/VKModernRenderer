@@ -39,6 +39,7 @@ layout(set = 0, binding = 3) uniform sampler2D lv_gbufferNormal;
 layout(set = 0, binding = 4) uniform sampler2D lv_gbufferAlbedoSpec;
 layout(set = 0, binding = 5) uniform sampler2D lv_gbufferTangent;
 layout(set = 0, binding = 6) uniform sampler2D lv_gbufferNormalVertex;
+layout(set = 0, binding = 7) uniform sampler2D lv_occlusionFactor;
 
 
 
@@ -64,16 +65,16 @@ vec3 NormalSampleToWorldSpace(vec3 l_sampledNormal, vec3 l_normalVertex, vec3 l_
 void main()
 {
 
+    float lv_occlusion = texture(lv_occlusionFactor ,lv_uv).r;
 
 	vec4 lv_worldPos = vec4(texture(lv_gbufferPos, lv_uv).xyz, 1.f);
     vec4 lv_viewPos = lv_cameraUniform.m_viewMatrix * lv_worldPos;
 	vec3 lv_albedo = texture(lv_gbufferAlbedoSpec, lv_uv).rgb;
-    vec3 lv_lightning = lv_albedo*0.0009f;
+    vec3 lv_lightning = lv_albedo*0.0004f*lv_occlusion;
     vec3 lv_fragPos = texture(lv_gbufferPos, lv_uv).rgb;
     vec3 lv_normal = NormalSampleToWorldSpace(texture(lv_gbufferNormal, lv_uv).rgb, texture(lv_gbufferNormalVertex, lv_uv).rgb, texture(lv_gbufferTangent, lv_uv).rgb);
     float lv_specular = texture(lv_gbufferAlbedoSpec, lv_uv).a;
     vec3 lv_dir = normalize(lv_cameraUniform.m_cameraPos.xyz - lv_fragPos);
-
 
 
 	for(uint i = 0; i < m_totalNumLights; ++i) {
@@ -82,7 +83,7 @@ void main()
 
         vec3 lv_lightDir = normalize(lv_light.m_position.xyz - lv_fragPos);
         vec3 lv_diffuse = max(dot(lv_normal, lv_lightDir), 0.0) * lv_albedo * lv_light.m_color.rgb;
-
+        
         //specular
         vec3 halfwayDir = normalize(lv_lightDir + lv_dir);  
         float spec = pow(max(dot(lv_normal, halfwayDir), 0.0), 16.0);
