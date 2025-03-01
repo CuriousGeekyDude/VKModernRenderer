@@ -63,7 +63,7 @@ namespace RenderCore
 			m_samplingTexturesHandles[j+1] = lv_normalAttachNameMeta.m_resourceHandle;
 			m_samplingTexturesHandles[j+2] = lv_albedoSpecAttachMeta.m_resourceHandle;
 
-			m_outputImageTexturesHandles[i] = lv_vkResManager.CreateTexture(std::format(" DeferredRendererOutputImage {} ", i).c_str());
+			m_outputImageTexturesHandles[i] = lv_vkResManager.CreateTexture(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_maxAnisotropy, std::format(" DeferredRendererOutputImage {} ", i).c_str());
 
 			lv_vkResManager.AddGpuResource(std::format(" DeferredRendererOutputImage {} ", i).c_str(), 
 				m_outputImageTexturesHandles[i], VulkanResourceManager::VulkanDataType::m_texture);

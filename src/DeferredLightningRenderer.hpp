@@ -19,7 +19,7 @@ namespace RenderCore
 		struct Light
 		{
 			glm::vec4 m_position;
-			glm::vec4 m_color{ 1.f, 1.f, 1.f, 1.f };
+			glm::vec4 m_color{ 60.f, 60.f, 60.f, 1.f };
 
 			float m_linear{ 0.7f };
 			float m_quadratic{ 1.8f };

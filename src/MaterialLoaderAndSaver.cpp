@@ -274,6 +274,54 @@ namespace MaterialLoaderAndSaver
 			}
 		}
 
+		if (aiGetMaterialTexture(l_material, aiTextureType_AMBIENT_OCCLUSION, 0, &lv_path, &lv_textureMapping,
+			&lv_uvIndex, &lv_blend, &lv_textureOp, lv_textureMapMode, &lv_textureFlags) == AI_SUCCESS) {
+			lv_newPath = lv_path.C_Str();
+			/*if (1 < lv_newPath.size()) {
+				lv_newPath.erase(0, 2);
+			}*/
+			lv_outputMaterial.m_ambientOcclusionMap = AddStringToContainer(m_files, lv_newPath);
+
+			if (-1 != lv_outputMaterial.m_ambientOcclusionMap) {
+				lv_outputMaterial.m_flags |= (uint32_t)MaterialFlags::sMaterialFlags_AmbientOcclusionMapIncluded;
+			}
+			else {
+				printf("AoMap index of -1 detected.\n");
+			}
+		}
+
+		if (aiGetMaterialTexture(l_material, aiTextureType_METALNESS, 0, &lv_path, &lv_textureMapping,
+			&lv_uvIndex, &lv_blend, &lv_textureOp, lv_textureMapMode, &lv_textureFlags) == AI_SUCCESS) {
+			lv_newPath = lv_path.C_Str();
+			/*if (1 < lv_newPath.size()) {
+				lv_newPath.erase(0, 2);
+			}*/
+			lv_outputMaterial.m_metallicMap = AddStringToContainer(m_files, lv_newPath);
+
+			if (-1 != lv_outputMaterial.m_metallicMap) {
+				lv_outputMaterial.m_flags |= (uint32_t)MaterialFlags::sMaterialFlags_MetallicMapIncluded;
+			}
+			else {
+				printf("MetallicMap index of -1 detected.\n");
+			}
+		}
+
+
+		if (aiGetMaterialTexture(l_material, aiTextureType_DIFFUSE_ROUGHNESS, 0, &lv_path, &lv_textureMapping,
+			&lv_uvIndex, &lv_blend, &lv_textureOp, lv_textureMapMode, &lv_textureFlags) == AI_SUCCESS) {
+			lv_newPath = lv_path.C_Str();
+			/*if (1 < lv_newPath.size()) {
+				lv_newPath.erase(0, 2);
+			}*/
+			lv_outputMaterial.m_roughnessMap = AddStringToContainer(m_files, lv_newPath);
+
+			if (-1 != lv_outputMaterial.m_roughnessMap) {
+				lv_outputMaterial.m_flags |= (uint32_t)MaterialFlags::sMaterialFlags_RoughnessMapIncluded;
+			}
+			else {
+				printf("MetallicMap index of -1 detected.\n");
+			}
+		}
 
 		m_materials.emplace_back(lv_outputMaterial);
 

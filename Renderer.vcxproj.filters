@@ -144,6 +144,9 @@
     <ClCompile Include="src\SSAORenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
+    <ClCompile Include="src\BoxBlurRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp">
@@ -282,6 +285,9 @@
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="src\SSAORenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BoxBlurRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
   </ItemGroup>

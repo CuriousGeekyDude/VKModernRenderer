@@ -15,12 +15,15 @@ layout(location = 1) out vec4 lv_gBufferPosition;
 layout(location = 2) out vec4 lv_gBufferNormal;
 layout(location = 3) out vec4 lv_gBufferAlbedoSpec;
 layout(location = 4) out vec4 lv_gbufferNormalVertex;
+layout(location = 5) out vec4 lv_gbufferMetallicRoughness;
 
 uint lv_ambientOcclusionMapIncluded = 4;
 uint lv_normalMapIncluded = 64;
 uint lv_emissiveMapIncluded = 8;
 uint lv_albedoMapIncluded = 16;
 uint lv_opacityMapIncluded = 128;
+uint lv_metallicRoughnessMapIncluded = 256;
+
 
 
 struct MaterialData
@@ -42,6 +45,8 @@ struct MaterialData
 		int m_metallicRoughnessMap;
 		int m_normalMap;
 		int m_opacityMap;
+		int m_metallicMap;
+		int m_roughnessMap;
 };
 
 
@@ -80,6 +85,7 @@ void main()
 	
 	vec4 lv_emissiveColor = lv_matData.m_emissiveColor;
 	vec4 lv_albedo = vec4(1.f, 0.f, 0.f, 0.f);
+	vec4 lv_metallic = vec4(0.5f, 0.5f, 0.5f, 1.f);
 	vec3 lv_normalSample = lv_n;
 
 	if(0 != (lv_matData.m_flags & lv_normalMapIncluded)) {
@@ -90,6 +96,9 @@ void main()
 		lv_albedo = texture(lv_textures[nonuniformEXT(lv_matData.m_albedoMap)], uvw.xy);
 	}
 
+	if(0 != (lv_matData.m_flags & lv_metallicRoughnessMapIncluded)) {
+		lv_metallic = texture(lv_textures[nonuniformEXT(lv_matData.m_metallicMap)], uvw.xy);
+	}
 
 
 	lv_gbufferTangent = lv_tangent;
@@ -98,4 +107,5 @@ void main()
 	lv_gBufferAlbedoSpec.rgb = pow(lv_albedo.rgb, vec3(2.2f));
 	lv_gBufferAlbedoSpec.a = lv_matData.m_specular.r;
 	lv_gbufferNormalVertex = vec4(lv_n, 1.f);
+	lv_gbufferMetallicRoughness = lv_metallic;
 }

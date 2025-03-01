@@ -56,6 +56,8 @@ struct VulkanRenderDevice final
 	uint32_t m_framebufferWidth;
 	uint32_t m_framebufferHeight;
 
+	float m_maxAnisotropy{1.f};
+
 	uint64_t m_timelineSemaphoreValue = (uint64_t)0;
 
 	bool m_useCompute = false;
@@ -192,7 +194,7 @@ size_t createSwapchainImages(VkDevice m_device, VkSwapchainKHR m_swapchain, std:
 
 VkResult createSemaphore(VkDevice m_device, VkSemaphore* outSemaphore);
 
-bool createTextureSampler(VkDevice m_device, VkSampler* sampler, VkFilter minFilter = VK_FILTER_LINEAR, VkFilter maxFilter = VK_FILTER_LINEAR, VkSamplerAddressMode addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
+bool createTextureSampler(VkDevice m_device, VkSampler* sampler, float l_maxAnistropy = 1 ,VkFilter minFilter = VK_FILTER_LINEAR, VkFilter maxFilter = VK_FILTER_LINEAR, VkSamplerAddressMode addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 bool createDescriptorPool(VulkanRenderDevice& vkDev, uint32_t uniformBufferCount, uint32_t storageBufferCount, uint32_t samplerCount, VkDescriptorPool* descriptorPool);
 

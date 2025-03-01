@@ -169,6 +169,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="src\BoxBlurRenderer.cpp" />
     <ClCompile Include="src\clusterizer.cpp" />
     <ClCompile Include="src\CpuResourceServiceProvider.cpp" />
     <ClCompile Include="src\DeferredComputeRenderer.cpp" />
@@ -228,6 +229,7 @@
     <ClInclude Include="src\EasyProfilerWrapper.h" />
     <ClInclude Include="src\ErrorCheck.hpp" />
     <ClInclude Include="src\FrameGraph.hpp" />
+    <ClInclude Include="src\BoxBlurRenderer.hpp" />
     <ClInclude Include="src\GeometryConverter.hpp" />
     <ClInclude Include="src\Graph.h" />
     <ClInclude Include="src\Hierarchy.hpp" />

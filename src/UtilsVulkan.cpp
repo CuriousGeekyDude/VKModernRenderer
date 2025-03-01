@@ -828,6 +828,10 @@ bool initVulkanRenderDevice2WithCompute(VulkanInstance& vk, VulkanRenderDevice& 
 	if (!presentSupported)
 		exit(EXIT_FAILURE);
 
+	VkPhysicalDeviceProperties lv_deviceProp{};
+	vkGetPhysicalDeviceProperties(vkDev.m_physicalDevice, &lv_deviceProp);
+	vkDev.m_maxAnisotropy = lv_deviceProp.limits.maxSamplerAnisotropy;
+
 	VK_CHECK(createSwapchain(vkDev.m_device, vkDev.m_physicalDevice, vk.surface, vkDev.m_mainFamily, width, height, &vkDev.m_swapchain, supportScreenshots));
 	const size_t imageCount = createSwapchainImages(vkDev.m_device, vkDev.m_swapchain, vkDev.m_swapchainImages, vkDev.m_swapchainImageViews);
 	vkDev.m_mainCommandBuffers2.resize(imageCount);
@@ -916,23 +920,31 @@ bool initVulkanRenderDevice3(VulkanInstance& vk, VulkanRenderDevice& vkDev, uint
 
 
 	VkPhysicalDeviceFeatures deviceFeatures = {
+
 		/* for wireframe outlines */
 		.geometryShader = (VkBool32)(ctxFeatures.geometryShader_ ? VK_TRUE : VK_FALSE),
+
 		/* for tesselation experiments */
 		.tessellationShader = (VkBool32)(ctxFeatures.tessellationShader_ ? VK_TRUE : VK_FALSE),
+
 		/* for indirect instanced rendering */
 		.multiDrawIndirect = VK_TRUE,
+
+
 		.drawIndirectFirstInstance = VK_TRUE,
+
 		/* for OIT and general atomic operations */
 		.fillModeNonSolid = VK_TRUE,
+		.samplerAnisotropy = VK_TRUE,
 		.vertexPipelineStoresAndAtomics = (VkBool32)(ctxFeatures.vertexPipelineStoresAndAtomics_ ? VK_TRUE : VK_FALSE),
 
 		.fragmentStoresAndAtomics = (VkBool32)(ctxFeatures.fragmentStoresAndAtomics_ ? VK_TRUE : VK_FALSE),
 		/* for arrays of textures */
 		.shaderSampledImageArrayDynamicIndexing = VK_TRUE,
 		/* for GL <-> VK material shader compatibility */
-
+		
 		.shaderInt64 =  VK_TRUE,
+
 		
 	};
 
@@ -981,7 +993,7 @@ void destroyVulkanInstance(VulkanInstance& vk)
 	vkDestroyInstance(vk.instance, nullptr);
 }
 
-bool createTextureSampler(VkDevice m_device, VkSampler* sampler, VkFilter minFilter, VkFilter maxFilter, VkSamplerAddressMode addressMode)
+bool createTextureSampler(VkDevice m_device, VkSampler* sampler, float l_maxAnistropy ,VkFilter minFilter, VkFilter maxFilter, VkSamplerAddressMode addressMode)
 {
 	const VkSamplerCreateInfo samplerInfo = {
 		.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
@@ -995,7 +1007,7 @@ bool createTextureSampler(VkDevice m_device, VkSampler* sampler, VkFilter minFil
 		.addressModeW = addressMode, // VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE VK_SAMPLER_ADDRESS_MODE_REPEAT,
 		.mipLodBias = 0.0f,
 		.anisotropyEnable = VK_FALSE,
-		.maxAnisotropy = 1,
+		.maxAnisotropy = l_maxAnistropy,
 		.compareEnable = VK_FALSE,
 		.compareOp = VK_COMPARE_OP_ALWAYS,
 		.minLod = 0.0f,

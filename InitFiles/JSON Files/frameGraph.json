@@ -4,6 +4,57 @@
 
   "RenderPasses": [
 
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "BoxBlur",
+
+      "Input": [
+
+        {
+          "Name": "BoxBlurTexture",
+          "CreateResourceOnGPU": "TRUE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 1024, 512, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
+              "Format": "VK_FORMAT_R32_SFLOAT"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "BoxBlurTexture",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DeferredLightning"
+        }
+
+      ]
+
+    },
   
 
     {
@@ -91,6 +142,21 @@
         },
 
         {
+          "Name": "GBufferMetallic",
+          "CreateResourceOnGPU": "TRUE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 1024, 512, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
+              "Format": "VK_FORMAT_R16G16B16A16_SFLOAT"
+            }
+
+          ]
+        },
+
+        {
           "Name": "Depth",
           "CreateResourceOnGPU": "FALSE",
           "TextureInfo": [
@@ -171,6 +237,19 @@
 
         {
           "Name": "GBufferNormalVertex",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        },
+
+        {
+          "Name": "GBufferMetallic",
           "CreateResourceOnGPU": "FALSE",
           "TextureInfo": [
 
@@ -321,7 +400,7 @@
       "TargetNodes": [
 
         {
-          "Name": "DeferredLightning"
+          "Name": "BoxBlur"
         }
 
       ]

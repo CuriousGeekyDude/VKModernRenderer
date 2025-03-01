@@ -18,7 +18,9 @@ namespace SceneConverter
 		sMaterialFlags_AlbedoMapIncluded = 16,
 		sMaterialFlags_MetallicRoughnessMapIncluded = 32,
 		sMaterialFlags_NormalMapIncluded = 64,
-		sMaterialFlags_OpacityMapIncluded = 128
+		sMaterialFlags_OpacityMapIncluded = 128,
+		sMaterialFlags_MetallicMapIncluded = 256,
+		sMaterialFlags_RoughnessMapIncluded = 512
 	};
 
 	constexpr const int INVALID_TEXTURE = 0xFFFFFFFF;
@@ -42,7 +44,7 @@ namespace SceneConverter
 		int m_metallicRoughnessMap = INVALID_TEXTURE;
 		int m_normalMap = INVALID_TEXTURE;
 		int m_opacityMap = INVALID_TEXTURE;
-		int m_padding1{};
-		int m_padding2{};
+		int m_metallicMap{};
+		int m_roughnessMap{};
 	};
 }

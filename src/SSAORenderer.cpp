@@ -72,7 +72,7 @@ namespace RenderCore
 			lv_randomRotations[i].w = 0.f;
 		}
 
-		m_gpuRandomRotationsTextureHandle = lv_vkResManager.CreateTexture("RandomRotationsSSAO", VK_FORMAT_R32G32B32A32_SFLOAT, 4, 4);
+		m_gpuRandomRotationsTextureHandle = lv_vkResManager.CreateTexture(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_maxAnisotropy, "RandomRotationsSSAO", VK_FORMAT_R32G32B32A32_SFLOAT, 4, 4);
 		auto& lv_randomRotationGpuTexture = lv_vkResManager.RetrieveGpuTexture(m_gpuRandomRotationsTextureHandle);
 
 		assert(true == updateTextureImage(m_vulkanRenderContext.GetContextCreator().m_vkDev

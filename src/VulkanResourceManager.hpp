@@ -165,7 +165,7 @@ namespace RenderCore
 		uint32_t CreateBufferWithHandle(VkDeviceSize l_size, VkBufferUsageFlags l_usage,
 			VkMemoryPropertyFlags l_memoryProperties, const char* l_nameBuffer);
 
-		VulkanTexture& CreateTextureForOffscreenFrameBuffer(const std::string& l_nameTexture,
+		VulkanTexture& CreateTextureForOffscreenFrameBuffer(float l_maxAnistropy ,const std::string& l_nameTexture,
 			VkFormat l_colorFormat = VK_FORMAT_B8G8R8A8_UNORM,
 			uint32_t l_width = 1024, uint32_t l_height = 512,
 			VkFilter l_minFilter = VK_FILTER_LINEAR,
@@ -174,7 +174,7 @@ namespace RenderCore
 
 
 		//Same as CreateTextureForOffscreenFrameBuffer() except this one returns the handle
-		uint32_t CreateTexture(const char* l_nameTexture,
+		uint32_t CreateTexture(float l_maxAnistropy ,const char* l_nameTexture,
 			VkFormat l_colorFormat = VK_FORMAT_B8G8R8A8_UNORM,
 			uint32_t l_width = 1024, uint32_t l_height = 512,
 			VkFilter l_minFilter = VK_FILTER_LINEAR,

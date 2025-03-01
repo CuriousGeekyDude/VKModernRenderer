@@ -10,6 +10,7 @@
 #include "FrameGraph.hpp"
 #include "DeferredLightningRenderer.hpp"
 #include "SSAORenderer.hpp"
+#include "BoxBlurRenderer.hpp"
 
 
 namespace VulkanEngine
@@ -28,6 +29,7 @@ namespace VulkanEngine
 		RenderCore::IndirectRenderer m_indirectGbuffer;
 		//RenderCore::BoundingBoxWireframeRenderer m_boundingBoxWireframe;
 		RenderCore::SSAORenderer m_ssao;
+		RenderCore::BoxBlurRenderer m_boxBlur;
 		RenderCore::DeferredLightningRenderer m_deferredLightning;
 
 	};

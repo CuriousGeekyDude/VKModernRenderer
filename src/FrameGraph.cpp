@@ -411,7 +411,7 @@ namespace VulkanEngine
                             lv_framebufferTexturesHandles.push_back(lv_textureMetaData.m_resourceHandle);
                         }
                         else {
-                            lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateTexture(std::vformat(lv_formattedString, lv_formattedArgs).c_str(),
+                            lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateTexture(m_vkRenderContext.GetContextCreator().m_vkDev.m_maxAnisotropy, std::vformat(lv_formattedString, lv_formattedArgs).c_str(),
                                 lv_attachmentDescriptions[j].format));
                             lv_vkResManager.AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_framebufferTexturesHandles.back(), RenderCore::VulkanResourceManager::VulkanDataType::m_texture);
                         }

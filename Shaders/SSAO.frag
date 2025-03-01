@@ -19,7 +19,7 @@ layout(set = 0, binding = 0) uniform UniformBufferMatrix
 } uboMatrix;
 
 
-const uint lv_offsetBufferSize = 64;
+const uint lv_offsetBufferSize = 32;
 layout(set = 0, binding = 1) readonly buffer OffsetsBuffer {vec4 OffsetData[];} lv_offsetBuffer;
 
 
@@ -29,7 +29,7 @@ layout(set = 0, binding = 4) uniform sampler2D lv_randomRotations;
 
 
 const vec2 lv_rotationScale = vec2(256, 128);
-const float lv_radius = 7.5f;
+const float lv_radius = 10.f;
 
 void main()
 {

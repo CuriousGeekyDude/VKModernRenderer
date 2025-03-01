@@ -24,8 +24,10 @@ namespace VulkanEngine
 		/*m_boundingBoxWireframe(ctx_,
 			"Shaders/BoundingBoxWireframe.vert", "Shaders/BoundingBoxWireframe.frag",
 			"Shaders/Spirv/BoundingBox.spv")*/
-		,m_ssao(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/SSAO.frag"
-			   , "Shaders/Spirv/SSAO.spv")
+		, m_ssao(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/SSAO.frag"
+			, "Shaders/Spirv/SSAO.spv")
+		, m_boxBlur(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/BoxBlur.frag"
+					, "Shaders/Spirv/BoxBlur.spv")
 		,m_deferredLightning(ctx_
 		,"Shaders/FullScreenQuad.vert"
 		,"Shaders/DeferredLightning.frag"

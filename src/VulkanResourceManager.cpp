@@ -209,7 +209,7 @@ namespace RenderCore
 
 
 	VulkanTexture& 
-		VulkanResourceManager::CreateTextureForOffscreenFrameBuffer(const std::string& l_nameTexture,
+		VulkanResourceManager::CreateTextureForOffscreenFrameBuffer(float l_maxAnistropy ,const std::string& l_nameTexture,
 		VkFormat l_colorFormat, 
 		uint32_t l_width, uint32_t l_height,
 		VkFilter l_minFilter,
@@ -258,7 +258,7 @@ namespace RenderCore
 
 		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo1));
 
-		if (false == createTextureSampler(m_renderDevice.m_device, &lv_textureToCreate.sampler, l_minFilter,
+		if (false == createTextureSampler(m_renderDevice.m_device, &lv_textureToCreate.sampler, l_maxAnistropy,l_minFilter,
 			l_maxFilter, l_addressMode)) {
 			PRINT_EXIT(".\nFailed to create sampler for offscreen attachment.\n");
 		}
@@ -425,14 +425,14 @@ namespace RenderCore
 
 
 
-	uint32_t VulkanResourceManager::CreateTexture(const char* l_nameTexture,
+	uint32_t VulkanResourceManager::CreateTexture(float l_maxAnistropy ,const char* l_nameTexture,
 		VkFormat l_colorFormat,
 		uint32_t l_width , uint32_t l_height,
 		VkFilter l_minFilter,
 		VkFilter l_maxFilter,
 		VkSamplerAddressMode l_addressMode)
 	{
-		CreateTextureForOffscreenFrameBuffer(l_nameTexture, l_colorFormat, l_width, l_height, l_minFilter, l_maxFilter, l_addressMode);
+		CreateTextureForOffscreenFrameBuffer(l_maxAnistropy,l_nameTexture, l_colorFormat, l_width, l_height, l_minFilter, l_maxFilter, l_addressMode);
 
 		return (uint32_t)m_textures.size()-1;
 	}
