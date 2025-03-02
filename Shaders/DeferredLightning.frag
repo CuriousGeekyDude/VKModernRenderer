@@ -132,7 +132,7 @@ void main()
         vec3 H = normalize(lv_dir + L);
         float distance = length(lv_lights.lights[i].m_position.xyz - lv_fragPos);
         float attenuation = 1.0 / ( distance * distance);
-        vec3 radiance = lv_lights.lights[i].m_color.rgb* 0.7f * attenuation;
+        vec3 radiance = lv_lights.lights[i].m_color.rgb * attenuation;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(lv_normal, H, lv_roughness);   
