@@ -47,6 +47,9 @@ struct VulkanRenderDevice final
 	std::vector<VkCommandBuffer> m_mainCommandBuffer1;
 	std::vector<VkCommandBuffer> m_mainCommandBuffers2;
 
+	std::vector<uint32_t> m_totalNumCmdBuffersLeft1;
+	std::vector<uint32_t> m_totalNumCmdBufferLeft2;
+
 
 	// List of all queues (for shared buffer allocation)
 	std::vector<uint32_t> m_deviceQueueIndices;

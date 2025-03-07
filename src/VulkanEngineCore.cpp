@@ -103,52 +103,44 @@ namespace VulkanEngine
 
 		updateBuffersFunc(imageIndex);
 
-		VkCommandBuffer commandBuffer = ctx_.GetContextCreator().m_vkDev.m_mainCommandBuffers2[imageIndex];
 
-		const VkCommandBufferBeginInfo bi =
-		{
-			.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-			.pNext = nullptr,
-			.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,
-			.pInheritanceInfo = nullptr
-		};
+		//commandBuffer is not used. Will have to change signature of composeFrameFun()
+		VkCommandBuffer commandBuffer{};
 
-		VK_CHECK(vkBeginCommandBuffer(commandBuffer, &bi));
 
 		composeFrameFunc(commandBuffer, imageIndex);
 
-		VK_CHECK(vkEndCommandBuffer(commandBuffer));
 
-		const VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT }; // or even VERTEX_SHADER_STAGE
+		//const VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT }; // or even VERTEX_SHADER_STAGE
 
-		const VkSubmitInfo si =
-		{
-			.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-			.pNext = nullptr,
-			.waitSemaphoreCount = 1,
-			.pWaitSemaphores = &ctx_.GetContextCreator().m_vkDev.m_binarySemaphore,
-			.pWaitDstStageMask = waitStages,
-			.commandBufferCount = 1,
-			.pCommandBuffers = &ctx_.GetContextCreator().m_vkDev.m_mainCommandBuffers2[imageIndex],
-			.signalSemaphoreCount = 1,
-			.pSignalSemaphores = &ctx_.GetContextCreator().m_vkDev.m_binarySemaphore
-		};
+		//const VkSubmitInfo si =
+		//{
+		//	.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		//	.pNext = nullptr,
+		//	.waitSemaphoreCount = 1,
+		//	.pWaitSemaphores = &ctx_.GetContextCreator().m_vkDev.m_binarySemaphore,
+		//	.pWaitDstStageMask = waitStages,
+		//	.commandBufferCount = 1,
+		//	.pCommandBuffers = &ctx_.GetContextCreator().m_vkDev.m_mainCommandBuffers2[imageIndex],
+		//	.signalSemaphoreCount = 1,
+		//	.pSignalSemaphores = &ctx_.GetContextCreator().m_vkDev.m_binarySemaphore
+		//};
 
-		VK_CHECK(vkQueueSubmit(ctx_.GetContextCreator().m_vkDev.m_mainQueue1, 1, &si, nullptr));
+		//VK_CHECK(vkQueueSubmit(ctx_.GetContextCreator().m_vkDev.m_mainQueue1, 1, &si, nullptr));
 
-		const VkPresentInfoKHR pi =
-		{
-			.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-			.pNext = nullptr,
-			.waitSemaphoreCount = 1,
-			.pWaitSemaphores = &ctx_.GetContextCreator().m_vkDev.m_binarySemaphore,
-			.swapchainCount = 1,
-			.pSwapchains = &ctx_.GetContextCreator().m_vkDev.m_swapchain,
-			.pImageIndices = &imageIndex
-		};
+		//const VkPresentInfoKHR pi =
+		//{
+		//	.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+		//	.pNext = nullptr,
+		//	.waitSemaphoreCount = 1,
+		//	.pWaitSemaphores = &ctx_.GetContextCreator().m_vkDev.m_binarySemaphore,
+		//	.swapchainCount = 1,
+		//	.pSwapchains = &ctx_.GetContextCreator().m_vkDev.m_swapchain,
+		//	.pImageIndices = &imageIndex
+		//};
 
-		VK_CHECK(vkQueuePresentKHR(ctx_.GetContextCreator().m_vkDev.m_mainQueue1, &pi));
-		VK_CHECK(vkDeviceWaitIdle(ctx_.GetContextCreator().m_vkDev.m_device));
+		//VK_CHECK(vkQueuePresentKHR(ctx_.GetContextCreator().m_vkDev.m_mainQueue1, &pi));
+		//VK_CHECK(vkDeviceWaitIdle(ctx_.GetContextCreator().m_vkDev.m_device));
 
 		return true;
 	}

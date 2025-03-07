@@ -130,7 +130,7 @@ namespace RenderCore
 			}
 		}
 
-		m_instanceBufferHandles.resize(lv_contextCreator.m_vkDev.m_swapchainImages.size());
+		m_instanceBuffersGpu.resize(lv_contextCreator.m_vkDev.m_swapchainImages.size());
 		m_indirectBufferHandles.resize(lv_contextCreator.m_vkDev.m_swapchainImages.size());
 
 		for (uint32_t i = 0; i < lv_contextCreator.m_vkDev.m_swapchainImages.size(); ++i) {
@@ -141,16 +141,16 @@ namespace RenderCore
 					VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
 					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 					VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-					std::format(" Indirect-Buffer-Shader-Indirect {} ", i).c_str());
+					std::format("Indirect-Buffer-Shader-Indirect {}", i).c_str());
 
 			UpdateIndirectBuffer(i);
 
 
-			m_instanceBufferHandles[i]= m_vulkanRenderContext.GetResourceManager()
+			m_instanceBuffersGpu[i]= m_vulkanRenderContext.GetResourceManager()
 				.CreateBufferWithHandle(m_instanceBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
 					VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
 					VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-					std::format(" Instance-Buffer-Indirect {} ", i).c_str());
+					std::format("Instance-Buffer-Indirect {}", i).c_str());
 
 			UpdateInstanceBuffer(i);
 
@@ -204,6 +204,8 @@ namespace RenderCore
 		//CreateRenderPass();
 		//CreateFramebuffers();
 		UpdateDescriptorSets();
+
+		lv_frameGraph.IncrementNumNodesPerCmdBuffer(0);
 
 		m_pipelineLayout = m_vulkanRenderContext.GetResourceManager()
 			.CreatePipelineLayout(m_descriptorSetLayout, " Pipeline-Layout-Indirect ");
@@ -345,7 +347,7 @@ namespace RenderCore
 	void IndirectRenderer::UpdateInstanceBuffer(uint32_t l_currentSwapchainIndex)
 	{
 		auto& lv_instanceBuffer = m_vulkanRenderContext.GetResourceManager()
-			.RetrieveGpuBuffer(m_instanceBufferHandles[l_currentSwapchainIndex]);
+			.RetrieveGpuBuffer(m_instanceBuffersGpu[l_currentSwapchainIndex]);
 
 		memcpy(lv_instanceBuffer.ptr, m_outputInstanceData.data(),
 			m_instanceBufferSize);
@@ -465,6 +467,19 @@ namespace RenderCore
 		}
 
 	}
+
+
+
+	const std::vector<InstanceData>& IndirectRenderer::GetInstanceData() const
+	{
+		return m_outputInstanceData;
+	}
+	const std::vector<MeshConverter::Mesh>& IndirectRenderer::GetMeshData() const
+	{
+		return m_meshes;
+	}
+
+
 
 	void IndirectRenderer::FillCommandBuffer(
 		VkCommandBuffer l_commandBuffer,
@@ -789,7 +804,7 @@ namespace RenderCore
 			.pTexelBufferView = nullptr });
 
 
-			auto& lv_drawDataBuffer = lv_vulkanResourceManager.RetrieveGpuBuffer(m_instanceBufferHandles[i]);
+			auto& lv_drawDataBuffer = lv_vulkanResourceManager.RetrieveGpuBuffer(m_instanceBuffersGpu[i]);
 			lv_bufferInfos[3 * i + 4].buffer = lv_drawDataBuffer.buffer;
 			lv_bufferInfos[3 * i + 4].offset = 0;
 			lv_bufferInfos[3 * i + 4].range = lv_drawDataBuffer.size;
@@ -857,6 +872,13 @@ namespace RenderCore
 		}
 
 		fclose(lv_instanceFile);
+	}
+
+
+
+	uint32_t IndirectRenderer::GetVertexBufferSize()
+	{
+		return m_vertexBufferSize;
 	}
 
 

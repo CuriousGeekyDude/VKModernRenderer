@@ -29,7 +29,7 @@ layout(set = 0, binding = 4) uniform sampler2D lv_randomRotations;
 
 
 const vec2 lv_rotationScale = vec2(256, 128);
-const float lv_radius = 10.f;
+const float lv_radius = 8.f;
 
 void main()
 {

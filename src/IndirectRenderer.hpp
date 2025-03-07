@@ -81,6 +81,11 @@ namespace RenderCore
 			VkCommandBuffer l_commandBuffer,
 			uint32_t l_currentSwapchainIndex) override;
 
+		uint32_t GetVertexBufferSize();
+
+		const std::vector<InstanceData>& GetInstanceData() const;
+		const std::vector<MeshConverter::Mesh>& GetMeshData() const;
+
 	protected:
 
 		void UpdateGeometryBuffers(VkCommandBuffer l_cmdBuffer);
@@ -132,7 +137,7 @@ namespace RenderCore
 		std::vector<uint32_t> m_arrayTexturesHandles{};
 
 		std::vector<uint32_t> m_transformationsBufferHandles{};
-		std::vector<uint32_t> m_instanceBufferHandles{};
+		std::vector<uint32_t> m_instanceBuffersGpu{};
 		std::vector<uint32_t> m_indirectBufferHandles{};
 
 

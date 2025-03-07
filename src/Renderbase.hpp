@@ -56,6 +56,8 @@ namespace RenderCore
 		void SetRenderPassAndFrameBuffer(const std::string& l_rendererName);
 
 
+		virtual ~Renderbase() = default;
+
 	protected:
 
 		void SetNodeToAppropriateRenderpass(const std::string& l_renderpassName,

@@ -27,6 +27,9 @@ namespace VulkanEngine
 		m_vkRenderContext(l_vkRenderContext)
 	{
 
+        m_totalNumNodesPerCmdBuffer.resize(m_vkRenderContext.GetContextCreator().m_vkDev.m_totalNumCmdBufferLeft2[0]);
+
+
         std::ifstream lv_graphJSONFile(l_jsonFilePath);
         rapidjson::IStreamWrapper lv_isw(lv_graphJSONFile);
 
@@ -274,7 +277,7 @@ namespace VulkanEngine
                 for (size_t i = 0; i < lv_node.m_inputResourcesHandles.size(); ++i) {
                     auto& lv_inputResource = m_frameGraphResources[lv_node.m_inputResourcesHandles[i]];
 
-                    if (lv_inputResource.m_resourceName == "Depth") {
+                    if (lv_inputResource.m_resourceName.substr(0, 5) == "Depth") {
                         lv_depthResourceHandle.emplace(i);
                         break;
                     }
@@ -308,9 +311,8 @@ namespace VulkanEngine
                             break;
                         }
                     }
-
-                    bool lv_depthTestName = lv_inputResource.m_resourceName == "Depth";
-                    bool lv_swapchainTestName = lv_inputResource.m_resourceName == "Swapchain";
+                    bool lv_depthTestName = (lv_inputResource.m_resourceName == "Depth");
+                    bool lv_swapchainTestName = (lv_inputResource.m_resourceName == "Swapchain");
                     VulkanTexture lv_depth, lv_swapchain;
 
                     if (lv_depthTestName == true) {
@@ -411,9 +413,15 @@ namespace VulkanEngine
                             lv_framebufferTexturesHandles.push_back(lv_textureMetaData.m_resourceHandle);
                         }
                         else {
-                            lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateTexture(m_vkRenderContext.GetContextCreator().m_vkDev.m_maxAnisotropy, std::vformat(lv_formattedString, lv_formattedArgs).c_str(),
-                                lv_attachmentDescriptions[j].format));
-                            lv_vkResManager.AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_framebufferTexturesHandles.back(), RenderCore::VulkanResourceManager::VulkanDataType::m_texture);
+                            if (std::string{ lv_attachmentNames[j] }.substr(0, 5) != "Depth") {
+                                lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateTexture(m_vkRenderContext.GetContextCreator().m_vkDev.m_maxAnisotropy, std::vformat(lv_formattedString, lv_formattedArgs).c_str(),
+                                    lv_attachmentDescriptions[j].format));
+                                lv_vkResManager.AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_framebufferTexturesHandles.back(), RenderCore::VulkanResourceManager::VulkanDataType::m_texture);
+                            }
+                            else {
+                                lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateDepthTextureWithHandle(std::vformat(lv_formattedString, lv_formattedArgs).c_str()));
+                                lv_vkResManager.AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_framebufferTexturesHandles.back(), RenderCore::VulkanResourceManager::VulkanDataType::m_texture);
+                            }
                         }
                     }
                 }
@@ -516,13 +524,68 @@ namespace VulkanEngine
     void FrameGraph::RenderGraph(VkCommandBuffer l_cmdBuffer,
         uint32_t l_currentSwapchainIndex)
     {
-        for (auto l_nodeHandle : m_nodeHandles) {
-            auto& lv_node = m_nodes[l_nodeHandle];
+       
+        size_t lv_countNodeIndex{ 0 }, lv_totalNumCmdBuffers{ 0 };
+        for (auto lv_totalNumNodes : m_totalNumNodesPerCmdBuffer) {
+            if (0 == lv_totalNumNodes) { break; }
 
-            if (true == lv_node.m_enabled) {
-                lv_node.FillCommandBuffer(l_cmdBuffer, l_currentSwapchainIndex);
+            const VkCommandBufferBeginInfo bi =
+            {
+                .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+                .pNext = nullptr,
+                .flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT,
+                .pInheritanceInfo = nullptr
+            };
+            assert(lv_totalNumCmdBuffers < m_vkRenderContext.GetContextCreator().m_vkDev.m_mainCommandBuffers2.size());
+            VkCommandBuffer commandBuffer = m_vkRenderContext.GetContextCreator().m_vkDev.m_mainCommandBuffers2[lv_totalNumCmdBuffers];
+
+
+            VK_CHECK(vkBeginCommandBuffer(commandBuffer, &bi));
+            for (size_t i = lv_countNodeIndex; i < lv_countNodeIndex + lv_totalNumNodes; ++i) {
+
+                auto lv_nodeHandle = m_nodeHandles[i];
+                auto& lv_node = m_nodes[lv_nodeHandle];
+
+                if (true == lv_node.m_enabled) {
+                    lv_node.FillCommandBuffer(commandBuffer, l_currentSwapchainIndex);
+                }
             }
+            VK_CHECK(vkEndCommandBuffer(commandBuffer));
+
+            lv_countNodeIndex += lv_totalNumNodes;
+            ++lv_totalNumCmdBuffers;
         }
+
+        const VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT }; // or even VERTEX_SHADER_STAGE
+
+        const VkSubmitInfo si =
+        {
+            .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+            .pNext = nullptr,
+            .waitSemaphoreCount = 1,
+            .pWaitSemaphores = &m_vkRenderContext.GetContextCreator().m_vkDev.m_binarySemaphore,
+            .pWaitDstStageMask = waitStages,
+            .commandBufferCount = (uint32_t)lv_totalNumCmdBuffers,
+            .pCommandBuffers = m_vkRenderContext.GetContextCreator().m_vkDev.m_mainCommandBuffers2.data(),
+            .signalSemaphoreCount = 1,
+            .pSignalSemaphores = &m_vkRenderContext.GetContextCreator().m_vkDev.m_binarySemaphore
+        };
+
+        VK_CHECK(vkQueueSubmit(m_vkRenderContext.GetContextCreator().m_vkDev.m_mainQueue1, 1, &si, nullptr));
+
+        const VkPresentInfoKHR pi =
+        {
+            .sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+            .pNext = nullptr,
+            .waitSemaphoreCount = 1,
+            .pWaitSemaphores = &m_vkRenderContext.GetContextCreator().m_vkDev.m_binarySemaphore,
+            .swapchainCount = 1,
+            .pSwapchains = &m_vkRenderContext.GetContextCreator().m_vkDev.m_swapchain,
+            .pImageIndices = &l_currentSwapchainIndex
+        };
+
+        VK_CHECK(vkQueuePresentKHR(m_vkRenderContext.GetContextCreator().m_vkDev.m_mainQueue1, &pi));
+        VK_CHECK(vkDeviceWaitIdle(m_vkRenderContext.GetContextCreator().m_vkDev.m_device));
     }
 
 
@@ -567,7 +630,12 @@ namespace VulkanEngine
     }
 
 
+    void FrameGraph::IncrementNumNodesPerCmdBuffer(uint32_t l_cmdBufferIndex)
+    {
+        assert(m_totalNumNodesPerCmdBuffer.size() > l_cmdBufferIndex);
 
+        ++m_totalNumNodesPerCmdBuffer[l_cmdBufferIndex];
+    }
 
 
     VkFormat FrameGraph::StringToVkFormat(const char* format) {

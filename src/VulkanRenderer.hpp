@@ -11,6 +11,8 @@
 #include "DeferredLightningRenderer.hpp"
 #include "SSAORenderer.hpp"
 #include "BoxBlurRenderer.hpp"
+#include "ClearSwapchainDepthRenderer.hpp"
+#include "DepthMapLightRenderer.hpp"
 
 
 namespace VulkanEngine
@@ -26,10 +28,13 @@ namespace VulkanEngine
 		virtual void draw3D(uint32_t l_currentImageIndex) override;
 
 	private:
+		//RenderCore::PresentToColorAttachRenderer m_presentToColor;
+		RenderCore::ClearSwapchainDepthRenderer m_clearSwapchainDepth;
 		RenderCore::IndirectRenderer m_indirectGbuffer;
 		//RenderCore::BoundingBoxWireframeRenderer m_boundingBoxWireframe;
 		RenderCore::SSAORenderer m_ssao;
 		RenderCore::BoxBlurRenderer m_boxBlur;
+		RenderCore::DepthMapLightRenderer m_depthMapLight;
 		RenderCore::DeferredLightningRenderer m_deferredLightning;
 
 	};

@@ -532,7 +532,7 @@ size_t createSwapchainImages(
 	VK_CHECK(vkGetSwapchainImagesKHR(m_device, m_swapchain, &imageCount, m_swapchainImages.data()));
 
 	for (unsigned i = 0; i < imageCount; i++)
-		if (!createImageView(m_device, m_swapchainImages[i], VK_FORMAT_B8G8R8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, &m_swapchainImageViews[i]))
+		if (!createImageView(m_device, m_swapchainImages[i], VK_FORMAT_B8G8R8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, &m_swapchainImageViews[i]))
 			exit(0);
 
 	return static_cast<size_t>(imageCount);
@@ -834,10 +834,19 @@ bool initVulkanRenderDevice2WithCompute(VulkanInstance& vk, VulkanRenderDevice& 
 
 	VK_CHECK(createSwapchain(vkDev.m_device, vkDev.m_physicalDevice, vk.surface, vkDev.m_mainFamily, width, height, &vkDev.m_swapchain, supportScreenshots));
 	const size_t imageCount = createSwapchainImages(vkDev.m_device, vkDev.m_swapchain, vkDev.m_swapchainImages, vkDev.m_swapchainImageViews);
-	vkDev.m_mainCommandBuffers2.resize(imageCount);
+
+	constexpr uint32_t lv_totalCmdBuffersFromEachPool = 30;
+	vkDev.m_mainCommandBuffers2.resize(lv_totalCmdBuffersFromEachPool *imageCount);
 	vkDev.m_mainCommandPool2.resize(imageCount);
 	vkDev.m_mainCommandPool1.resize(imageCount);
-	vkDev.m_mainCommandBuffer1.resize(imageCount);
+	vkDev.m_mainCommandBuffer1.resize(lv_totalCmdBuffersFromEachPool *imageCount);
+	vkDev.m_totalNumCmdBuffersLeft1.resize(imageCount);
+	vkDev.m_totalNumCmdBufferLeft2.resize(imageCount);
+
+	for (size_t i = 0; i < imageCount; ++i) {
+		vkDev.m_totalNumCmdBuffersLeft1[i] = lv_totalCmdBuffersFromEachPool;
+		vkDev.m_totalNumCmdBufferLeft2[i] = lv_totalCmdBuffersFromEachPool;
+	}
 
 	VK_CHECK(createSemaphore(vkDev.m_device, &vkDev.m_timelineSemaphore, true));
 	VK_CHECK(createSemaphore(vkDev.m_device, &vkDev.m_binarySemaphore, false));
@@ -859,10 +868,10 @@ bool initVulkanRenderDevice2WithCompute(VulkanInstance& vk, VulkanRenderDevice& 
 			.pNext = nullptr,
 			.commandPool = vkDev.m_mainCommandPool2[i],
 			.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-			.commandBufferCount = 1,
+			.commandBufferCount = lv_totalCmdBuffersFromEachPool,
 		};
 
-		VK_CHECK(vkAllocateCommandBuffers(vkDev.m_device, &ai, &vkDev.m_mainCommandBuffers2[i]));
+		VK_CHECK(vkAllocateCommandBuffers(vkDev.m_device, &ai, &vkDev.m_mainCommandBuffers2[lv_totalCmdBuffersFromEachPool * i]));
 
 		{
 			// Create compute command pool
@@ -881,10 +890,10 @@ bool initVulkanRenderDevice2WithCompute(VulkanInstance& vk, VulkanRenderDevice& 
 				.pNext = nullptr,
 				.commandPool = vkDev.m_mainCommandPool1[i],
 				.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-				.commandBufferCount = 1,
+				.commandBufferCount = lv_totalCmdBuffersFromEachPool,
 			};
 
-			VK_CHECK(vkAllocateCommandBuffers(vkDev.m_device, &ai1, &vkDev.m_mainCommandBuffer1[i]));
+			VK_CHECK(vkAllocateCommandBuffers(vkDev.m_device, &ai1, &vkDev.m_mainCommandBuffer1[lv_totalCmdBuffersFromEachPool*i]));
 		}
 	}
 	vkDev.m_useCompute = true;
@@ -1796,7 +1805,7 @@ VkCommandBuffer beginSingleTimeCommands(VulkanRenderDevice& vkDev)
 	const VkCommandBufferAllocateInfo allocInfo = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 		.pNext = nullptr,
-		.commandPool = vkDev.m_mainCommandPool2[0],
+		.commandPool = vkDev.m_mainCommandPool1[0],
 		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
 		.commandBufferCount = 1
 	};
@@ -1834,7 +1843,7 @@ void endSingleTimeCommands(VulkanRenderDevice& vkDev, VkCommandBuffer commandBuf
 	vkQueueSubmit(vkDev.m_mainQueue1, 1, &submitInfo, VK_NULL_HANDLE);
 	vkQueueWaitIdle(vkDev.m_mainQueue1);
 
-	vkFreeCommandBuffers(vkDev.m_device, vkDev.m_mainCommandPool2[0], 1, &commandBuffer);
+	vkFreeCommandBuffers(vkDev.m_device, vkDev.m_mainCommandPool1[0], 1, &commandBuffer);
 }
 
 void copyBuffer(VulkanRenderDevice& vkDev, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
@@ -2051,7 +2060,13 @@ void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFo
 
 		}
 
+	else if (oldLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR  && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
+		sourceStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		}
 
 
 	/* Convert from updateable depth texture to shader read-only */
@@ -2062,6 +2077,21 @@ void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFo
 		sourceStage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
 		destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 	}
+	else if (oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
+		barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+		destinationStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+	}
+	else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR) {
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = 0;
+
+		sourceStage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+		destinationStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		}
+
 
 	vkCmdPipelineBarrier(
 		commandBuffer,

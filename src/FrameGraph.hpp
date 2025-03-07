@@ -91,6 +91,7 @@ namespace VulkanEngine
 
 		void Debug();
 
+		void IncrementNumNodesPerCmdBuffer(uint32_t l_cmdBufferIndex);
 
 		FrameGraphNode* RetrieveNode(const std::string& l_nodeName);
 
@@ -117,6 +118,7 @@ namespace VulkanEngine
 		std::vector<FrameGraphResource> m_frameGraphResources;
 		std::vector<uint32_t> m_frameGraphResourcesHandles;
 		std::vector<uint32_t> m_nodeHandles;
+		std::vector<uint32_t> m_totalNumNodesPerCmdBuffer;
 		std::string m_frameGraphName;
 
 	};

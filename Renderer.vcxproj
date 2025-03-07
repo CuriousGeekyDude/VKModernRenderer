@@ -170,11 +170,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="src\BoxBlurRenderer.cpp" />
+    <ClCompile Include="src\ClearSwapchainDepthRenderer.cpp" />
     <ClCompile Include="src\clusterizer.cpp" />
     <ClCompile Include="src\CpuResourceServiceProvider.cpp" />
     <ClCompile Include="src\DeferredComputeRenderer.cpp" />
     <ClCompile Include="src\DeferredForwardRenderer.cpp" />
     <ClCompile Include="src\DeferredLightningRenderer.cpp" />
+    <ClCompile Include="src\DepthMapLightRenderer.cpp" />
     <ClCompile Include="src\FrameGraph.cpp" />
     <ClCompile Include="src\GeometryConverter.cpp" />
     <ClCompile Include="src\indexcodec.cpp" />
@@ -184,6 +186,7 @@
     <ClCompile Include="src\MaterialLoaderAndSaver.cpp" />
     <ClCompile Include="src\overdrawanalyzer.cpp" />
     <ClCompile Include="src\overdrawoptimizer.cpp" />
+    <ClCompile Include="src\PresentToColorAttachRenderer.cpp" />
     <ClCompile Include="src\ProcessSceneMetaData.cpp" />
     <ClCompile Include="src\Renderbase.cpp" />
     <ClCompile Include="src\SceneConverter.cpp" />
@@ -221,11 +224,13 @@
     </ClInclude>
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\CameraStructure.hpp" />
+    <ClInclude Include="src\ClearSwapchainDepthRenderer.hpp" />
     <ClInclude Include="src\CpuResourceServiceProvider.hpp" />
     <ClInclude Include="src\debug.h" />
     <ClInclude Include="src\DeferredComputeRenderer.hpp" />
     <ClInclude Include="src\DeferredForwardRenderer.hpp" />
     <ClInclude Include="src\DeferredLightningRenderer.hpp" />
+    <ClInclude Include="src\DepthMapLightRenderer.hpp" />
     <ClInclude Include="src\EasyProfilerWrapper.h" />
     <ClInclude Include="src\ErrorCheck.hpp" />
     <ClInclude Include="src\FrameGraph.hpp" />
@@ -240,6 +245,7 @@
     <ClInclude Include="src\Mesh.hpp" />
     <ClInclude Include="src\MeshFileHeader.hpp" />
     <ClInclude Include="src\meshoptimizer.h" />
+    <ClInclude Include="src\PresentToColorAttachRenderer.hpp" />
     <ClInclude Include="src\ProcessSceneMetaData.hpp" />
     <ClInclude Include="src\Renderbase.hpp" />
     <ClInclude Include="src\Scene.hpp" />

@@ -32,8 +32,9 @@ namespace RenderCore
 		SetRenderPassAndFrameBuffer("BoxBlur");
 		SetNodeToAppropriateRenderpass("BoxBlur", this);
 		UpdateDescriptorSets();
-
 		auto* lv_node = lv_frameGraph.RetrieveNode("BoxBlur");
+		lv_frameGraph.IncrementNumNodesPerCmdBuffer(2);
+
 		VulkanResourceManager::PipelineInfo lv_pipeInfo{};
 		lv_pipeInfo.m_dynamicScissorState = false;
 		lv_pipeInfo.m_enableWireframe = false;

@@ -13,6 +13,8 @@ namespace VulkanEngine
 
 	VulkanRenderer::VulkanRenderer(int l_width, int l_height, const std::string& l_frameGraphPath)
 		:CameraApp(l_width, l_height, l_frameGraphPath),
+		m_clearSwapchainDepth(ctx_),
+		m_depthMapLight(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", glm::vec4{0.f, 17.f, -10.f, 1.f}),
 		m_indirectGbuffer(ctx_,
 			ctx_.GetContextCreator().m_vkDev.m_mainCommandBuffers2[0], "InitFiles/Binary Scene Files/SponzaMeshFileHeader"
 			, "InitFiles/Binary Scene Files/SponzaBoundingBoxes", "InitFiles/Binary Scene Files/SponzaInstanceData",

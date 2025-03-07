@@ -39,21 +39,10 @@ namespace VulkanEngine
 		VulkanEngine::VulkanContextCreator& GetContextCreator();
 		RenderCore::VulkanResourceManager& GetResourceManager();
 
-		RenderCore::VulkanResourceManager::RenderPass& GetOffscreenRenderPassDepth();
-		RenderCore::VulkanResourceManager::RenderPass& GetOffscreenRenderPassNoDepth();
 
-
-		RenderCore::VulkanResourceManager::RenderPass& GetOffscreenRenderPassDepthContinue();
-
-		//RenderCore::VulkanResourceManager::RenderPass& GetColorAttachDepthAttachToShaderReadOnlyRenderpass();
-
-		RenderCore::VulkanResourceManager::RenderPass& GetClearRenderPass();
-		RenderCore::VulkanResourceManager::RenderPass& GetPresentRenderPass();
-
-		VkFramebuffer GetSwapchainFramebufferDepth(size_t l_swapchainIndex);
 		std::vector<VkFramebuffer>& GetSwapchainFramebufferDepth();
 
-		VkFramebuffer GetSwapchainFramebufferNoDepth(size_t l_swapchainIndex);
+		
 		std::vector<VkFramebuffer>& GetSwapchainFramebufferNoDepth();
 
 		FrameGraph& GetFrameGraph();
@@ -77,25 +66,6 @@ namespace VulkanEngine
 		RenderCore::VulkanResourceManager m_vulkanResources;
 		VulkanEngine::CpuResourceServiceProvider m_cpuResourceProvider;
 		std::optional<FrameGraph> m_frameGraph;
-
-		VulkanTexture& m_depth;
-		RenderCore::VulkanResourceManager::RenderPass m_offScreenRenderPassDepth{};
-		RenderCore::VulkanResourceManager::RenderPass m_offScreenRenderPassNoDepth{};
-		RenderCore::VulkanResourceManager::RenderPass m_offscreenContinueRenderPassDepth{};
-		RenderCore::VulkanResourceManager::RenderPass m_clearRenderPass{};
-		RenderCore::VulkanResourceManager::RenderPass m_presentToColorAttachRenderPassDepth{};
-		//RenderCore::VulkanResourceManager::RenderPass m_colorAttachDepthAttachToShaderReadOnlyRenderpass;
-
-		RenderCore::VulkanResourceManager::RenderPass m_clearRenderPassAfterFirst{};
-
-		RenderCore::VulkanResourceManager::RenderPass m_presentRenderPass{};
-		std::vector<VkFramebuffer> m_swapchainFrameBuffersDepth{};
-		std::vector<VkFramebuffer> m_swapchainFrameBuffersNoDepth{};
-		std::vector<VkFramebuffer> m_swapchainFrameBufferDepthClear{};
-		std::vector<VkFramebuffer> m_swapchainFrameBufferDepthPresent{};
-		std::vector<VkFramebuffer> m_swapchainFrameBuffersDepthContinue{};
-		std::vector<VkFramebuffer> m_swapchainFrameBufferClearAfterFirst{};
-		std::vector<VkFramebuffer> m_swapchainFrameBufferPresentToColorAttach{};
 
 	};
 }

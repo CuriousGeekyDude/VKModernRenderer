@@ -30,6 +30,9 @@ struct Light
 
 
 uint m_totalNumLights = 16;
+const float PI = 3.14159265359;
+
+
 
 layout(set = 0, binding = 1) readonly buffer LightData {Light lights[];} lv_lights;
 
@@ -41,6 +44,15 @@ layout(set = 0, binding = 5) uniform sampler2D lv_gbufferTangent;
 layout(set = 0, binding = 6) uniform sampler2D lv_gbufferNormalVertex;
 layout(set = 0, binding = 7) uniform sampler2D lv_occlusionFactor;
 layout(set = 0, binding = 8) uniform sampler2D lv_gbufferMetallic;
+layout(set = 0, binding = 9) uniform sampler2D lv_depthMapLight;
+
+layout(set = 0,binding = 10) uniform  UniformBuffer2 { 
+
+	mat4 m_viewMatrixSun;
+	mat4 m_orthoMatrixSun;
+	vec4 m_posSun;
+
+} ubo;
 
 void main()
 {

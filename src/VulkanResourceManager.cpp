@@ -31,7 +31,7 @@ namespace RenderCore
 
 			VulkanTexture lv_swapchain{};
 			lv_swapchain.depth = 0;
-			lv_swapchain.format = VK_FORMAT_B8G8R8A8_UNORM;
+			lv_swapchain.format = VK_FORMAT_B8G8R8A8_SRGB;
 			lv_swapchain.height = l_renderDevice.m_framebufferHeight;
 			lv_swapchain.width = l_renderDevice.m_framebufferWidth;
 			lv_swapchain.sampler = nullptr;
@@ -201,6 +201,12 @@ namespace RenderCore
 
 		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device,&lv_objectNameInfo));
 
+		std::string lv_temp{ l_nameBuffer };
+		GpuResourceMetaData lv_metaData{};
+		lv_metaData.m_resourceHandle = m_buffers.size() - 1;
+		lv_metaData.m_vkDataType = VulkanDataType::m_buffer;
+
+		m_gpuResourcesHandles.emplace(std::move(lv_temp), lv_metaData);
 
 		return m_buffers[m_buffers.size()-1];
 	}
