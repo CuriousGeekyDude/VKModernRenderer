@@ -705,7 +705,7 @@ namespace RenderCore
 
 			lv_imageInfos.push_back(VkDescriptorImageInfo{
 				.sampler = lv_sceneTexture.sampler,
-				.imageView = lv_sceneTexture.image.imageView,
+				.imageView = lv_sceneTexture.image.imageView0,
 				.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL });
 		}
 

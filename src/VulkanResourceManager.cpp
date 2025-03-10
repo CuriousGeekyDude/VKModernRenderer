@@ -36,7 +36,7 @@ namespace RenderCore
 			lv_swapchain.width = l_renderDevice.m_framebufferWidth;
 			lv_swapchain.sampler = nullptr;
 			lv_swapchain.image.image = l_renderDevice.m_swapchainImages[i];
-			lv_swapchain.image.imageView = l_renderDevice.m_swapchainImageViews[i];
+			lv_swapchain.image.imageView0 = l_renderDevice.m_swapchainImageViews[i];
 
 			m_textures.push_back(lv_swapchain);
 
@@ -58,8 +58,234 @@ namespace RenderCore
 		}
 
 
+
+		CreateDepthCubeMapTexture("DepthMapPointLight", l_renderDevice.m_framebufferWidth , l_renderDevice.m_framebufferWidth);
+
+
 	}
 
+	uint32_t VulkanResourceManager::CreateFrameBufferCubemapFace(const RenderPass& l_renderpass,
+		uint32_t l_textureHandle,
+		uint32_t l_cubemapLayer,
+		const char* l_nameFramebuffer)
+	{
+		using namespace ErrorCheck;
+
+		VkFramebuffer lv_frameBufferToCreate{};
+
+		assert(l_textureHandle != std::numeric_limits<uint32_t>::max());
+		assert(0 <= l_cubemapLayer && l_cubemapLayer <= 5);
+
+		auto& lv_cubemapTexture = RetrieveGpuTexture(l_textureHandle);
+
+		VkImageView lv_cubemapFaceView = VK_NULL_HANDLE;
+
+		switch (l_cubemapLayer) {
+		case 0:
+			lv_cubemapFaceView = lv_cubemapTexture.image.imageView0;
+			break;
+		case 1:
+			lv_cubemapFaceView = lv_cubemapTexture.image.imageView1;
+			break;
+		case 2:
+			lv_cubemapFaceView = lv_cubemapTexture.image.imageView2;
+			break;
+		case 3:
+			lv_cubemapFaceView = lv_cubemapTexture.image.imageView3;
+			break;
+		case 4:
+			lv_cubemapFaceView = lv_cubemapTexture.image.imageView4;
+			break;
+		case 5:
+			lv_cubemapFaceView = lv_cubemapTexture.image.imageView5;
+			break;
+
+		}
+
+		assert(VK_NULL_HANDLE != lv_cubemapFaceView);
+
+		VkFramebufferCreateInfo lv_frameBufferCreateInfo{};
+		lv_frameBufferCreateInfo.attachmentCount = 1;
+		lv_frameBufferCreateInfo.height = lv_cubemapTexture.height;
+		lv_frameBufferCreateInfo.width = lv_cubemapTexture.width;
+		lv_frameBufferCreateInfo.pAttachments = &lv_cubemapFaceView;
+		lv_frameBufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		lv_frameBufferCreateInfo.renderPass = l_renderpass.m_renderpass;
+		lv_frameBufferCreateInfo.layers = 1U;
+
+		VULKAN_CHECK(vkCreateFramebuffer(m_renderDevice.m_device, &lv_frameBufferCreateInfo, nullptr, &lv_frameBufferToCreate));
+
+		m_frameBuffers.push_back(lv_frameBufferToCreate);
+
+
+		VkDebugUtilsObjectNameInfoEXT lv_objectNameInfo{};
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_frameBufferToCreate);
+		lv_objectNameInfo.objectType = VK_OBJECT_TYPE_FRAMEBUFFER;
+		lv_objectNameInfo.pNext = nullptr;
+		lv_objectNameInfo.pObjectName = l_nameFramebuffer;
+		lv_objectNameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
+
+
+		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
+
+
+		return (uint32_t)m_frameBuffers.size() - 1;
+	}
+
+
+	VulkanTexture& VulkanResourceManager::CreateDepthCubeMapTexture(const std::string& l_textureName, uint32_t l_height
+		, uint32_t l_width)
+	{
+
+		using namespace ErrorCheck;
+
+		VulkanTexture lv_depthTextureToCreate{};
+		lv_depthTextureToCreate.height = l_height;
+		lv_depthTextureToCreate.width = l_width;
+		lv_depthTextureToCreate.format = findDepthFormat(m_renderDevice.m_physicalDevice);
+		lv_depthTextureToCreate.depth = 1U;
+
+
+		if (false == createImage(m_renderDevice.m_device, m_renderDevice.m_physicalDevice, lv_depthTextureToCreate.width,
+			lv_depthTextureToCreate.height, lv_depthTextureToCreate.format, VK_IMAGE_TILING_OPTIMAL,
+			VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			lv_depthTextureToCreate.image.image, lv_depthTextureToCreate.image.imageMemory
+			, VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT)) {
+			PRINT_EXIT("\nFailed to create depth texture.\n");
+		}
+
+
+		VkDebugUtilsObjectNameInfoEXT lv_objectNameInfo{};
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.image);
+		lv_objectNameInfo.objectType = VK_OBJECT_TYPE_IMAGE;
+		lv_objectNameInfo.pNext = nullptr;
+		lv_objectNameInfo.pObjectName = l_textureName.c_str();
+		lv_objectNameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
+
+
+		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
+
+
+		if (false == createImageViewCubeMap(m_renderDevice.m_device, lv_depthTextureToCreate.image.image,
+			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.imageView0
+									, VK_IMAGE_VIEW_TYPE_2D)) {
+			PRINT_EXIT("\nFaled to create image view of depth texture\n");
+		}
+		if (false == createImageViewCubeMap(m_renderDevice.m_device, lv_depthTextureToCreate.image.image,
+			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.imageView1
+			, VK_IMAGE_VIEW_TYPE_2D, 1)) {
+			PRINT_EXIT("\nFaled to create image view of depth texture\n");
+		}
+		if (false == createImageViewCubeMap(m_renderDevice.m_device, lv_depthTextureToCreate.image.image,
+			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.imageView2
+			, VK_IMAGE_VIEW_TYPE_2D, 2)) {
+			PRINT_EXIT("\nFaled to create image view of depth texture\n");
+		}
+		if (false == createImageViewCubeMap(m_renderDevice.m_device, lv_depthTextureToCreate.image.image,
+			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.imageView3
+			, VK_IMAGE_VIEW_TYPE_2D, 3)) {
+			PRINT_EXIT("\nFaled to create image view of depth texture\n");
+		}
+		if (false == createImageViewCubeMap(m_renderDevice.m_device, lv_depthTextureToCreate.image.image,
+			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.imageView4
+			, VK_IMAGE_VIEW_TYPE_2D, 4)) {
+			PRINT_EXIT("\nFaled to create image view of depth texture\n");
+		}
+		if (false == createImageViewCubeMap(m_renderDevice.m_device, lv_depthTextureToCreate.image.image,
+			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.imageView5
+			, VK_IMAGE_VIEW_TYPE_2D, 5)) {
+			PRINT_EXIT("\nFaled to create image view of depth texture\n");
+		}
+
+		if (false == createImageView(m_renderDevice.m_device, lv_depthTextureToCreate.image.image,
+			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.cubemapImageView
+			, VK_IMAGE_VIEW_TYPE_CUBE, 6)) {
+			PRINT_EXIT("\nFaled to create image view of depth texture\n");
+		}
+
+		std::string lv_imageViewName{ l_textureName + "-view0 " };
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.imageView0);
+		lv_objectNameInfo.objectType = VK_OBJECT_TYPE_IMAGE_VIEW;
+		lv_objectNameInfo.pNext = nullptr;
+		lv_objectNameInfo.pObjectName = lv_imageViewName.c_str();
+		lv_objectNameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
+
+
+		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
+
+		lv_imageViewName = l_textureName + "-view1 ";
+		lv_objectNameInfo.pObjectName = lv_imageViewName.c_str();
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.imageView1);
+		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
+
+		lv_imageViewName = l_textureName + "-view2 ";
+		lv_objectNameInfo.pObjectName = lv_imageViewName.c_str();
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.imageView2);
+		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
+
+		lv_imageViewName = l_textureName + "-view3 ";
+		lv_objectNameInfo.pObjectName = lv_imageViewName.c_str();
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.imageView3);
+		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
+
+		lv_imageViewName = l_textureName + "-view4 ";
+		lv_objectNameInfo.pObjectName = lv_imageViewName.c_str();
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.imageView4);
+		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
+
+		lv_imageViewName = l_textureName + "-view5 ";
+		lv_objectNameInfo.pObjectName = lv_imageViewName.c_str();
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.imageView5);
+		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
+
+		lv_imageViewName = l_textureName + "-viewCubemap ";
+		lv_objectNameInfo.pObjectName = lv_imageViewName.c_str();
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.cubemapImageView);
+		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
+
+
+		if (false == createTextureSampler(m_renderDevice.m_device, &lv_depthTextureToCreate.sampler
+										, 1.f, VK_FILTER_LINEAR, VK_FILTER_LINEAR
+										, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER)) {
+			PRINT_EXIT("\nFailed to create image sampler for depth texture.\n");
+		}
+
+
+		std::string lv_samplerName{ l_textureName + "-sampler " };
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.sampler);
+		lv_objectNameInfo.objectType = VK_OBJECT_TYPE_SAMPLER;
+		lv_objectNameInfo.pNext = nullptr;
+		lv_objectNameInfo.pObjectName = lv_samplerName.c_str();
+		lv_objectNameInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT;
+
+
+		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
+
+
+		transitionImageLayout(m_renderDevice, lv_depthTextureToCreate.image.image, lv_depthTextureToCreate.format,
+			VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 6);
+
+		lv_depthTextureToCreate.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+		lv_depthTextureToCreate.l_cubemapFace0Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lv_depthTextureToCreate.l_cubemapFace1Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lv_depthTextureToCreate.l_cubemapFace2Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lv_depthTextureToCreate.l_cubemapFace3Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lv_depthTextureToCreate.l_cubemapFace4Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		lv_depthTextureToCreate.l_cubemapFace5Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+
+		m_textures.push_back(lv_depthTextureToCreate);
+
+		GpuResourceMetaData lv_textureMetaData{};
+		lv_textureMetaData.m_resourceHandle = (uint32_t)m_textures.size() - 1;
+		lv_textureMetaData.m_vkDataType = VulkanDataType::m_texture;
+
+		m_gpuResourcesHandles.emplace(std::string{ l_textureName }, lv_textureMetaData);
+
+		return m_textures[m_textures.size() - 1];
+
+	}
 
 
 	void VulkanResourceManager::CopyDataToLocalBuffer(VkQueue l_queue, VkCommandBuffer l_cmdBuffer,
@@ -248,14 +474,14 @@ namespace RenderCore
 
 
 		if (false == createImageView(m_renderDevice.m_device, lv_textureToCreate.image.image, 
-			l_colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, &lv_textureToCreate.image.imageView)) {
+			l_colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, &lv_textureToCreate.image.imageView0)) {
 			PRINT_EXIT(".\nFailed to create image view of an offscreen attachment.\n");
 		}
 
 
 		std::string lv_imageViewName{ l_nameTexture + "-view " };
 		VkDebugUtilsObjectNameInfoEXT lv_objectNameInfo1{};
-		lv_objectNameInfo1.objectHandle = reinterpret_cast<uint64_t>(lv_textureToCreate.image.imageView);
+		lv_objectNameInfo1.objectHandle = reinterpret_cast<uint64_t>(lv_textureToCreate.image.imageView0);
 		lv_objectNameInfo1.objectType = VK_OBJECT_TYPE_IMAGE_VIEW;
 		lv_objectNameInfo1.pNext = nullptr;
 		lv_objectNameInfo1.pObjectName = lv_imageViewName.c_str();
@@ -318,7 +544,7 @@ namespace RenderCore
 		}
 
 		if (false == createImageView(m_renderDevice.m_device, lv_textureToCreate.image.image,
-			VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, &lv_textureToCreate.image.imageView)) {
+			VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, &lv_textureToCreate.image.imageView0)) {
 			PRINT_EXIT("\nFailed to create image view for the loaded 2D texture file.\n");
 		}
 
@@ -358,6 +584,7 @@ namespace RenderCore
 
 
 
+
 	VulkanTexture& VulkanResourceManager::CreateDepthTextureForOffscreenFrameBuffer(const std::string& l_nameDepthTexture)
 	{
 		using namespace ErrorCheck;
@@ -388,14 +615,14 @@ namespace RenderCore
 
 
 		if (false == createImageView(m_renderDevice.m_device, lv_depthTextureToCreate.image.image,
-			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.imageView)) {
+			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.imageView0)) {
 			PRINT_EXIT("\nFaled to create image view of depth texture\n");
 		}
 
 
 		std::string lv_imageViewName{ l_nameDepthTexture + "-view " };
 		VkDebugUtilsObjectNameInfoEXT lv_objectNameInfo1{};
-		lv_objectNameInfo1.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.imageView);
+		lv_objectNameInfo1.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.imageView0);
 		lv_objectNameInfo1.objectType = VK_OBJECT_TYPE_IMAGE_VIEW;
 		lv_objectNameInfo1.pNext = nullptr;
 		lv_objectNameInfo1.pObjectName = lv_imageViewName.c_str();
@@ -665,13 +892,13 @@ namespace RenderCore
 
 
 		if (false == createImageView(m_renderDevice.m_device, lv_depthTextureToCreate.image.image,
-			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.imageView)) {
+			lv_depthTextureToCreate.format, VK_IMAGE_ASPECT_DEPTH_BIT, &lv_depthTextureToCreate.image.imageView0)) {
 			PRINT_EXIT("\nFaled to create image view of depth texture\n");
 		}
 
 
 		std::string lv_imageViewName{ l_nameDepthTexture + "-view "};
-		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.imageView);
+		lv_objectNameInfo.objectHandle = reinterpret_cast<uint64_t>(lv_depthTextureToCreate.image.imageView0);
 		lv_objectNameInfo.objectType = VK_OBJECT_TYPE_IMAGE_VIEW;
 		lv_objectNameInfo.pNext = nullptr;
 		lv_objectNameInfo.pObjectName = lv_imageViewName.c_str();
@@ -735,7 +962,7 @@ namespace RenderCore
 		}
 
 		for (auto& l_image : l_images) {
-			lv_attachments.push_back(l_image.image.imageView);
+			lv_attachments.push_back(l_image.image.imageView0);
 		}
 
 		VkFramebufferCreateInfo lv_frameBufferCreateInfo{};
@@ -1324,7 +1551,7 @@ namespace RenderCore
 
 			lv_textureImageInfoVector[i] = VkDescriptorImageInfo{
 				.sampler = l_dsResources.m_textures[i].m_texture.sampler,
-				.imageView = l_dsResources.m_textures[i].m_texture.image.imageView,
+				.imageView = l_dsResources.m_textures[i].m_texture.image.imageView0,
 				.imageLayout = l_dsResources.m_textures[i].m_texture.Layout};
 
 			lv_writeDSVector.push_back(imageWriteDescriptorSet(l_ds, &lv_textureImageInfoVector[i], lv_bindingNumber++));
@@ -1336,7 +1563,7 @@ namespace RenderCore
 			for (uint32_t j = 0; j < l_dsResources.m_textureArrays[i].m_textures.size(); ++j) {
 				lv_textureArrayImageInfoVector.push_back(VkDescriptorImageInfo{
 					.sampler = l_dsResources.m_textureArrays[i].m_textures[j].sampler,
-					.imageView = l_dsResources.m_textureArrays[i].m_textures[j].image.imageView,
+					.imageView = l_dsResources.m_textureArrays[i].m_textures[j].image.imageView0,
 					.imageLayout = l_dsResources.m_textureArrays[i].m_textures[j].Layout
 					});
 			}
@@ -1367,7 +1594,9 @@ namespace RenderCore
 
 	VulkanResourceManager::~VulkanResourceManager()
 	{
+		auto lv_totalNumSwapchains = m_renderDevice.m_swapchainImages.size();
 		for (auto& l_buffer : m_buffers) {
+			
 			if (nullptr != l_buffer.ptr) {
 				vkUnmapMemory(m_renderDevice.m_device, l_buffer.memory);
 			}
@@ -1376,7 +1605,13 @@ namespace RenderCore
 		}
 
 		for (auto& l_texture : m_textures) {
-			destroyVulkanTexture(m_renderDevice.m_device, l_texture);
+
+
+			if (0 == lv_totalNumSwapchains) {
+				destroyVulkanTexture(m_renderDevice.m_device, l_texture);
+				continue;
+			}
+			--lv_totalNumSwapchains;
 		}
 
 		for (auto& l_frameBuffer : m_frameBuffers) {

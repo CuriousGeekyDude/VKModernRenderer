@@ -28,7 +28,7 @@ namespace RenderCore
 
 		for (size_t i = 0; i < lv_totalNumSwapchains; ++i) {
 			m_swapchainTextures[i] = &lv_vkResManager.RetrieveGpuTexture("Swapchain", i);
-			m_depthTextures[i] = &lv_vkResManager.RetrieveGpuTexture("DepthMapLightTexture", i);
+			m_depthTextures[i] = &lv_vkResManager.RetrieveGpuTexture("Depth", i);
 		}
 
 		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();

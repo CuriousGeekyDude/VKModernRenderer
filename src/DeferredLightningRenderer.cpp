@@ -4,6 +4,7 @@
 #include "DeferredLightningRenderer.hpp"
 #include <format>
 #include "CameraStructure.hpp"
+#include <GLFW/glfw3.h>
 
 namespace RenderCore
 {
@@ -78,6 +79,12 @@ namespace RenderCore
 		
 		m_swapchainTextures.resize(lv_totalNumSwapchains);
 
+		auto lv_depthMapLightMeta = lv_vkResManager.RetrieveGpuResourceMetaData("DepthMapPointLight");
+
+		assert(lv_depthMapLightMeta.m_resourceHandle != std::numeric_limits<uint32_t>::max());
+
+		m_depthMapLightGpuHandle = lv_depthMapLightMeta.m_resourceHandle;
+
 		for (size_t i = 0; i < lv_totalNumSwapchains; ++i) {
 			m_swapchainTextures[i] = &lv_vkResManager.RetrieveGpuTexture("Swapchain", i);
 		}
@@ -134,6 +141,10 @@ namespace RenderCore
 		lv_bufferInfos[2].offset = 0;
 		lv_bufferInfos[2].range = VK_WHOLE_SIZE;
 
+
+		auto lv_depthMapLightCubeMeta = lv_vkResManager.RetrieveGpuResourceMetaData("DepthMapPointLight");
+		assert(std::numeric_limits<uint32_t>::max() != lv_depthMapLightCubeMeta.m_resourceHandle);
+		auto& lv_depthMapLightGpu = lv_vkResManager.RetrieveGpuTexture(lv_depthMapLightCubeMeta.m_resourceHandle);
 		for (size_t i = 0, j = 0; i < lv_imageInfos.size(); i+=8, ++j) {
 			
 			auto& lv_gbufferPosGpu = lv_vkResManager.RetrieveGpuTexture("GBufferPosition", j);
@@ -141,40 +152,39 @@ namespace RenderCore
 			auto& lv_gbufferAlbedoSpec = lv_vkResManager.RetrieveGpuTexture("GBufferAlbedoSpec", j);
 			auto& lv_gbufferTangent = lv_vkResManager.RetrieveGpuTexture("GBufferTangent", j);
 			auto& lv_gbufferNormalVertexGpu = lv_vkResManager.RetrieveGpuTexture("GBufferNormalVertex", j);
-			auto& lv_occlusionGpu = lv_vkResManager.RetrieveGpuTexture("OcclusionFactor", j);
+			auto& lv_occlusionGpu = lv_vkResManager.RetrieveGpuTexture("BoxBlurTexture", j);
 			auto& lv_gbufferMetallicGpu = lv_vkResManager.RetrieveGpuTexture("GBufferMetallic", j);
-			auto& lv_depthMapLightGpu = lv_vkResManager.RetrieveGpuTexture("DepthMapLightTexture", j);
 
 			lv_imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i].imageView = lv_gbufferPosGpu.image.imageView;
+			lv_imageInfos[i].imageView = lv_gbufferPosGpu.image.imageView0;
 			lv_imageInfos[i].sampler = lv_gbufferPosGpu.sampler;
 
 			lv_imageInfos[i + 1].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i + 1].imageView = lv_gbufferNormalGpu.image.imageView;
+			lv_imageInfos[i + 1].imageView = lv_gbufferNormalGpu.image.imageView0;
 			lv_imageInfos[i + 1].sampler = lv_gbufferNormalGpu.sampler;
 
 			lv_imageInfos[i + 2].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i + 2].imageView = lv_gbufferAlbedoSpec.image.imageView;
+			lv_imageInfos[i + 2].imageView = lv_gbufferAlbedoSpec.image.imageView0;
 			lv_imageInfos[i + 2].sampler = lv_gbufferAlbedoSpec.sampler;
 
 			lv_imageInfos[i + 3].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i + 3].imageView = lv_gbufferTangent.image.imageView;
+			lv_imageInfos[i + 3].imageView = lv_gbufferTangent.image.imageView0;
 			lv_imageInfos[i + 3].sampler = lv_gbufferTangent.sampler;
 
 			lv_imageInfos[i + 4].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i + 4].imageView = lv_gbufferNormalVertexGpu.image.imageView;
+			lv_imageInfos[i + 4].imageView = lv_gbufferNormalVertexGpu.image.imageView0;
 			lv_imageInfos[i + 4].sampler = lv_gbufferNormalVertexGpu.sampler;
 
 			lv_imageInfos[i + 5].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i + 5].imageView = lv_occlusionGpu.image.imageView;
+			lv_imageInfos[i + 5].imageView = lv_occlusionGpu.image.imageView0;
 			lv_imageInfos[i + 5].sampler = lv_occlusionGpu.sampler;
 
 			lv_imageInfos[i + 6].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i + 6].imageView = lv_gbufferMetallicGpu.image.imageView;
+			lv_imageInfos[i + 6].imageView = lv_gbufferMetallicGpu.image.imageView0;
 			lv_imageInfos[i + 6].sampler = lv_gbufferMetallicGpu.sampler;
 
 			lv_imageInfos[i + 7].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i + 7].imageView = lv_depthMapLightGpu.image.imageView;
+			lv_imageInfos[i + 7].imageView = lv_depthMapLightGpu.image.cubemapImageView;
 			lv_imageInfos[i + 7].sampler = lv_depthMapLightGpu.sampler;
 
 		}
@@ -323,7 +333,7 @@ namespace RenderCore
 		lv_cameraUniform.m_cameraPos = glm::vec4{ l_cameraStructure.m_cameraPos, 1.f };
 		lv_cameraUniform.m_viewMatrix = l_cameraStructure.m_viewMatrix;
 		lv_cameraUniform.m_inMtx = l_cameraStructure.m_projectionMatrix * l_cameraStructure.m_viewMatrix;
-
+		lv_cameraUniform.m_time = glm::vec4{ (float)glfwGetTime() };
 
 		auto& lv_uniformBufferGpu = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_uniformBufferGpuHandle);
 		memcpy(lv_uniformBufferGpu.ptr, &lv_cameraUniform, lv_uniformBufferGpu.size);
@@ -346,7 +356,7 @@ namespace RenderCore
 		auto& lv_depth = lv_vkResManager.RetrieveGpuTexture("Depth", l_currentSwapchainIndex);
 		auto& lv_occlusionGpu = lv_vkResManager.RetrieveGpuTexture("OcclusionFactor", l_currentSwapchainIndex);
 		auto& lv_metallicGpu = lv_vkResManager.RetrieveGpuTexture("GBufferMetallic", l_currentSwapchainIndex);
-		auto& lv_depthMapLight = lv_vkResManager.RetrieveGpuTexture("DepthMapLightTexture", l_currentSwapchainIndex);
+		//auto& lv_depthMapLight = lv_vkResManager.RetrieveGpuTexture(m_depthMapLightGpuHandle);
 
 		transitionImageLayoutCmd(l_cmdBuffer, lv_gbufferTangentGpu.image.image
 			, lv_gbufferTangentGpu.format, lv_gbufferTangentGpu.Layout
@@ -366,15 +376,15 @@ namespace RenderCore
 		transitionImageLayoutCmd(l_cmdBuffer, lv_depth.image.image
 			, lv_depth.format, lv_depth.Layout
 			, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-		transitionImageLayoutCmd(l_cmdBuffer, lv_occlusionGpu.image.image
+		/*transitionImageLayoutCmd(l_cmdBuffer, lv_occlusionGpu.image.image
 			, lv_occlusionGpu.format, lv_occlusionGpu.Layout
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);*/
 		transitionImageLayoutCmd(l_cmdBuffer, lv_metallicGpu.image.image
 			, lv_metallicGpu.format, lv_metallicGpu.Layout
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		transitionImageLayoutCmd(l_cmdBuffer, lv_depthMapLight.image.image
+		/*transitionImageLayoutCmd(l_cmdBuffer, lv_depthMapLight.image.image
 			, lv_depthMapLight.format, lv_depthMapLight.Layout
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 6);*/
 		/*transitionImageLayoutCmd(l_cmdBuffer, m_swapchainTextures[l_currentSwapchainIndex]->image.image
 			, m_swapchainTextures[l_currentSwapchainIndex]->format, m_swapchainTextures[l_currentSwapchainIndex]->Layout
 			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);*/
@@ -387,9 +397,9 @@ namespace RenderCore
 		lv_gbufferAlbedoSpecGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_gbufferNormalVertexGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_depth.Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		lv_occlusionGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		//lv_occlusionGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_metallicGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		lv_depthMapLight.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		//lv_depthMapLight.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		//m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		/*VkDeviceSize lv_offset{ 0 };
@@ -400,6 +410,15 @@ namespace RenderCore
 		vkCmdDraw(l_cmdBuffer, 6, 1, 0, 0);
 		vkCmdEndRenderPass(l_cmdBuffer);
 		m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+		/*transitionImageLayoutCmd(l_cmdBuffer, lv_depthMapLight.image.image
+			, lv_depthMapLight.format, lv_depthMapLight.Layout
+			, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 6);
+		lv_depthMapLight.Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;*/
+
+		
+
+		//lv_depthMapLight.Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 
 	}

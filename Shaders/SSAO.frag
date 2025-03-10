@@ -28,11 +28,12 @@ layout(set = 0, binding = 3) uniform sampler2D lv_gbufferNormalVertex;
 layout(set = 0, binding = 4) uniform sampler2D lv_randomRotations;
 
 
-const vec2 lv_rotationScale = vec2(256, 128);
 const float lv_radius = 8.f;
 
 void main()
 {
+	ivec2 lv_textureSize = textureSize(lv_gbufferPos, 0);
+	const vec2 lv_rotationScale = vec2(lv_textureSize.x/4.f, lv_textureSize.y/4.f);
 	vec3 lv_posInView = texture(lv_gbufferPos, lv_texCoord).rgb;
 	vec3 lv_normalInView = texture(lv_gbufferNormalVertex, lv_texCoord).rgb;
 	vec3 lv_rotation = texture(lv_randomRotations, lv_texCoord * lv_rotationScale).rgb;

@@ -34,7 +34,12 @@ namespace VulkanEngine
 		//RenderCore::BoundingBoxWireframeRenderer m_boundingBoxWireframe;
 		RenderCore::SSAORenderer m_ssao;
 		RenderCore::BoxBlurRenderer m_boxBlur;
-		RenderCore::DepthMapLightRenderer m_depthMapLight;
+		RenderCore::DepthMapLightRenderer m_depthMapLightPlusX;
+		RenderCore::DepthMapLightRenderer m_depthMapLightMinusX;
+		RenderCore::DepthMapLightRenderer m_depthMapLightPlusY;
+		RenderCore::DepthMapLightRenderer m_depthMapLightMinusY;
+		RenderCore::DepthMapLightRenderer m_depthMapLightPlusZ;
+		RenderCore::DepthMapLightRenderer m_depthMapLightMinusZ;
 		RenderCore::DeferredLightningRenderer m_deferredLightning;
 
 	};

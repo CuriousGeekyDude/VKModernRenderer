@@ -119,7 +119,7 @@ namespace RenderCore
 			auto& lv_outputImageCompute = lv_vkResManager.RetrieveGpuTexture(m_samplerTexturesHandles[i]);
 
 			lv_imageInfo[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfo[i].imageView = lv_outputImageCompute.image.imageView;
+			lv_imageInfo[i].imageView = lv_outputImageCompute.image.imageView0;
 			lv_imageInfo[i].sampler = lv_outputImageCompute.sampler;
 
 			lv_writes[i].descriptorCount = 1;

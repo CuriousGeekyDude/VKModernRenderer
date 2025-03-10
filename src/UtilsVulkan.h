@@ -117,7 +117,15 @@ struct VulkanImage final
 {
 	VkImage image = nullptr;
 	VkDeviceMemory imageMemory = nullptr;
-	VkImageView imageView = nullptr;
+	VkImageView imageView0 = nullptr;
+	VkImageView imageView1 = VK_NULL_HANDLE;
+	VkImageView imageView2 = VK_NULL_HANDLE;
+	VkImageView imageView3 = VK_NULL_HANDLE;
+	VkImageView imageView4 = VK_NULL_HANDLE;
+	VkImageView imageView5 = VK_NULL_HANDLE;
+
+	VkImageView cubemapImageView = VK_NULL_HANDLE;
+
 };
 
 // Aggregate structure for passing around the texture data
@@ -136,6 +144,14 @@ struct VulkanTexture final
 
 	// Offscreen buffers require VK_IMAGE_LAYOUT_GENERAL && static textures have VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 	VkImageLayout Layout;
+
+	VkImageLayout l_cubemapFace0Layout = VK_IMAGE_LAYOUT_UNDEFINED;
+	VkImageLayout l_cubemapFace1Layout = VK_IMAGE_LAYOUT_UNDEFINED;
+	VkImageLayout l_cubemapFace2Layout = VK_IMAGE_LAYOUT_UNDEFINED;
+	VkImageLayout l_cubemapFace3Layout = VK_IMAGE_LAYOUT_UNDEFINED;
+	VkImageLayout l_cubemapFace4Layout = VK_IMAGE_LAYOUT_UNDEFINED;
+	VkImageLayout l_cubemapFace5Layout = VK_IMAGE_LAYOUT_UNDEFINED;
+
 };
 
 void CHECK(bool check, const char* fileName, int lineNumber);
@@ -256,11 +272,11 @@ bool createOffscreenImage(VulkanRenderDevice& vkDev,
 		VkFormat texFormat,
 		uint32_t layerCount, VkImageCreateFlags flags);
 
-bool createOffscreenImageFromData(VulkanRenderDevice& vkDev,
-		VkImage& textureImage, VkDeviceMemory& textureImageMemory,
-		void* imageData, uint32_t texWidth, uint32_t texHeight,
-		VkFormat texFormat,
-		uint32_t layerCount, VkImageCreateFlags flags);
+//bool createOffscreenImageFromData(VulkanRenderDevice& vkDev,
+//		VkImage& textureImage, VkDeviceMemory& textureImageMemory,
+//		void* imageData, uint32_t texWidth, uint32_t texHeight,
+//		VkFormat texFormat,
+//		uint32_t layerCount, VkImageCreateFlags flags);
 
 bool createDepthSampler(VkDevice m_device, VkSampler* sampler);
 
@@ -272,7 +288,8 @@ void uploadBufferData(VulkanRenderDevice& vkDev, const VkDeviceMemory& bufferMem
 /** Copy GPU device buffer data to [outData] */
 void downloadBufferData(VulkanRenderDevice& vkDev, const VkDeviceMemory& bufferMemory, VkDeviceSize deviceOffset, void* outData, size_t dataSize);
 
-bool createImageView(VkDevice m_device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* imageView, VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D, uint32_t layerCount = 1, uint32_t mipLevels = 1);
+bool createImageViewCubeMap(VkDevice m_device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* imageView0, VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D, uint32_t l_baseArrayLayer = 0, uint32_t layerCount = 1, uint32_t mipLevels = 1);
+bool createImageView(VkDevice m_device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* imageView0, VkImageViewType viewType = VK_IMAGE_VIEW_TYPE_2D, uint32_t layerCount = 1, uint32_t mipLevels = 1);
 
 enum eRenderPassBit : uint16_t
 {
@@ -312,7 +329,7 @@ VkCommandBuffer beginSingleTimeCommands(VulkanRenderDevice& vkDev);
 void endSingleTimeCommands(VulkanRenderDevice& vkDev, VkCommandBuffer commandBuffer);
 void copyBuffer(VulkanRenderDevice& vkDev, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 void transitionImageLayout(VulkanRenderDevice& vkDev, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount = 1, uint32_t mipLevels = 1);
-void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount = 1, uint32_t mipLevels = 1);
+void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount = 1, uint32_t mipLevels = 1, uint32_t l_baseArrayLayer = 0);
 
 bool initVulkanRenderDevice(VulkanInstance& vk, VulkanRenderDevice& vkDev, uint32_t width, uint32_t height, std::function<bool(VkPhysicalDevice)> selector, VkPhysicalDeviceFeatures deviceFeatures);
 bool initVulkanRenderDevice2(VulkanInstance& vk, VulkanRenderDevice& vkDev, uint32_t width, uint32_t height, std::function<bool(VkPhysicalDevice)> selector, VkPhysicalDeviceFeatures2 deviceFeatures2);

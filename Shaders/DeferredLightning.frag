@@ -13,6 +13,7 @@ layout(set = 0, binding = 0) uniform UniformBuffer
 	mat4   m_inMtx;
 	mat4   m_viewMatrix;
 	vec4   m_cameraPos;
+    vec4   m_time;
 
 }lv_cameraUniform;
 
@@ -29,7 +30,7 @@ struct Light
 };
 
 
-uint m_totalNumLights = 0;
+uint m_totalNumLights = 1;
 const float PI = 3.14159265359;
 
 
@@ -44,7 +45,7 @@ layout(set = 0, binding = 5) uniform sampler2D lv_gbufferTangent;
 layout(set = 0, binding = 6) uniform sampler2D lv_gbufferNormalVertex;
 layout(set = 0, binding = 7) uniform sampler2D lv_occlusionFactor;
 layout(set = 0, binding = 8) uniform sampler2D lv_gbufferMetallic;
-layout(set = 0, binding = 9) uniform sampler2D lv_depthMapLight;
+layout(set = 0, binding = 9) uniform samplerCube  lv_depthMapLight;
 
 layout(set = 0,binding = 10) uniform  UniformBuffer2 { 
 
@@ -56,27 +57,44 @@ layout(set = 0,binding = 10) uniform  UniformBuffer2 {
 
 
 
-float ShadowCalculation(vec3 lv_posLightSpace, vec3 lv_normal, vec3 lv_lightDir)
+
+
+vec3 sampleOffsetDirections[20] = vec3[]
+(
+   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+); 
+
+float ShadowCalculation(vec3 lv_worldPos, vec3 lv_normal)
 {
-    vec2 lv_depthMapLightSize = textureSize(lv_depthMapLight, 0);
+    vec3 lv_lightPos = ubo.m_posSun.xyz;
 
-    vec2 lv_texelOffset = 1.f/lv_depthMapLightSize;
+    vec3 lv_dirVector = lv_worldPos - lv_lightPos;
 
-    vec2 lv_texCoord = vec2(lv_posLightSpace.x, lv_posLightSpace.y)*0.5f + 0.5f;
-    float lv_bias = max(0.05 * (1.0 - dot(lv_normal, lv_lightDir)), 0.005);
+    float lv_depthFragToLight = length(lv_dirVector);
 
-    float lv_shadow = 0.f;
 
-    for(int x = -1; x < 2; ++x) {
-        
-        for(int y = -1; y < 2; ++y) {
-              float lv_depthLight = texture(lv_depthMapLight, lv_texCoord + vec2(x, y)*lv_texelOffset).r;
-              lv_shadow += lv_depthLight < lv_posLightSpace.z - lv_bias ? 1.f : 0.f;
-        }
 
+    float shadow = 0.0;
+    float bias   = max(0.05 * (1.0 - dot(lv_normal, lv_dirVector)), 0.005);
+    int samples  = 20;
+    float viewDistance = length(lv_cameraUniform.m_cameraPos.xyz - lv_worldPos);
+    float diskRadius = (1.0 + (viewDistance / 100)) / 25.0;
+    for(int i = 0; i < samples; ++i)
+    {
+        float closestDepth = texture(lv_depthMapLight, lv_dirVector + sampleOffsetDirections[i] * diskRadius).r;
+        closestDepth *= 100;   // undo mapping [0;1]
+        if(lv_depthFragToLight - bias > closestDepth)
+            shadow += 1.0;
     }
+    shadow /= float(samples); 
+
     
-    return lv_shadow/9.f;
+    
+    return shadow;
 }
 
 
@@ -157,10 +175,11 @@ void main()
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, lv_albedo, lv_metallic);
 
-    vec3 lv_sunDir = normalize(ubo.m_posSun.xyz - lv_fragPos);
+    vec3 lv_lightPos = ubo.m_posSun.xyz;
 
-     vec4 lv_posLightSpace = ubo.m_orthoMatrixSun * ubo.m_viewMatrixSun * lv_worldPos;
-     float lv_shadow = ShadowCalculation(lv_posLightSpace.xyz, lv_normal, lv_sunDir);
+    //vec3 lv_sunDir = normalize(lv_lightPos - lv_fragPos);
+
+     float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal);
 
      vec3 lv_lightning = lv_albedo*0.025f*lv_occlusion;
 
@@ -168,11 +187,11 @@ void main()
      vec3 Lo = vec3(0.0);
 	for(uint i = 0; i < m_totalNumLights; ++i) {
 
-        vec3 L = normalize(lv_lights.lights[i].m_position.xyz - lv_fragPos);
+        vec3 L = normalize(lv_lightPos - lv_fragPos);
         vec3 H = normalize(lv_dir + L);
-        float distance = length(lv_lights.lights[i].m_position.xyz - lv_fragPos);
+        float distance = length(lv_lightPos - lv_fragPos);
         float attenuation = 1.0 / ( distance * distance);
-        vec3 radiance = lv_lights.lights[i].m_color.rgb * attenuation;
+        vec3 radiance = vec3(3000.f, 3000.f, 3000.f) * attenuation;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(lv_normal, H, lv_roughness);   
@@ -196,18 +215,20 @@ void main()
 	}
 
 
-    float diff = max(dot(lv_sunDir, lv_normal), 0.0);
-    vec3 lv_diffuse = diff * vec3(0.5f, 0.5f, 0.5f);
+    //float diff = max(dot(lv_sunDir, lv_normal), 0.0);
+    //vec3 lv_diffuse = diff * vec3(0.5f, 0.5f, 0.5f);
     // specular
-    float spec = 0.0;
-    vec3 halfwayDir = normalize(lv_sunDir + lv_dir);  
-    spec = pow(max(dot(lv_normal, halfwayDir), 0.0), 64.0);
-    vec3 specular = spec * vec3(0.5f, 0.5f, 0.5f);
+    //float spec = 0.0;
+    //vec3 halfwayDir = normalize(lv_sunDir + lv_dir);  
+    //spec = pow(max(dot(lv_normal, halfwayDir), 0.0), 64.0);
+    //vec3 specular = spec * vec3(0.5f, 0.5f, 0.5f);
 
 
 
     //lv_finalColor = vec4(lv_lightning, 1.f);
-    lv_lightning += (1.f - lv_shadow) * (lv_diffuse + specular)*lv_albedo;
+    lv_lightning += (1.f - lv_shadow) * Lo;
+   // lv_lightning += (lv_diffuse + specular)*lv_albedo;
+
     //lv_lightning = vec3(1.f) - exp(-lv_lightning*2.5f);
 
 

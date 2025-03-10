@@ -10,6 +10,8 @@
 
       "Name": "ClearSwapchainDepth",
 
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
       "Input": [
 
         {
@@ -88,6 +90,9 @@
 
       "Name": "BoxBlur",
 
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
       "Input": [
 
         {
@@ -97,7 +102,7 @@
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 1024, 512, 0 ],
+              "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
               "Format": "VK_FORMAT_R32_SFLOAT"
             }
@@ -139,20 +144,21 @@
     {
       "Pipeline": "GRAPHIC",
 
-      "Name": "DepthMapLight",
+      "Name": "DepthMapOmnidirectionalPointLight0",
+
+      "RenderToCubemap": "TRUE",
+      "CubemapFace": 0,
 
       "Input": [
 
         {
-          "Name": "DepthMapLightTexture",
-          "CreateResourceOnGPU": "TRUE",
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
           "TextureInfo": [
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 1024, 512, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_D32_SFLOAT"
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR"
             }
 
           ]
@@ -163,7 +169,269 @@
       "Output": [
 
         {
-          "Name": "DepthMapLightTexture",
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DepthMapOmnidirectionalPointLight1"
+        }
+
+      ]
+
+    },
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DepthMapOmnidirectionalPointLight1",
+
+      "RenderToCubemap": "TRUE",
+      "CubemapFace": 1,
+
+      "Input": [
+
+        {
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DepthMapOmnidirectionalPointLight2"
+        }
+
+      ]
+
+    },
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DepthMapOmnidirectionalPointLight2",
+
+      "RenderToCubemap": "TRUE",
+      "CubemapFace": 2,
+
+      "Input": [
+
+        {
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DepthMapOmnidirectionalPointLight3"
+        }
+
+      ]
+
+    },
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DepthMapOmnidirectionalPointLight3",
+
+      "RenderToCubemap": "TRUE",
+      "CubemapFace": 3,
+
+      "Input": [
+
+        {
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DepthMapOmnidirectionalPointLight4"
+        }
+
+      ]
+
+    },
+
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DepthMapOmnidirectionalPointLight4",
+
+      "RenderToCubemap": "TRUE",
+      "CubemapFace": 4,
+
+      "Input": [
+
+        {
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DepthMapOmnidirectionalPointLight5"
+        }
+
+      ]
+
+    },
+
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DepthMapOmnidirectionalPointLight5",
+
+      "RenderToCubemap": "TRUE",
+      "CubemapFace": 5,
+
+      "Input": [
+
+        {
+          "Name": "DepthMapPointLight",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DepthMapPointLight",
           "CreateResourceOnGPU": "FALSE",
           "TextureInfo": [
 
@@ -191,6 +459,9 @@
     {
       "Pipeline": "GRAPHIC",
       "Name": "IndirectGbuffer",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
       "Input": [
 
         {
@@ -200,7 +471,7 @@
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 1024, 512, 0 ],
+              "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
               "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
             }
@@ -217,7 +488,7 @@
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 1024, 512, 0 ],
+              "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
               "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
             }
@@ -233,7 +504,7 @@
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 1024, 512, 0 ],
+              "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
               "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
             }
@@ -248,7 +519,7 @@
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 1024, 512, 0 ],
+              "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
               "Format": "VK_FORMAT_R16G16B16A16_SFLOAT"
             }
@@ -264,7 +535,7 @@
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 1024, 512, 0 ],
+              "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
               "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
             }
@@ -279,7 +550,7 @@
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 1024, 512, 0 ],
+              "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
               "Format": "VK_FORMAT_R16G16B16A16_SFLOAT"
             }
@@ -410,7 +681,7 @@
       "TargetNodes": [
 
         {
-          "Name": "DepthMapLight"
+          "Name": "DepthMapOmnidirectionalPointLight0"
         }
 
       ]
@@ -421,6 +692,9 @@
       "Pipeline": "GRAPHIC",
 
       "Name": "DeferredLightning",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
 
       "Input": [
 
@@ -492,6 +766,9 @@
 
       "Name": "SSAO",
 
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
       "Input": [
 
         {
@@ -501,7 +778,7 @@
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 1024, 512, 0 ],
+              "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
               "Format": "VK_FORMAT_R32_SFLOAT"
             }

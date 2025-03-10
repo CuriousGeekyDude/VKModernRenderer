@@ -147,6 +147,15 @@
     <ClCompile Include="src\BoxBlurRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
+    <ClCompile Include="src\ClearSwapchainDepthRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PresentToColorAttachRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DepthMapLightRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp">
@@ -288,6 +297,15 @@
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="src\BoxBlurRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClearSwapchainDepthRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PresentToColorAttachRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DepthMapLightRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
   </ItemGroup>

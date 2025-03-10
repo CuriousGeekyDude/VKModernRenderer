@@ -61,7 +61,7 @@ namespace RenderCore
 
 		for (size_t i = 0; i < lv_totalNumSwapchains; ++i) {
 			lv_imageDescriptors[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageDescriptors[i].imageView = m_ssaoTextures[i]->image.imageView;
+			lv_imageDescriptors[i].imageView = m_ssaoTextures[i]->image.imageView0;
 			lv_imageDescriptors[i].sampler = m_ssaoTextures[i]->sampler;
 		}
 
@@ -115,6 +115,11 @@ namespace RenderCore
 		vkCmdEndRenderPass(l_cmdBuffer);
 
 		m_frameBufferTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+		transitionImageLayoutCmd(l_cmdBuffer, m_frameBufferTextures[l_currentSwapchainIndex]->image.image
+			, m_frameBufferTextures[l_currentSwapchainIndex]->format
+			, m_frameBufferTextures[l_currentSwapchainIndex]->Layout
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	}
 

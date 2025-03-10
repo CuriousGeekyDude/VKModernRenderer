@@ -1,10 +1,14 @@
 #version 460 core
 
 
+
+layout(location = 0) out vec4 lv_world;
+
+
 layout(binding = 0) uniform  UniformBuffer { 
 
 	mat4 m_viewMatrix;
-	mat4 m_orthoMatrix;
+	mat4 m_projMatrix;
 	vec4 m_pos;
 
 } ubo;
@@ -40,5 +44,7 @@ void main()
 
 	vec4 lv_worldPos = vec4(v.x, v.y, v.z, 1.0);
 
-	gl_Position = ubo.m_orthoMatrix * ubo.m_viewMatrix * lv_worldPos;
+	lv_world = lv_worldPos;
+
+	gl_Position = ubo.m_projMatrix * ubo.m_viewMatrix * lv_worldPos;
 }

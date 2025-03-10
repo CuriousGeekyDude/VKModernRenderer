@@ -34,6 +34,7 @@ namespace RenderCore
 			glm::mat4   m_inMtx;
 			glm::mat4   m_viewMatrix;
 			glm::vec4	m_cameraPos;
+			glm::vec4   m_time;
 		};
 
 	public:
@@ -72,6 +73,7 @@ namespace RenderCore
 		uint32_t m_lightBufferGpuHandle;
 		uint32_t m_vertexBufferGpuHandle;
 		uint32_t m_indicesBufferGpuHandle;
+		uint32_t m_depthMapLightGpuHandle;
 		std::vector<VulkanTexture*> m_swapchainTextures;
 	};
 

@@ -1021,7 +1021,7 @@ bool createTextureSampler(VkDevice m_device, VkSampler* sampler, float l_maxAnis
 		.compareOp = VK_COMPARE_OP_ALWAYS,
 		.minLod = 0.0f,
 		.maxLod = 0.0f,
-		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_WHITE,
 		.unnormalizedCoordinates = VK_FALSE
 	};
 
@@ -1543,9 +1543,33 @@ bool createVolume(VkDevice m_device, VkPhysicalDevice m_physicalDevice, uint32_t
 }
 
 // For volumes use the call
-// createImageView(device, image, /* whatever the format is */ VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VkImageView* imageView, VK_IMAGE_VIEW_TYPE_3D, 1)
+// createImageView(device, image, /* whatever the format is */ VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VkImageView* imageView0, VK_IMAGE_VIEW_TYPE_3D, 1)
 
-bool createImageView(VkDevice m_device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* imageView, VkImageViewType viewType, uint32_t layerCount, uint32_t mipLevels)
+
+bool createImageViewCubeMap(VkDevice m_device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* imageView0, VkImageViewType viewType, uint32_t l_baseArrayLayer, uint32_t layerCount, uint32_t mipLevels)
+{
+	const VkImageViewCreateInfo viewInfo =
+	{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+		.pNext = nullptr,
+		.flags = 0,
+		.image = image,
+		.viewType = viewType,
+		.format = format,
+		.subresourceRange =
+		{
+			.aspectMask = aspectFlags,
+			.baseMipLevel = 0,
+			.levelCount = mipLevels,
+			.baseArrayLayer = l_baseArrayLayer,
+			.layerCount = layerCount
+		}
+	};
+
+	return (vkCreateImageView(m_device, &viewInfo, nullptr, imageView0) == VK_SUCCESS);
+}
+
+bool createImageView(VkDevice m_device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, VkImageView* imageView0, VkImageViewType viewType, uint32_t layerCount, uint32_t mipLevels)
 {
 	const VkImageViewCreateInfo viewInfo =
 	{
@@ -1565,7 +1589,7 @@ bool createImageView(VkDevice m_device, VkImage image, VkFormat format, VkImageA
 		}
 	};
 
-	return (vkCreateImageView(m_device, &viewInfo, nullptr, imageView) == VK_SUCCESS);
+	return (vkCreateImageView(m_device, &viewInfo, nullptr, imageView0) == VK_SUCCESS);
 }
 
 bool createColorOnlyRenderPass(VulkanRenderDevice& vkDev, VkRenderPass* renderPass, const RenderPassCreateInfo& ci, VkFormat colorFormat)
@@ -1870,7 +1894,7 @@ void transitionImageLayout(VulkanRenderDevice& vkDev, VkImage image, VkFormat fo
 	endSingleTimeCommands(vkDev, commandBuffer);
 }
 
-void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount, uint32_t mipLevels)
+void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount, uint32_t mipLevels, uint32_t l_baseArrayLayer)
 {
 	VkImageMemoryBarrier barrier = {
 		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -1886,7 +1910,7 @@ void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFo
 			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
 			.baseMipLevel = 0,
 			.levelCount = mipLevels,
-			.baseArrayLayer = 0,
+			.baseArrayLayer = l_baseArrayLayer,
 			.layerCount = layerCount
 		}
 	};
@@ -2020,7 +2044,7 @@ void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFo
 		barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
 		sourceStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-		destinationStage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+		destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	}
 
 	else if (oldLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
@@ -2289,7 +2313,7 @@ void destroyVulkanTexture(VkDevice m_device, VulkanTexture& texture)
 
 void destroyVulkanImage(VkDevice m_device, VulkanImage& image)
 {
-	vkDestroyImageView(m_device, image.imageView, nullptr);
+	vkDestroyImageView(m_device, image.imageView0, nullptr);
 	vkDestroyImage(m_device, image.image, nullptr);
 	vkFreeMemory(m_device, image.imageMemory, nullptr);
 }
@@ -2396,7 +2420,7 @@ bool createDepthResources(VulkanRenderDevice& vkDev, uint32_t width, uint32_t he
 	if (!createImage(vkDev.m_device, vkDev.m_physicalDevice, width, height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depth.image, depth.imageMemory))
 		return false;
 
-	if (!createImageView(vkDev.m_device, depth.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, &depth.imageView))
+	if (!createImageView(vkDev.m_device, depth.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, &depth.imageView0))
 		return false;
 
 	transitionImageLayout(vkDev, depth.image, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
@@ -2453,7 +2477,7 @@ bool createPipelineLayoutWithConstants(VkDevice m_device, VkDescriptorSetLayout 
 }
 
 //bool createVolume(vkDev.device, vkDev.physicalDevice, width, height, depth, VkFormat format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VkImage& image, VkDeviceMemory& imageMemory, VkImageCreateFlags flags)
-// createImageView(device, image, /* whatever the format is */ VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VkImageView* imageView, VK_IMAGE_VIEW_TYPE_3D, 1)
+// createImageView(device, image, /* whatever the format is */ VK_FORMAT_R32G32B32A32_SFLOAT, VK_IMAGE_ASPECT_COLOR_BIT, VkImageView* imageView0, VK_IMAGE_VIEW_TYPE_3D, 1)
 
 bool createTextureVolumeFromData(VulkanRenderDevice& vkDev,
 		VkImage& textureVolume, VkDeviceMemory& textureVolumeMemory,
@@ -3047,7 +3071,7 @@ void updateTextureInDescriptorSetArray(VulkanRenderDevice& vkDev, VkDescriptorSe
 {
 	const VkDescriptorImageInfo imageInfo = {
 		.sampler = t.sampler,
-		.imageView = t.image.imageView,
+		.imageView = t.image.imageView0,
 		.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
 	};
 

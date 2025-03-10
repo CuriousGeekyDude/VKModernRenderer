@@ -193,6 +193,9 @@ namespace RenderCore
 
 		VulkanTexture& CreateDepthTexture(const std::string& l_nameDepthTexture);
 
+		VulkanTexture& CreateDepthCubeMapTexture(const std::string& l_textureName, uint32_t l_height
+												, uint32_t l_width);
+
 
 		uint32_t CreateDepthTextureWithHandle(const std::string& l_nameTexture);
 
@@ -201,6 +204,13 @@ namespace RenderCore
 			const std::vector<VulkanTexture>& l_images,
 			const char* l_nameFramebuffer);
 
+
+
+
+		uint32_t CreateFrameBufferCubemapFace(const RenderPass& l_renderpass,
+			uint32_t l_textureHandle,
+			uint32_t l_cubemapLayer,
+			const char* l_nameFramebuffer);
 
 
 		uint32_t CreateFrameBuffer(const RenderPass& l_renderpass,

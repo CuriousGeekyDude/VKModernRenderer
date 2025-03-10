@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include "IndirectRenderer.hpp"
+#include <GLFW/glfw3.h>
 
 namespace RenderCore
 {
@@ -13,30 +14,35 @@ namespace RenderCore
 
 	DepthMapLightRenderer::DepthMapLightRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator
 		, const char* l_vtxShader, const char* l_fragShader
-		, const char* l_spvFile, const glm::vec4& l_lightPos)
+		, const char* l_spvFile, const char* l_rendererName
+		, const glm::vec3& l_lightPos, const glm::vec3& l_lookAtVector
+		, const glm::vec3& l_up, const int l_cubemapFace)
 		:Renderbase(l_vkContextCreator)
+		,m_rendererName{l_rendererName}
+		,m_cubemapFace(l_cubemapFace)
 	{
 		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
 		auto lv_totalNumSwapchains = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_swapchainImages.size();
 		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();
 		auto* lv_indirectRenderer = (IndirectRenderer*)lv_frameGraph.RetrieveNode("IndirectGbuffer")->m_renderer;
 
-		m_uniformBufferCpu.m_pos = glm::rotate(glm::identity<glm::mat4>(), glm::radians(-30.f), glm::vec3{1.f, 0.f,0.f}) * l_lightPos;
-		m_uniformBufferCpu.m_viewMatrix = glm::lookAt(glm::vec3{l_lightPos.x, l_lightPos.y, l_lightPos.z}, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f));
-		m_uniformBufferCpu.m_orthoMatrix = glm::ortho(-80.0f, 80.0f, -80.0f, 80.0f, 0.1f, 70.f);
 
-		glm::mat4 lv_iden = glm::identity<glm::mat4>();
-		lv_iden[2][2] = 0.5f;
-		lv_iden[3][2] = 0.5f;
-		m_uniformBufferCpu.m_orthoMatrix = lv_iden * m_uniformBufferCpu.m_orthoMatrix;
+		float lv_aspect = (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth / (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
+
+		m_uniformBufferCpu.m_pos = glm::vec4{ l_lightPos, 1.f };
+		m_uniformBufferCpu.m_viewMatrix = glm::lookAt(l_lightPos, l_lookAtVector, l_up);
+		m_uniformBufferCpu.m_projMatrix = glm::perspective(glm::radians(90.f),lv_aspect, 0.1f, 100.f);
 
 		m_uniformBufferGpuHandle = lv_vkResManager.CreateBufferWithHandle(sizeof(UniformBufferLight), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
 																		 , VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
 																		 , "UniformBufferLightMatricesDepthMap");
-		m_depthMapGpuTextures.resize(lv_totalNumSwapchains);
+
+
+		auto lv_depthMapMeta = lv_vkResManager.RetrieveGpuResourceMetaData("DepthMapPointLight");
+
+		m_depthMapGpuTextures.push_back(&lv_vkResManager.RetrieveGpuTexture(lv_depthMapMeta.m_resourceHandle));
 		m_instanceBuffersGpu.resize(lv_totalNumSwapchains);
 		for (size_t i = 0; i < lv_totalNumSwapchains; ++i) {
-			m_depthMapGpuTextures[i] = &lv_vkResManager.RetrieveGpuTexture("DepthMapLightTexture", i);
 			m_instanceBuffersGpu[i] = &lv_vkResManager.RetrieveGpuBuffer("Instance-Buffer-Indirect", i);
 		}
 
@@ -45,20 +51,27 @@ namespace RenderCore
 		auto& lv_outputInstanceData = lv_indirectRenderer->GetInstanceData();
 		auto& lv_meshes = lv_indirectRenderer->GetMeshData();
 
-		m_indirectBufferGpuHandle = lv_vkResManager.CreateBufferWithHandle(sizeof(VkDrawIndirectCommand) * lv_outputInstanceData.size()
-																		  , VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT
-																		  ,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
-																		  , "indirectBufferDepthMapLight");
+		auto lv_indirectBufferMeta = lv_vkResManager.RetrieveGpuResourceMetaData("indirectBufferDepthMapLight");
 
-		auto& lv_indirectBuffer = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_indirectBufferGpuHandle);
-		VkDrawIndirectCommand* lv_drawStructure = (VkDrawIndirectCommand*)lv_indirectBuffer.ptr;
-		for (uint32_t i = 0; i < lv_outputInstanceData.size(); ++i) {
-			auto j = lv_outputInstanceData[i].m_meshIndex;
-			lv_drawStructure[i].vertexCount = lv_meshes[j].CalculateLODNumberOfIndices(lv_outputInstanceData[i].m_lod);
-			lv_drawStructure[i].firstInstance = i;
-			lv_drawStructure[i].firstVertex = 0U;
-			lv_drawStructure[i].instanceCount = 1;
+		bool lv_indirectBufferCreatedBefore = (lv_indirectBufferMeta.m_resourceHandle != std::numeric_limits<uint32_t>::max());
 
+		m_indirectBufferGpuHandle = true == lv_indirectBufferCreatedBefore ? lv_indirectBufferMeta.m_resourceHandle
+									: lv_vkResManager.CreateBufferWithHandle(sizeof(VkDrawIndirectCommand) * lv_outputInstanceData.size()
+										, VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT
+										, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+										, "indirectBufferDepthMapLight");
+
+		if (false == lv_indirectBufferCreatedBefore) {
+			auto& lv_indirectBuffer = lv_vkResManager.RetrieveGpuBuffer(m_indirectBufferGpuHandle);
+			VkDrawIndirectCommand* lv_drawStructure = (VkDrawIndirectCommand*)lv_indirectBuffer.ptr;
+			for (uint32_t i = 0; i < lv_outputInstanceData.size(); ++i) {
+				auto j = lv_outputInstanceData[i].m_meshIndex;
+				lv_drawStructure[i].vertexCount = lv_meshes[j].CalculateLODNumberOfIndices(lv_outputInstanceData[i].m_lod);
+				lv_drawStructure[i].firstInstance = i;
+				lv_drawStructure[i].firstVertex = 0U;
+				lv_drawStructure[i].instanceCount = 1;
+
+			}
 		}
 
 
@@ -73,11 +86,11 @@ namespace RenderCore
 		m_indicesVerticesGpuBufferHandle = lv_indicesVerticesMetaData.m_resourceHandle;
 
 		GeneratePipelineFromSpirvBinaries(l_spvFile);
-		SetRenderPassAndFrameBuffer("DepthMapLight");
-		SetNodeToAppropriateRenderpass("DepthMapLight", this);
+		SetRenderPassAndFrameBuffer(l_rendererName);
+		SetNodeToAppropriateRenderpass(l_rendererName, this);
 		UpdateDescriptorSets();
 
-		auto* lv_node = lv_frameGraph.RetrieveNode("DepthMapLight");
+		auto* lv_node = lv_frameGraph.RetrieveNode(l_rendererName);
 		lv_frameGraph.IncrementNumNodesPerCmdBuffer(1);
 
 		VulkanResourceManager::PipelineInfo lv_pipeInfo{};
@@ -90,27 +103,77 @@ namespace RenderCore
 		lv_pipeInfo.m_useDepth = true;
 		lv_pipeInfo.m_totalNumColorAttach = lv_node->m_outputResourcesHandles.size()-1;
 
-
+		std::string lv_pipelineName{ "GraphicsPipeline" };
+		lv_pipelineName += l_rendererName;
 		m_graphicsPipeline = lv_vkResManager.CreateGraphicsPipeline(m_renderPass, m_pipelineLayout
-			, { l_vtxShader, l_fragShader }, "GraphicsPipelineDepthMapLight", lv_pipeInfo);
+			, { l_vtxShader, l_fragShader }, lv_pipelineName.c_str(), lv_pipeInfo);
 	}
 
 	void DepthMapLightRenderer::FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
 		uint32_t l_currentSwapchainIndex)
 	{
 		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
+		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();
 
-		auto* lv_currDepthMapTex = m_depthMapGpuTextures[l_currentSwapchainIndex];
+		auto* lv_currentNode = lv_frameGraph.RetrieveNode(m_rendererName);
 
+
+		auto* lv_currDepthMapTex = m_depthMapGpuTextures[0];
+
+
+		/*if (VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL == lv_currDepthMapTex->Layout) {
+			transitionImageLayoutCmd(l_cmdBuffer, lv_currDepthMapTex->image.image, lv_currDepthMapTex->format
+				, lv_currDepthMapTex->Layout, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,6);
+			lv_currDepthMapTex->Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		}*/
+
+		VkImageLayout lv_layout = VK_IMAGE_LAYOUT_UNDEFINED;
+		
+		switch (m_cubemapFace) {
+		case 0:
+			lv_layout = lv_currDepthMapTex->l_cubemapFace0Layout;
+			lv_currDepthMapTex->l_cubemapFace0Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			break;
+		case 1:
+			lv_layout = lv_currDepthMapTex->l_cubemapFace1Layout;
+			lv_currDepthMapTex->l_cubemapFace1Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			break;
+		case 2:
+			lv_layout = lv_currDepthMapTex->l_cubemapFace2Layout;
+			lv_currDepthMapTex->l_cubemapFace2Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			break;
+		case 3:
+			lv_layout = lv_currDepthMapTex->l_cubemapFace3Layout;
+			lv_currDepthMapTex->l_cubemapFace3Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			break;
+		case 4:
+			lv_layout = lv_currDepthMapTex->l_cubemapFace4Layout;
+			lv_currDepthMapTex->l_cubemapFace4Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			break;
+		case 5:
+			lv_layout = lv_currDepthMapTex->l_cubemapFace5Layout;
+			lv_currDepthMapTex->l_cubemapFace5Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			break;
+		
+		}
 		transitionImageLayoutCmd(l_cmdBuffer, lv_currDepthMapTex->image.image, lv_currDepthMapTex->format
-								, lv_currDepthMapTex->Layout, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-		lv_currDepthMapTex->Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			, lv_layout, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, 1, 1, m_cubemapFace);
+
+		/*bool lv_allLayersTransitioned = (lv_currDepthMapTex->l_cubemapFace0Layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) &&
+			(lv_currDepthMapTex->l_cubemapFace1Layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) &&
+			(lv_currDepthMapTex->l_cubemapFace2Layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) &&
+			(lv_currDepthMapTex->l_cubemapFace3Layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) &&
+			(lv_currDepthMapTex->l_cubemapFace4Layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) &&
+			(lv_currDepthMapTex->l_cubemapFace5Layout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);*/
+
 
 
 		auto& lv_indirectBuffer = lv_vkResManager.RetrieveGpuBuffer(m_indirectBufferGpuHandle);
-		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();
 		auto* lv_indirectRenderer = (IndirectRenderer*)lv_frameGraph.RetrieveNode("IndirectGbuffer")->m_renderer;
 		auto lv_totalNumInstances = lv_indirectRenderer->GetInstanceData().size();
+
+
+		
 
 		auto lv_framebuffer = lv_vkResManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);
 
@@ -119,14 +182,66 @@ namespace RenderCore
 			sizeof(VkDrawIndirectCommand));
 		vkCmdEndRenderPass(l_cmdBuffer);
 
-		lv_currDepthMapTex->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		
+
+		switch (m_cubemapFace) {
+		case 0:
+			lv_currDepthMapTex->l_cubemapFace0Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			break;
+		case 1:
+			lv_currDepthMapTex->l_cubemapFace1Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			break;
+		case 2:
+			lv_currDepthMapTex->l_cubemapFace2Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			break;
+		case 3:
+			lv_currDepthMapTex->l_cubemapFace3Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			break;
+		case 4:
+			lv_currDepthMapTex->l_cubemapFace4Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			break;
+		case 5:
+			lv_currDepthMapTex->l_cubemapFace5Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			break;
+
+		}
+
+		//lv_currentNode->m_enabled = false;
 
 	}
 
 	void DepthMapLightRenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
+		auto& lv_uniformBufferGpu = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_uniformBufferGpuHandle);
+		m_uniformBufferCpu.m_pos.x = 20.f * (float)std::sin(glfwGetTime());
 
+
+		glm::vec3 lv_lightPos{ m_uniformBufferCpu.m_pos.x, m_uniformBufferCpu.m_pos.y, m_uniformBufferCpu.m_pos.z};
+		switch (m_cubemapFace) {
+		case 0:
+			m_uniformBufferCpu.m_viewMatrix = glm::lookAt(lv_lightPos, lv_lightPos+ glm::vec3{ 1.f, 0.f, 0.f }, glm::vec3{ 0.f, -1.f, 0.f });
+			break;
+		case 1:
+			m_uniformBufferCpu.m_viewMatrix = glm::lookAt(lv_lightPos, lv_lightPos + glm::vec3{ -1.f, 0.f, 0.f }, glm::vec3{ 0.f, -1.f, 0.f });
+			break;
+		case 2:
+			m_uniformBufferCpu.m_viewMatrix = glm::lookAt(lv_lightPos, lv_lightPos + glm::vec3{ 0.f, 1.f, 0.f }, glm::vec3{ 0.f, 0.f, 1.f });
+			break;
+		case 3:
+			m_uniformBufferCpu.m_viewMatrix = glm::lookAt(lv_lightPos, lv_lightPos + glm::vec3{ 0.f, -1.f, 0.f }, glm::vec3{ 0.f, 0.f, -1.f });
+			break;
+		case 4:
+			m_uniformBufferCpu.m_viewMatrix = glm::lookAt(lv_lightPos, lv_lightPos + glm::vec3{ 0.f, 0.f, 1.f }, glm::vec3{ 0.f, -1.f, 0.f });
+			break;
+		case 5:
+			m_uniformBufferCpu.m_viewMatrix = glm::lookAt(lv_lightPos, lv_lightPos + glm::vec3{ 0.f, 0.f, -1.f }, glm::vec3{ 0.f, -1.f, 0.f });
+			break;
+		}
+
+		memcpy(lv_uniformBufferGpu.ptr, &m_uniformBufferCpu, sizeof(UniformBufferLight));
+
+		
 	}
 
 

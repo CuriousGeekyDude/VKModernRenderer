@@ -142,15 +142,15 @@ namespace RenderCore
 			auto& lv_gpuNormalVertexTexture = lv_vkResManager.RetrieveGpuTexture("GBufferNormalVertex", (uint32_t)j);
 
 			lv_imageDescriptors[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageDescriptors[i].imageView = lv_gpuPosTexture.image.imageView;
+			lv_imageDescriptors[i].imageView = lv_gpuPosTexture.image.imageView0;
 			lv_imageDescriptors[i].sampler = lv_gpuPosTexture.sampler;
 
 			lv_imageDescriptors[i + 1].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageDescriptors[i + 1].imageView = lv_gpuNormalVertexTexture.image.imageView;
+			lv_imageDescriptors[i + 1].imageView = lv_gpuNormalVertexTexture.image.imageView0;
 			lv_imageDescriptors[i + 1].sampler = lv_gpuNormalVertexTexture.sampler;
 
 			lv_imageDescriptors[i + 2].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageDescriptors[i + 2].imageView = lv_randomRotationTexture.image.imageView;
+			lv_imageDescriptors[i + 2].imageView = lv_randomRotationTexture.image.imageView0;
 			lv_imageDescriptors[i + 2].sampler = lv_randomRotationTexture.sampler;
 
 

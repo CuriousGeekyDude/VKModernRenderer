@@ -73,7 +73,9 @@ namespace VulkanEngine
 		std::string m_nodeNames;
 		std::string m_pipelineType;
 		uint32_t m_nodeIndex;
+		int m_cubemapFace{ -1 };
 		bool m_enabled{ true };
+		bool m_renderToCubemap{ true };
 	};
 
 

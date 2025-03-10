@@ -176,19 +176,19 @@ namespace RenderCore
 
 
 			lv_imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i].imageView = lv_gBufferPositonsGPU.image.imageView;
+			lv_imageInfos[i].imageView = lv_gBufferPositonsGPU.image.imageView0;
 			lv_imageInfos[i].sampler = lv_gBufferPositonsGPU.sampler;
 
 			lv_imageInfos[i+1].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i+1].imageView = lv_gbufferNormalGPU.image.imageView;
+			lv_imageInfos[i+1].imageView = lv_gbufferNormalGPU.image.imageView0;
 			lv_imageInfos[i+1].sampler = lv_gbufferNormalGPU.sampler;
 
 			lv_imageInfos[i+2].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			lv_imageInfos[i+2].imageView = lv_gbufferAlbedoSpecGPU.image.imageView;
+			lv_imageInfos[i+2].imageView = lv_gbufferAlbedoSpecGPU.image.imageView0;
 			lv_imageInfos[i+2].sampler = lv_gbufferAlbedoSpecGPU.sampler;
 
 			lv_imageInfos[i + 3].imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-			lv_imageInfos[i + 3].imageView = lv_outputImage.image.imageView;
+			lv_imageInfos[i + 3].imageView = lv_outputImage.image.imageView0;
 			lv_imageInfos[i + 3].sampler = lv_outputImage.sampler;
 
 		}

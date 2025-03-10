@@ -14,7 +14,7 @@ namespace RenderCore
 		struct UniformBufferLight
 		{
 			glm::mat4 m_viewMatrix;
-			glm::mat4 m_orthoMatrix;
+			glm::mat4 m_projMatrix;
 			glm::vec4 m_pos;
 		};
 
@@ -22,7 +22,9 @@ namespace RenderCore
 
 		DepthMapLightRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator
 							 , const char* l_vtxShader, const char* l_fragShader
-							 , const char* l_spvFile, const glm::vec4& l_lightPos);
+							 , const char* l_spvFile, const char* l_rendererName
+							 ,const glm::vec3& l_lightPos, const glm::vec3& l_lookAtVector
+							 , const glm::vec3& l_up, const int l_cubemapFace);
 
 
 		void FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
@@ -41,5 +43,7 @@ namespace RenderCore
 		uint32_t m_indicesVerticesGpuBufferHandle;
 		std::vector<VulkanBuffer*> m_instanceBuffersGpu;
 		uint32_t m_indirectBufferGpuHandle;
+		std::string m_rendererName{};
+		int m_cubemapFace{ -1 };
 	};
 }
