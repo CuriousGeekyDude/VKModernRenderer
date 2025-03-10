@@ -13,6 +13,7 @@ layout(set = 0, binding = 0) uniform UniformBuffer
 	mat4   m_inMtx;
 	mat4   m_viewMatrix;
 	vec4   m_cameraPos;
+    vec4   m_time;
 
 }lv_cameraUniform;
 
@@ -29,7 +30,7 @@ struct Light
 };
 
 
-uint m_totalNumLights = 0;
+uint m_totalNumLights = 1;
 const float PI = 3.14159265359;
 
 
@@ -53,6 +54,8 @@ layout(set = 0,binding = 10) uniform  UniformBuffer2 {
 	vec4 m_posSun;
 
 } ubo;
+
+layout(set = 0, binding = 11) uniform sampler2D lv_depth;
 
 void main()
 {

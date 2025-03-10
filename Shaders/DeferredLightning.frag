@@ -55,7 +55,7 @@ layout(set = 0,binding = 10) uniform  UniformBuffer2 {
 
 } ubo;
 
-
+layout(set = 0, binding = 11) uniform sampler2D lv_depth;
 
 
 
@@ -191,7 +191,7 @@ void main()
         vec3 H = normalize(lv_dir + L);
         float distance = length(lv_lightPos - lv_fragPos);
         float attenuation = 1.0 / ( distance * distance);
-        vec3 radiance = vec3(3000.f, 3000.f, 3000.f) * attenuation;
+        vec3 radiance = vec3(4500.f, 4500.f, 4500.f) * attenuation;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(lv_normal, H, lv_roughness);   

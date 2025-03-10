@@ -192,6 +192,7 @@
     <ClCompile Include="src\SceneConverter.cpp" />
     <ClCompile Include="src\SceneLoaderAndSaver.cpp" />
     <ClCompile Include="src\simplifier.cpp" />
+    <ClCompile Include="src\SingleModelRenderer.cpp" />
     <ClCompile Include="src\spatialorder.cpp" />
     <ClCompile Include="src\SpirvPipelineGenerator.cpp" />
     <ClCompile Include="src\spirv_reflect.c" />
@@ -252,6 +253,7 @@
     <ClInclude Include="src\SceneConverter.hpp" />
     <ClInclude Include="src\SceneLoaderAndSaver.hpp" />
     <ClInclude Include="src\SceneMetaData.hpp" />
+    <ClInclude Include="src\SingleModelRenderer.hpp" />
     <ClInclude Include="src\spirv.h" />
     <ClInclude Include="src\SpirvPipelineGenerator.hpp" />
     <ClInclude Include="src\spirv_reflect.h" />

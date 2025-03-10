@@ -105,8 +105,8 @@ namespace RenderCore
 		lv_pipeInfo.m_width = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth;
 		lv_pipeInfo.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		lv_pipeInfo.m_useBlending = false;
-		lv_pipeInfo.m_useDepth = true;
-		lv_pipeInfo.m_totalNumColorAttach = lv_node->m_outputResourcesHandles.size() - 1;
+		lv_pipeInfo.m_useDepth = false;
+		lv_pipeInfo.m_totalNumColorAttach = lv_node->m_outputResourcesHandles.size();
 		
 
 		m_graphicsPipeline = lv_vkResManager.CreateGraphicsPipeline(m_renderPass, m_pipelineLayout
@@ -121,7 +121,7 @@ namespace RenderCore
 
 		std::array<VkDescriptorBufferInfo, 3> lv_bufferInfos{};
 		std::vector<VkDescriptorImageInfo> lv_imageInfos{};
-		lv_imageInfos.resize(lv_totalNumSwapchains * 8);
+		lv_imageInfos.resize(lv_totalNumSwapchains * 9);
 
 
 		auto& lv_lightBufferGpu = lv_vkResManager.RetrieveGpuBuffer(m_lightBufferGpuHandle);
@@ -145,7 +145,7 @@ namespace RenderCore
 		auto lv_depthMapLightCubeMeta = lv_vkResManager.RetrieveGpuResourceMetaData("DepthMapPointLight");
 		assert(std::numeric_limits<uint32_t>::max() != lv_depthMapLightCubeMeta.m_resourceHandle);
 		auto& lv_depthMapLightGpu = lv_vkResManager.RetrieveGpuTexture(lv_depthMapLightCubeMeta.m_resourceHandle);
-		for (size_t i = 0, j = 0; i < lv_imageInfos.size(); i+=8, ++j) {
+		for (size_t i = 0, j = 0; i < lv_imageInfos.size(); i+=9, ++j) {
 			
 			auto& lv_gbufferPosGpu = lv_vkResManager.RetrieveGpuTexture("GBufferPosition", j);
 			auto& lv_gbufferNormalGpu = lv_vkResManager.RetrieveGpuTexture("GBufferNormal", j);
@@ -154,6 +154,7 @@ namespace RenderCore
 			auto& lv_gbufferNormalVertexGpu = lv_vkResManager.RetrieveGpuTexture("GBufferNormalVertex", j);
 			auto& lv_occlusionGpu = lv_vkResManager.RetrieveGpuTexture("BoxBlurTexture", j);
 			auto& lv_gbufferMetallicGpu = lv_vkResManager.RetrieveGpuTexture("GBufferMetallic", j);
+			auto& lv_depth = lv_vkResManager.RetrieveGpuTexture("Depth", j);
 
 			lv_imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 			lv_imageInfos[i].imageView = lv_gbufferPosGpu.image.imageView0;
@@ -187,13 +188,17 @@ namespace RenderCore
 			lv_imageInfos[i + 7].imageView = lv_depthMapLightGpu.image.cubemapImageView;
 			lv_imageInfos[i + 7].sampler = lv_depthMapLightGpu.sampler;
 
+			lv_imageInfos[i + 8].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			lv_imageInfos[i + 8].imageView = lv_depth.image.imageView0;
+			lv_imageInfos[i + 8].sampler = lv_depth.sampler;
+
 		}
 
 		std::vector<VkWriteDescriptorSet> lv_writes;
 		lv_writes.resize(lv_totalNumSwapchains*lv_bufferInfos.size() + lv_imageInfos.size());
 
 
-		for (size_t i = 0, j = 0; i < lv_writes.size(); i += 11, ++j) {
+		for (size_t i = 0, j = 0; i < lv_writes.size(); i += 12, ++j) {
 
 			lv_writes[i].descriptorCount = 1;
 			lv_writes[i].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ;
@@ -225,7 +230,7 @@ namespace RenderCore
 			lv_writes[i+2].dstBinding = 2;
 			lv_writes[i+2].dstSet = m_descriptorSets[j];
 			lv_writes[i+2].pBufferInfo = nullptr;
-			lv_writes[i+2].pImageInfo = &lv_imageInfos[8*j];
+			lv_writes[i+2].pImageInfo = &lv_imageInfos[9*j];
 			lv_writes[i+2].pNext = nullptr;
 			lv_writes[i+2].pTexelBufferView = nullptr;
 			lv_writes[i+2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -236,7 +241,7 @@ namespace RenderCore
 			lv_writes[i + 3].dstBinding = 3;
 			lv_writes[i + 3].dstSet = m_descriptorSets[j];
 			lv_writes[i + 3].pBufferInfo = nullptr;
-			lv_writes[i + 3].pImageInfo = &lv_imageInfos[8 * j + 1];
+			lv_writes[i + 3].pImageInfo = &lv_imageInfos[9 * j + 1];
 			lv_writes[i + 3].pNext = nullptr;
 			lv_writes[i + 3].pTexelBufferView = nullptr;
 			lv_writes[i + 3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -247,7 +252,7 @@ namespace RenderCore
 			lv_writes[i + 4].dstBinding = 4;
 			lv_writes[i + 4].dstSet = m_descriptorSets[j];
 			lv_writes[i + 4].pBufferInfo = nullptr;
-			lv_writes[i + 4].pImageInfo = &lv_imageInfos[8 * j + 2];
+			lv_writes[i + 4].pImageInfo = &lv_imageInfos[9 * j + 2];
 			lv_writes[i + 4].pNext = nullptr;
 			lv_writes[i + 4].pTexelBufferView = nullptr;
 			lv_writes[i + 4].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -258,7 +263,7 @@ namespace RenderCore
 			lv_writes[i + 5].dstBinding = 5;
 			lv_writes[i + 5].dstSet = m_descriptorSets[j];
 			lv_writes[i + 5].pBufferInfo = nullptr;
-			lv_writes[i + 5].pImageInfo = &lv_imageInfos[8 * j + 3];
+			lv_writes[i + 5].pImageInfo = &lv_imageInfos[9 * j + 3];
 			lv_writes[i + 5].pNext = nullptr;
 			lv_writes[i + 5].pTexelBufferView = nullptr;
 			lv_writes[i + 5].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -269,7 +274,7 @@ namespace RenderCore
 			lv_writes[i + 6].dstBinding = 6;
 			lv_writes[i + 6].dstSet = m_descriptorSets[j];
 			lv_writes[i + 6].pBufferInfo = nullptr;
-			lv_writes[i + 6].pImageInfo = &lv_imageInfos[8 * j + 4];
+			lv_writes[i + 6].pImageInfo = &lv_imageInfos[9 * j + 4];
 			lv_writes[i + 6].pNext = nullptr;
 			lv_writes[i + 6].pTexelBufferView = nullptr;
 			lv_writes[i + 6].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -280,7 +285,7 @@ namespace RenderCore
 			lv_writes[i + 7].dstBinding = 7;
 			lv_writes[i + 7].dstSet = m_descriptorSets[j];
 			lv_writes[i + 7].pBufferInfo = nullptr;
-			lv_writes[i + 7].pImageInfo = &lv_imageInfos[8 * j + 5];
+			lv_writes[i + 7].pImageInfo = &lv_imageInfos[9 * j + 5];
 			lv_writes[i + 7].pNext = nullptr;
 			lv_writes[i + 7].pTexelBufferView = nullptr;
 			lv_writes[i + 7].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -291,7 +296,7 @@ namespace RenderCore
 			lv_writes[i + 8].dstBinding = 8;
 			lv_writes[i + 8].dstSet = m_descriptorSets[j];
 			lv_writes[i + 8].pBufferInfo = nullptr;
-			lv_writes[i + 8].pImageInfo = &lv_imageInfos[8 * j + 6];
+			lv_writes[i + 8].pImageInfo = &lv_imageInfos[9 * j + 6];
 			lv_writes[i + 8].pNext = nullptr;
 			lv_writes[i + 8].pTexelBufferView = nullptr;
 			lv_writes[i + 8].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -302,7 +307,7 @@ namespace RenderCore
 			lv_writes[i + 9].dstBinding = 9;
 			lv_writes[i + 9].dstSet = m_descriptorSets[j];
 			lv_writes[i + 9].pBufferInfo = nullptr;
-			lv_writes[i + 9].pImageInfo = &lv_imageInfos[8 * j + 7];
+			lv_writes[i + 9].pImageInfo = &lv_imageInfos[9 * j + 7];
 			lv_writes[i + 9].pNext = nullptr;
 			lv_writes[i + 9].pTexelBufferView = nullptr;
 			lv_writes[i + 9].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -318,6 +323,17 @@ namespace RenderCore
 			lv_writes[i + 10].pNext = nullptr;
 			lv_writes[i + 10].pTexelBufferView = nullptr;
 			lv_writes[i + 10].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+
+			lv_writes[i + 11].descriptorCount = 1;
+			lv_writes[i + 11].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			lv_writes[i + 11].dstArrayElement = 0;
+			lv_writes[i + 11].dstBinding = 11;
+			lv_writes[i + 11].dstSet = m_descriptorSets[j];
+			lv_writes[i + 11].pBufferInfo = nullptr;
+			lv_writes[i + 11].pImageInfo = &lv_imageInfos[9 * j + 8];
+			lv_writes[i + 11].pNext = nullptr;
+			lv_writes[i + 11].pTexelBufferView = nullptr;
+			lv_writes[i + 11].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		}
 
 		vkUpdateDescriptorSets(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_device
@@ -375,7 +391,7 @@ namespace RenderCore
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		transitionImageLayoutCmd(l_cmdBuffer, lv_depth.image.image
 			, lv_depth.format, lv_depth.Layout
-			, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		/*transitionImageLayoutCmd(l_cmdBuffer, lv_occlusionGpu.image.image
 			, lv_occlusionGpu.format, lv_occlusionGpu.Layout
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);*/
@@ -396,7 +412,7 @@ namespace RenderCore
 		lv_gbufferNormalGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_gbufferAlbedoSpecGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_gbufferNormalVertexGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		lv_depth.Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		lv_depth.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		//lv_occlusionGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_metallicGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		//lv_depthMapLight.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

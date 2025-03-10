@@ -206,7 +206,7 @@ namespace RenderCore
 
 		}
 
-		//lv_currentNode->m_enabled = false;
+		lv_currentNode->m_enabled = false;
 
 	}
 
@@ -214,7 +214,9 @@ namespace RenderCore
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
 		auto& lv_uniformBufferGpu = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_uniformBufferGpuHandle);
-		m_uniformBufferCpu.m_pos.x = 20.f * (float)std::sin(glfwGetTime());
+		float lv_time = glfwGetTime();
+
+		m_uniformBufferCpu.m_pos.x = 20.f * std::sin(std::log10(lv_time));
 
 
 		glm::vec3 lv_lightPos{ m_uniformBufferCpu.m_pos.x, m_uniformBufferCpu.m_pos.y, m_uniformBufferCpu.m_pos.z};
