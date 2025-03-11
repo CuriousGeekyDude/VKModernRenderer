@@ -14,12 +14,12 @@ namespace VulkanEngine
 	VulkanRenderer::VulkanRenderer(int l_width, int l_height, const std::string& l_frameGraphPath)
 		:CameraApp(l_width, l_height, l_frameGraphPath),
 		m_clearSwapchainDepth(ctx_),
-		m_depthMapLightPlusX(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight0", glm::vec3{ -20.f, 13.f, -2.f }, glm::vec3{ -20.f, 13.f, -2.f } + glm::vec3{ 1.f, 0.f, 0.f }, glm::vec3{0.f, -1.f, 0.f}, 0),
-		m_depthMapLightMinusX(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight1", glm::vec3{ -20.f, 13.f, -2.f }, glm::vec3{ -20.f, 13.f, -2.f } + glm::vec3{ -1.f, 0.f, 0.f }, glm::vec3{ 0.f, -1.f, 0.f }, 1),
-		m_depthMapLightPlusY(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight2", glm::vec3{ -20.f, 13.f, -2.f }, glm::vec3{ -20.f, 13.f, -2.f } + glm::vec3{ 0.f, 1.f, 0.f }, glm::vec3{ 0.f, 0.f, 1.f }, 2),
-		m_depthMapLightMinusY(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight3", glm::vec3{ -20.f, 13.f, -2.f }, glm::vec3{ -20.f, 13.f, -2.f } + glm::vec3{ 0.f, -1.f, 0.f }, glm::vec3{ 0.f, 0.f, -1.f }, 3),
-		m_depthMapLightPlusZ(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight4", glm::vec3{ -20.f, 13.f, -2.f }, glm::vec3{ -20.f, 13.f, -2.f } + glm::vec3{ 0.f, 0.f, 1.f }, glm::vec3{ 0.f, -1.f, 0.f }, 4),
-		m_depthMapLightMinusZ(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight5", glm::vec3{ -20.f, 13.f, -2.f }, glm::vec3{ -20.f, 13.f, -2.f } + glm::vec3{ 0.f, 0.f, -1.f }, glm::vec3{ 0.f, -1.f, 0.f }, 5),
+		m_depthMapLightPlusX(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight0", glm::vec3{ -13.f, 18.f, -2.f }, glm::vec3{ -13.f, 18.f, -2.f } + glm::vec3{ 1.f, 0.f, 0.f }, glm::vec3{0.f, -1.f, 0.f}, 0),
+		m_depthMapLightMinusX(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight1", glm::vec3{ -13.f, 18.f, -2.f }, glm::vec3{ -13.f, 18.f, -2.f } + glm::vec3{ -1.f, 0.f, 0.f }, glm::vec3{ 0.f, -1.f, 0.f }, 1),
+		m_depthMapLightPlusY(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight2", glm::vec3{ -13.f, 18.f, -2.f }, glm::vec3{ -13.f, 18.f, -2.f } + glm::vec3{ 0.f, 1.f, 0.f }, glm::vec3{ 0.f, 0.f, 1.f }, 2),
+		m_depthMapLightMinusY(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight3", glm::vec3{ -13.f, 18.f, -2.f }, glm::vec3{ -13.f, 18.f, -2.f } + glm::vec3{ 0.f, -1.f, 0.f }, glm::vec3{ 0.f, 0.f, -1.f }, 3),
+		m_depthMapLightPlusZ(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight4", glm::vec3{ -13.f, 18.f, -2.f }, glm::vec3{ -13.f, 18.f, -2.f } + glm::vec3{ 0.f, 0.f, 1.f }, glm::vec3{ 0.f, -1.f, 0.f }, 4),
+		m_depthMapLightMinusZ(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight5", glm::vec3{ -13.f, 18.f, -2.f }, glm::vec3{ -13.f, 18.f, -2.f } + glm::vec3{ 0.f, 0.f, -1.f }, glm::vec3{ 0.f, -1.f, 0.f }, 5),
 		m_indirectGbuffer(ctx_,
 			ctx_.GetContextCreator().m_vkDev.m_mainCommandBuffers2[0], "InitFiles/Binary Scene Files/SponzaMeshFileHeader"
 			, "InitFiles/Binary Scene Files/SponzaBoundingBoxes", "InitFiles/Binary Scene Files/SponzaInstanceData",
@@ -39,6 +39,8 @@ namespace VulkanEngine
 		,"Shaders/FullScreenQuad.vert"
 		,"Shaders/DeferredLightning.frag"
 		,"Shaders/Spirv/DeferredLightning.spv")
+		
+		,m_pointLightCube(ctx_)
 		/*m_interior(ctx_, ctx_.GetOffscreenRenderPassDepth(),
 			ctx_.GetContextCreator().m_vkDev.m_graphicsCommandBuffers[0], "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorMeshFileHeader"
 		,"build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorBoundingBoxes", "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorInstanceData",
@@ -58,6 +60,49 @@ namespace VulkanEngine
 	{
 
 
+		std::vector<glm::vec3> vertices{
+			// Front face
+			{ -0.5f, -0.5f,  0.5f }, // 0
+			{  0.5f, -0.5f,  0.5f }, // 1
+			{  0.5f,  0.5f,  0.5f }, // 2
+			{ -0.5f,  0.5f,  0.5f }, // 3
+
+			// Back face
+			{ -0.5f, -0.5f, -0.5f }, // 4
+			{  0.5f, -0.5f, -0.5f }, // 5
+			{  0.5f,  0.5f, -0.5f }, // 6
+			{ -0.5f,  0.5f, -0.5f }  // 7
+		};
+
+		glm::vec3 lv_lightPos{ -13.f, 18.f, -2.f };
+
+		for (auto& l_pos : vertices) {
+			l_pos *= 4.f;
+			l_pos += lv_lightPos;
+		}
+
+		const std::vector<uint32_t> indices{
+			// Front face
+			0, 1, 2,  2, 3, 0,
+
+			// Back face
+			4, 5, 6,  6, 7, 4,
+
+			// Left face
+			4, 0, 3,  3, 7, 4,
+
+			// Right face
+			1, 5, 6,  6, 2, 1,
+
+			// Top face
+			3, 2, 6,  6, 7, 3,
+
+			// Bottom face
+			4, 5, 1,  1, 0, 4
+		};
+
+
+		m_pointLightCube.Init(vertices, indices, "Shaders/PointLightCube.vert", "Shaders/PointLightCube.frag", "Shaders/Spirv/PointLightCube.spv");
 		
 		////ctx_.m_offScreenRenderers.emplace_back(m_interior, true, true);
 		//ctx_.m_offScreenRenderers.emplace_back(m_exterior, true, true);

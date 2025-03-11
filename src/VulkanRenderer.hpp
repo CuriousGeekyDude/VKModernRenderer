@@ -13,6 +13,7 @@
 #include "BoxBlurRenderer.hpp"
 #include "ClearSwapchainDepthRenderer.hpp"
 #include "DepthMapLightRenderer.hpp"
+#include "SingleModelRenderer.hpp"
 
 
 namespace VulkanEngine
@@ -41,6 +42,7 @@ namespace VulkanEngine
 		RenderCore::DepthMapLightRenderer m_depthMapLightPlusZ;
 		RenderCore::DepthMapLightRenderer m_depthMapLightMinusZ;
 		RenderCore::DeferredLightningRenderer m_deferredLightning;
+		RenderCore::SingleModelRenderer m_pointLightCube;
 
 	};
 }

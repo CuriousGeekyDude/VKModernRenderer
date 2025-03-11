@@ -398,6 +398,10 @@ namespace RenderCore
 		transitionImageLayoutCmd(l_cmdBuffer, lv_metallicGpu.image.image
 			, lv_metallicGpu.format, lv_metallicGpu.Layout
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+		transitionImageLayoutCmd(l_cmdBuffer, m_swapchainTextures[l_currentSwapchainIndex]->image.image
+			, m_swapchainTextures[l_currentSwapchainIndex]->format, m_swapchainTextures[l_currentSwapchainIndex]->Layout
+			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		/*transitionImageLayoutCmd(l_cmdBuffer, lv_depthMapLight.image.image
 			, lv_depthMapLight.format, lv_depthMapLight.Layout
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 6);*/
@@ -415,6 +419,8 @@ namespace RenderCore
 		lv_depth.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		//lv_occlusionGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_metallicGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
 		//lv_depthMapLight.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		//m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
@@ -425,7 +431,7 @@ namespace RenderCore
 		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1);
 		vkCmdDraw(l_cmdBuffer, 6, 1, 0, 0);
 		vkCmdEndRenderPass(l_cmdBuffer);
-		m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		/*transitionImageLayoutCmd(l_cmdBuffer, lv_depthMapLight.image.image
 			, lv_depthMapLight.format, lv_depthMapLight.Layout

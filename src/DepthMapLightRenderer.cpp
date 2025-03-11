@@ -213,7 +213,7 @@ namespace RenderCore
 	void DepthMapLightRenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
-		auto& lv_uniformBufferGpu = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_uniformBufferGpuHandle);
+		/*auto& lv_uniformBufferGpu = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_uniformBufferGpuHandle);
 		float lv_time = glfwGetTime();
 
 		m_uniformBufferCpu.m_pos.x = 20.f * std::sin(std::log10(lv_time));
@@ -241,7 +241,7 @@ namespace RenderCore
 			break;
 		}
 
-		memcpy(lv_uniformBufferGpu.ptr, &m_uniformBufferCpu, sizeof(UniformBufferLight));
+		memcpy(lv_uniformBufferGpu.ptr, &m_uniformBufferCpu, sizeof(UniformBufferLight));*/
 
 		
 	}
