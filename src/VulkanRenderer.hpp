@@ -14,7 +14,9 @@
 #include "ClearSwapchainDepthRenderer.hpp"
 #include "DepthMapLightRenderer.hpp"
 #include "SingleModelRenderer.hpp"
-
+#include "ExtractBrightnessRenderer.hpp"
+#include "GaussianBlurRenderer.hpp"
+#include "BloomBlendBlurAndSceneRenderer.hpp"
 
 namespace VulkanEngine
 {
@@ -43,6 +45,21 @@ namespace VulkanEngine
 		RenderCore::DepthMapLightRenderer m_depthMapLightMinusZ;
 		RenderCore::DeferredLightningRenderer m_deferredLightning;
 		RenderCore::SingleModelRenderer m_pointLightCube;
+		RenderCore::ExtractBrightnessRenderer m_extractBrightnessBloom;
 
+		RenderCore::GaussianBlurRenderer m_blurHor0;
+		RenderCore::GaussianBlurRenderer m_blurHor1;
+		RenderCore::GaussianBlurRenderer m_blurHor2;
+		RenderCore::GaussianBlurRenderer m_blurHor3;
+		RenderCore::GaussianBlurRenderer m_blurHor4;
+
+
+		RenderCore::GaussianBlurRenderer m_blurVert0;
+		RenderCore::GaussianBlurRenderer m_blurVert1;
+		RenderCore::GaussianBlurRenderer m_blurVert2;
+		RenderCore::GaussianBlurRenderer m_blurVert3;
+		RenderCore::GaussianBlurRenderer m_blurVert4;
+
+		RenderCore::BloomBlendBlurAndSceneRenderer m_bloomBlend;
 	};
 }

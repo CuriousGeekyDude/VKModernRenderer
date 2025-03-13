@@ -77,7 +77,7 @@ namespace RenderCore
 
 	
 		
-		m_swapchainTextures.resize(lv_totalNumSwapchains);
+		m_colorOutputTextures.resize(lv_totalNumSwapchains);
 
 		auto lv_depthMapLightMeta = lv_vkResManager.RetrieveGpuResourceMetaData("DepthMapPointLight");
 
@@ -86,7 +86,7 @@ namespace RenderCore
 		m_depthMapLightGpuHandle = lv_depthMapLightMeta.m_resourceHandle;
 
 		for (size_t i = 0; i < lv_totalNumSwapchains; ++i) {
-			m_swapchainTextures[i] = &lv_vkResManager.RetrieveGpuTexture("Swapchain", i);
+			m_colorOutputTextures[i] = &lv_vkResManager.RetrieveGpuTexture("DeferredLightningColorTexture", i);
 		}
 
 
@@ -399,14 +399,14 @@ namespace RenderCore
 			, lv_metallicGpu.format, lv_metallicGpu.Layout
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-		transitionImageLayoutCmd(l_cmdBuffer, m_swapchainTextures[l_currentSwapchainIndex]->image.image
-			, m_swapchainTextures[l_currentSwapchainIndex]->format, m_swapchainTextures[l_currentSwapchainIndex]->Layout
+		transitionImageLayoutCmd(l_cmdBuffer, m_colorOutputTextures[l_currentSwapchainIndex]->image.image
+			, m_colorOutputTextures[l_currentSwapchainIndex]->format, m_colorOutputTextures[l_currentSwapchainIndex]->Layout
 			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		/*transitionImageLayoutCmd(l_cmdBuffer, lv_depthMapLight.image.image
 			, lv_depthMapLight.format, lv_depthMapLight.Layout
 			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 6);*/
-		/*transitionImageLayoutCmd(l_cmdBuffer, m_swapchainTextures[l_currentSwapchainIndex]->image.image
-			, m_swapchainTextures[l_currentSwapchainIndex]->format, m_swapchainTextures[l_currentSwapchainIndex]->Layout
+		/*transitionImageLayoutCmd(l_cmdBuffer, m_colorOutputTextures[l_currentSwapchainIndex]->image.image
+			, m_colorOutputTextures[l_currentSwapchainIndex]->format, m_colorOutputTextures[l_currentSwapchainIndex]->Layout
 			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);*/
 
 
@@ -419,10 +419,10 @@ namespace RenderCore
 		lv_depth.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		//lv_occlusionGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		lv_metallicGpu.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		m_colorOutputTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		//lv_depthMapLight.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		//m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		//m_colorOutputTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		/*VkDeviceSize lv_offset{ 0 };
 		vkCmdBindVertexBuffers(l_cmdBuffer, 0, 1, &lv_vertexBuffer.buffer, &lv_offset);
@@ -431,7 +431,7 @@ namespace RenderCore
 		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1);
 		vkCmdDraw(l_cmdBuffer, 6, 1, 0, 0);
 		vkCmdEndRenderPass(l_cmdBuffer);
-		m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		m_colorOutputTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		/*transitionImageLayoutCmd(l_cmdBuffer, lv_depthMapLight.image.image
 			, lv_depthMapLight.format, lv_depthMapLight.Layout

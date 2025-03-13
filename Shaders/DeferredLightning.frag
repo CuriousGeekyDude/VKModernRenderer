@@ -59,13 +59,43 @@ layout(set = 0, binding = 11) uniform sampler2D lv_depth;
 
 
 
-vec3 sampleOffsetDirections[20] = vec3[]
+vec3 sampleOffsetDirections[59] = vec3[]
 (
    vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
    vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
    vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
    vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
-   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1),
+   vec3(-1.f, -1.f, -1.f), vec3(-1.f, 1.f, 1.f), vec3(1.f, 1.f, -1.f),
+   vec3(1.f, -1.f, 1.f), vec3( 1,  2,  0), vec3(-1, -2,  0), vec3( 2,  1,  0),
+   vec3(-2, -1,  0), vec3( 1,  0,  2), vec3(-1,  0, -2), vec3( 0,  2,  1), vec3( 0, -2, -1),
+   vec3( 2,  0,  1),
+vec3(-2,  0, -1),
+vec3( 0,  1,  2),
+vec3( 0, -1, -2),
+vec3( 1,  2,  1),
+vec3(-1, -2, -1),
+vec3( 2,  1, -1),
+vec3(-2, -1,  1),
+vec3( 1, -2,  2),
+vec3(-1,  2, -2),
+vec3(  0.276,  0.447,  0.851),
+vec3( -0.724,  0.447,  0.526),
+vec3( -0.724,  0.447, -0.526),
+vec3(  0.276,  0.447, -0.851),
+vec3(  0.724, -0.447,  0.526),
+vec3( -0.276, -0.447,  0.851),
+vec3( -0.894, -0.447,  0.000),
+vec3( -0.276, -0.447, -0.851),
+vec3(  0.724, -0.447, -0.526),
+vec3(  0.309,  0.951,  0.000),
+vec3( -0.809,  0.588,  0.000),
+vec3(  0.809, -0.588,  0.000),
+vec3( -0.309, -0.951,  0.000),
+vec3(  0.000,  0.309,  0.951),
+vec3(  0.000, -0.309,  0.951),
+vec3(  0.000,  0.309, -0.951),
+vec3(  0.000, -0.309, -0.951)
 ); 
 
 float ShadowCalculation(vec3 lv_worldPos, vec3 lv_normal)
@@ -80,7 +110,7 @@ float ShadowCalculation(vec3 lv_worldPos, vec3 lv_normal)
 
     float shadow = 0.0;
     float bias   = max(0.05 * (1.0 - dot(lv_normal, lv_dirVector)), 0.005);
-    int samples  = 20;
+    int samples  = 59;
     float viewDistance = length(lv_cameraUniform.m_cameraPos.xyz - lv_worldPos);
     float diskRadius = (1.0 + (viewDistance / 100)) / 25.0;
     for(int i = 0; i < samples; ++i)
@@ -181,7 +211,7 @@ void main()
 
      float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal);
 
-     vec3 lv_lightning = lv_albedo*0.025f*lv_occlusion;
+     vec3 lv_lightning = lv_albedo*0.018f*lv_occlusion;
 
 
      vec3 Lo = vec3(0.0);
@@ -191,7 +221,7 @@ void main()
         vec3 H = normalize(lv_dir + L);
         float distance = length(lv_lightPos - lv_fragPos);
         float attenuation = 1.0 / ( distance * distance);
-        vec3 radiance = vec3(4500.f, 4500.f, 4500.f) * attenuation;
+        vec3 radiance = vec3(2000.f, 2000.f, 2000.f) * attenuation;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(lv_normal, H, lv_roughness);   
@@ -232,7 +262,7 @@ void main()
     //lv_lightning = vec3(1.f) - exp(-lv_lightning*2.5f);
 
 
-    lv_lightning /= (lv_lightning + vec3(1.f));
+    //lv_lightning /= (lv_lightning + vec3(1.f));
 
    // lv_finalColor.rgb = pow(lv_lightning, vec3(1.f/2.2f));
    lv_finalColor.rgb = lv_lightning;

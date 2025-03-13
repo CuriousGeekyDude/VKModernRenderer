@@ -41,22 +41,25 @@ namespace VulkanEngine
 		,"Shaders/Spirv/DeferredLightning.spv")
 		
 		,m_pointLightCube(ctx_)
-		/*m_interior(ctx_, ctx_.GetOffscreenRenderPassDepth(),
-			ctx_.GetContextCreator().m_vkDev.m_graphicsCommandBuffers[0], "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorMeshFileHeader"
-		,"build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorBoundingBoxes", "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorInstanceData",
-		 "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorMaterialFile", "build/Chapter3/VK02_DemoApp/CustomSceneStructures/BristoInteriorSceneFile", "C:/Users/farhan/source/repos/3D-Graphics-Rendering-Cookbook-master/data/shaders/chapter05/VK01.vert", "C:/Users/farhan/source/repos/3D-Graphics-Rendering-Cookbook-master/data/shaders/chapter05/VK01.frag"),*/
-		/*m_exterior(ctx_,
-			ctx_.GetContextCreator().m_vkDev.m_mainCommandBuffers2[0], "build/Chapter3/VK02_DemoApp/CustomSceneStructures/SponzaMeshFileHeader"
-			, "build/Chapter3/VK02_DemoApp/CustomSceneStructures/SponzaBoundingBoxes", "build/Chapter3/VK02_DemoApp/CustomSceneStructures/SponzaInstanceData",
-			"build/Chapter3/VK02_DemoApp/CustomSceneStructures/SponzaMaterialFile", 
-			"build/Chapter3/VK02_DemoApp/CustomSceneStructures/SponzaSceneFile" ,
-			"C:/Users/farhan/source/repos/3D-Graphics-Rendering-Cookbook-master/build/Chapter3/VK02_DemoApp/Shaders/VK01.vert",
-			"C:/Users/farhan/source/repos/3D-Graphics-Rendering-Cookbook-master/build/Chapter3/VK02_DemoApp/Shaders/VK01.frag",
-			"build/Chapter3/VK02_DemoApp/Shaders/Indirect.spv"),
-		m_deferred(ctx_, 
-			"C:/Users/farhan/source/repos/3D-Graphics-Rendering-Cookbook-master/build/Chapter3/VK02_DemoApp/Shaders/VK02_Quad.vert", 
-			"C:/Users/farhan/source/repos/3D-Graphics-Rendering-Cookbook-master/build/Chapter3/VK02_DemoApp/Shaders/Deferred.frag",
-			"build/Chapter3/VK02_DemoApp/Shaders/Deferred.spv")*/
+		,m_extractBrightnessBloom(ctx_
+		 ,"Shaders/FullScreenQuad.vert"
+		, "Shaders/ExtractBrightness.frag"
+		,"Shaders/Spirv/ExtractBrightness.spv")
+
+		,m_blurHor0(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurHorizontal.frag", "Shaders/Spirv/GaussianBlur.spv", 0, true, "GaussianBlurHorizontal0")
+		,m_blurHor1(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurHorizontal.frag", "Shaders/Spirv/GaussianBlur.spv", 1, false, "GaussianBlurHorizontal1")
+		,m_blurHor2(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurHorizontal.frag", "Shaders/Spirv/GaussianBlur.spv", 0, false, "GaussianBlurHorizontal2")
+		,m_blurHor3(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurHorizontal.frag", "Shaders/Spirv/GaussianBlur.spv", 1, false, "GaussianBlurHorizontal3")
+		,m_blurHor4(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurHorizontal.frag", "Shaders/Spirv/GaussianBlur.spv", 0, false, "GaussianBlurHorizontal4")
+
+		,m_blurVert0(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurVertical.frag", "Shaders/Spirv/GaussianBlur.spv", 1, false, "GaussianBlurVertical0")
+		,m_blurVert1(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurVertical.frag", "Shaders/Spirv/GaussianBlur.spv", 0, false, "GaussianBlurVertical1")
+		,m_blurVert2(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurVertical.frag", "Shaders/Spirv/GaussianBlur.spv", 1, false, "GaussianBlurVertical2")
+		,m_blurVert3(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurVertical.frag", "Shaders/Spirv/GaussianBlur.spv", 0, false, "GaussianBlurVertical3")
+		,m_blurVert4(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurVertical.frag", "Shaders/Spirv/GaussianBlur.spv", 1, false, "GaussianBlurVertical4")
+		
+		,m_bloomBlend(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/BloomBlend.frag", "Shaders/Spirv/BloomBlend.spv", 1)
+
 	{
 
 
@@ -77,7 +80,7 @@ namespace VulkanEngine
 		glm::vec3 lv_lightPos{ -13.f, 18.f, -2.f };
 
 		for (auto& l_pos : vertices) {
-			l_pos *= 4.f;
+			l_pos *= 2.5f;
 			l_pos += lv_lightPos;
 		}
 

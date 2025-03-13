@@ -159,6 +159,15 @@
     <ClCompile Include="src\SingleModelRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
+    <ClCompile Include="src\ExtractBrightnessRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GaussianBlurRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\BloomBlendBlurAndSceneRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp">
@@ -312,6 +321,15 @@
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="src\SingleModelRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ExtractBrightnessRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GaussianBlurRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BloomBlendBlurAndSceneRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
   </ItemGroup>

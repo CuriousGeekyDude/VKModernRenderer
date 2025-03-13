@@ -163,6 +163,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\allocator.cpp" />
+    <ClCompile Include="src\BloomBlendBlurAndSceneRenderer.cpp" />
     <ClCompile Include="src\BoundingBoxWireframeRenderer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -177,7 +178,9 @@
     <ClCompile Include="src\DeferredForwardRenderer.cpp" />
     <ClCompile Include="src\DeferredLightningRenderer.cpp" />
     <ClCompile Include="src\DepthMapLightRenderer.cpp" />
+    <ClCompile Include="src\ExtractBrightnessRenderer.cpp" />
     <ClCompile Include="src\FrameGraph.cpp" />
+    <ClCompile Include="src\GaussianBlurRenderer.cpp" />
     <ClCompile Include="src\GeometryConverter.cpp" />
     <ClCompile Include="src\indexcodec.cpp" />
     <ClCompile Include="src\indexgenerator.cpp" />
@@ -217,6 +220,7 @@
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp" />
     <ClInclude Include="src\argh.h" />
+    <ClInclude Include="src\BloomBlendBlurAndSceneRenderer.hpp" />
     <ClInclude Include="src\BoundingBoxWireframeRenderer.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -234,8 +238,10 @@
     <ClInclude Include="src\DepthMapLightRenderer.hpp" />
     <ClInclude Include="src\EasyProfilerWrapper.h" />
     <ClInclude Include="src\ErrorCheck.hpp" />
+    <ClInclude Include="src\ExtractBrightnessRenderer.hpp" />
     <ClInclude Include="src\FrameGraph.hpp" />
     <ClInclude Include="src\BoxBlurRenderer.hpp" />
+    <ClInclude Include="src\GaussianBlurRenderer.hpp" />
     <ClInclude Include="src\GeometryConverter.hpp" />
     <ClInclude Include="src\Graph.h" />
     <ClInclude Include="src\Hierarchy.hpp" />

@@ -74,7 +74,7 @@ namespace RenderCore
 		uint32_t m_vertexBufferGpuHandle;
 		uint32_t m_indicesBufferGpuHandle;
 		uint32_t m_depthMapLightGpuHandle;
-		std::vector<VulkanTexture*> m_swapchainTextures;
+		std::vector<VulkanTexture*> m_colorOutputTextures;
 	};
 
 

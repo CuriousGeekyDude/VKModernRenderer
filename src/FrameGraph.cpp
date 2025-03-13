@@ -343,6 +343,22 @@ namespace VulkanEngine
                         lv_inputResource.m_Info.m_imageLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
                     }
 
+                    else if (false == lv_inputResource.m_Info.m_createOnGPU) {
+
+                        VulkanTexture* lv_inputRes;
+                        auto lv_inputResMeta = lv_vkResManager.RetrieveGpuResourceMetaData(lv_inputResource.m_resourceName);
+
+
+                        if (std::numeric_limits<uint32_t>::max() == lv_inputResMeta.m_resourceHandle) {
+                            lv_inputRes = &lv_vkResManager.RetrieveGpuTexture(lv_inputResource.m_resourceName, 0);
+                        }
+                        else {
+                            lv_inputRes = &lv_vkResManager.RetrieveGpuTexture(lv_inputResMeta.m_resourceHandle);
+                        }
+
+                        lv_inputResource.m_Info.m_format = lv_inputRes->format;
+                    }
+
                     //0 signifies that there is no need to create a new resource
                     //1 signifies that there is a need to create a new resource
                     if (lv_inputResource.m_Info.m_createOnGPU == false) {
@@ -461,7 +477,7 @@ namespace VulkanEngine
                             else {
                                 if (std::string{ lv_attachmentNames[j] }.substr(0, 5) != "Depth") {
                                     lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateTexture(m_vkRenderContext.GetContextCreator().m_vkDev.m_maxAnisotropy, std::vformat(lv_formattedString, lv_formattedArgs).c_str(),
-                                        lv_attachmentDescriptions[j].format, 700, 700));
+                                        lv_attachmentDescriptions[j].format, 700, 700,VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER));
                                     lv_vkResManager.AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_framebufferTexturesHandles.back(), RenderCore::VulkanResourceManager::VulkanDataType::m_texture);
                                 }
                                 else {

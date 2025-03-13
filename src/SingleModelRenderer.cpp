@@ -29,9 +29,9 @@ namespace RenderCore
 
 
 		m_depthTextures.resize(lv_totalNumSwapchain);
-		m_swapchainTextures.resize(lv_totalNumSwapchain);
+		m_colorOutputTextures.resize(lv_totalNumSwapchain);
 		for (size_t i = 0; i < lv_totalNumSwapchain; ++i) {
-			m_swapchainTextures[i] = &lv_vkResManager.RetrieveGpuTexture("Swapchain", i);
+			m_colorOutputTextures[i] = &lv_vkResManager.RetrieveGpuTexture("DeferredLightningColorTexture", i);
 			m_depthTextures[i] = &lv_vkResManager.RetrieveGpuTexture("Depth", i);
 		}
 
@@ -98,9 +98,9 @@ namespace RenderCore
 
 		auto lv_framebuffer = lv_vkResManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);
 
-		transitionImageLayoutCmd(l_cmdBuffer, m_swapchainTextures[l_currentSwapchainIndex]->image.image
-			, m_swapchainTextures[l_currentSwapchainIndex]->format
-			,m_swapchainTextures[l_currentSwapchainIndex]->Layout
+		transitionImageLayoutCmd(l_cmdBuffer, m_colorOutputTextures[l_currentSwapchainIndex]->image.image
+			, m_colorOutputTextures[l_currentSwapchainIndex]->format
+			,m_colorOutputTextures[l_currentSwapchainIndex]->Layout
 			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		transitionImageLayoutCmd(l_cmdBuffer, m_depthTextures[l_currentSwapchainIndex]->image.image
 			, m_depthTextures[l_currentSwapchainIndex]->format
@@ -108,7 +108,7 @@ namespace RenderCore
 			, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 
 		m_depthTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		m_colorOutputTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		VkDeviceSize lv_offset = 0;
 		auto& lv_vertexBufferGpu = lv_vkResManager.RetrieveGpuBuffer(m_vertexBufferGpuHandle);
@@ -121,7 +121,7 @@ namespace RenderCore
 		vkCmdDrawIndexed(l_cmdBuffer, m_indexCount, 1, 0,0, 0);
 		vkCmdEndRenderPass(l_cmdBuffer);
 
-		m_swapchainTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		m_colorOutputTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		m_depthTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 

@@ -4,20 +4,18 @@
 
 
 
-
 #include "Renderbase.hpp"
 
 
 namespace RenderCore
 {
-
-	class ClearSwapchainDepthRenderer : public Renderbase
+	class ExtractBrightnessRenderer : public Renderbase
 	{
-
 	public:
 
-		ClearSwapchainDepthRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator);
-
+		ExtractBrightnessRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator
+								, const char* l_vtxShader, const char* l_fragShader
+								, const char* l_spv);
 		void FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
 			uint32_t l_currentSwapchainIndex) override;
 
@@ -27,12 +25,8 @@ namespace RenderCore
 		void UpdateDescriptorSets() override;
 
 	private:
-
+		std::vector<VulkanTexture*> m_extractedBrightnessTextures;
 		std::vector<VulkanTexture*> m_colorOutputTextures;
-		std::vector<VulkanTexture*> m_depthTextures;
-
 
 	};
-
-
 }
