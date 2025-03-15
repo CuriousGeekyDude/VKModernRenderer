@@ -509,7 +509,13 @@ namespace RenderCore
 			.RetrieveGpuTexture(m_attachmentHandles[lv_totalNumAttachmentsPerFrameBuffer * l_currentSwapchainIndex + 6]);
 
 
-		transitionImageLayoutCmd(l_commandBuffer, lv_tangentAttach.image.image, lv_tangentAttach.format,
+		std::vector<VulkanTexture*> lv_colorOptimLayouts{&lv_tangentAttach, & lv_posColorAttach, & lv_normalColorAttach
+			, & lv_albedoSpecColorAttach, & lv_normalVertexColorAttach, & lv_metallicColorAttach };
+		std::vector<VulkanTexture*> lv_depthOptimLayouts{ &lv_depthAttach };
+
+		TransitionImageLayoutsCmd(l_commandBuffer, lv_colorOptimLayouts, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		TransitionImageLayoutsCmd(l_commandBuffer, lv_depthOptimLayouts, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+		/*transitionImageLayoutCmd(l_commandBuffer, lv_tangentAttach.image.image, lv_tangentAttach.format,
 			lv_tangentAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		transitionImageLayoutCmd(l_commandBuffer, lv_posColorAttach.image.image, lv_posColorAttach.format,
 			lv_posColorAttach.Layout, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
@@ -530,7 +536,7 @@ namespace RenderCore
 		lv_albedoSpecColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		lv_normalVertexColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		lv_metallicColorAttach.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		lv_depthAttach.Layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+		lv_depthAttach.Layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;*/
 		
 
 		BeginRenderPass(m_renderPass, lv_framebuffer, l_commandBuffer, l_currentSwapchainIndex, m_attachmentHandles.size());

@@ -70,20 +70,7 @@ namespace RenderCore
 		uint32_t l_currentSwapchainIndex)
 	{
 		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
-
-		transitionImageLayoutCmd(l_cmdBuffer, m_swapchainTexture[l_currentSwapchainIndex]->image.image
-			, m_swapchainTexture[l_currentSwapchainIndex]->format, m_swapchainTexture[l_currentSwapchainIndex]->Layout
-			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-		transitionImageLayoutCmd(l_cmdBuffer, m_deferredLightnintOutputTextures[l_currentSwapchainIndex]->image.image
-			, m_deferredLightnintOutputTextures[l_currentSwapchainIndex]->format, m_deferredLightnintOutputTextures[l_currentSwapchainIndex]->Layout
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		transitionImageLayoutCmd(l_cmdBuffer, m_gaussianBlurredTextures[l_currentSwapchainIndex]->image.image
-			, m_gaussianBlurredTextures[l_currentSwapchainIndex]->format, m_gaussianBlurredTextures[l_currentSwapchainIndex]->Layout
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-		m_swapchainTexture[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		m_gaussianBlurredTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		m_deferredLightnintOutputTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		
 
 
 		auto lv_framebuffer = lv_vkResManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);

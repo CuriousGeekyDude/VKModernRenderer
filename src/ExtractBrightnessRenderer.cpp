@@ -57,14 +57,11 @@ namespace RenderCore
 	{
 		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
 
-		transitionImageLayoutCmd(l_cmdBuffer, m_colorOutputTextures[l_currentSwapchainIndex]->image.image
-			, m_colorOutputTextures[l_currentSwapchainIndex]->format, m_colorOutputTextures[l_currentSwapchainIndex]->Layout
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		
 		transitionImageLayoutCmd(l_cmdBuffer, m_extractedBrightnessTextures[l_currentSwapchainIndex]->image.image
 			, m_extractedBrightnessTextures[l_currentSwapchainIndex]->format, m_extractedBrightnessTextures[l_currentSwapchainIndex]->Layout
 			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
-		m_colorOutputTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		m_extractedBrightnessTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		auto lv_framebuffer = lv_vkResManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);

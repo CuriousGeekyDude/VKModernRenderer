@@ -79,6 +79,10 @@ namespace RenderCore
 			, lv_randomRotationGpuTexture.image.image, lv_randomRotationGpuTexture.image.imageMemory
 			, 4, 4, lv_randomRotationGpuTexture.format, 1, lv_randomRotations.data(), lv_randomRotationGpuTexture.Layout));
 
+
+		transitionImageLayout(m_vulkanRenderContext.GetContextCreator().m_vkDev, lv_randomRotationGpuTexture.image.image, lv_randomRotationGpuTexture.format, lv_randomRotationGpuTexture.Layout, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		lv_randomRotationGpuTexture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
 		m_gpuUniformBufferHandle = lv_vkResManager.CreateBufferWithHandle(sizeof(UniformBufferMatrices)
 												   , VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
 												   , VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
@@ -243,26 +247,14 @@ namespace RenderCore
 
 
 		auto lv_framebuffer = lv_vkResManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);
-		auto& lv_gpuPosTexture = lv_vkResManager.RetrieveGpuTexture("GBufferPosition", l_currentSwapchainIndex);
-		auto& lv_gpuNormalVertexTexture = lv_vkResManager.RetrieveGpuTexture("GBufferNormal", l_currentSwapchainIndex);
-		auto& lv_gpuRotationTexture = lv_vkResManager.RetrieveGpuTexture(m_gpuRandomRotationsTextureHandle);
+		
 		auto& lv_gpuOcclusionTexture = lv_vkResManager.RetrieveGpuTexture("OcclusionFactor", l_currentSwapchainIndex);
 
-		transitionImageLayoutCmd(l_cmdBuffer, lv_gpuPosTexture.image.image
-								, lv_gpuPosTexture.format, lv_gpuPosTexture.Layout
-								, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		transitionImageLayoutCmd(l_cmdBuffer, lv_gpuNormalVertexTexture.image.image
-			, lv_gpuNormalVertexTexture.format, lv_gpuNormalVertexTexture.Layout
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		transitionImageLayoutCmd(l_cmdBuffer, lv_gpuRotationTexture.image.image
-			, lv_gpuRotationTexture.format, lv_gpuRotationTexture.Layout
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		
 		transitionImageLayoutCmd(l_cmdBuffer, lv_gpuOcclusionTexture.image.image
 			, lv_gpuOcclusionTexture.format, lv_gpuOcclusionTexture.Layout
 			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-		lv_gpuPosTexture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		lv_gpuNormalVertexTexture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		lv_gpuRotationTexture.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		
 		lv_gpuOcclusionTexture.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1);

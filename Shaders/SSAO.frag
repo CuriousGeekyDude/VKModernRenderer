@@ -19,7 +19,7 @@ layout(set = 0, binding = 0) uniform UniformBufferMatrix
 } uboMatrix;
 
 
-const uint lv_offsetBufferSize = 32;
+const uint lv_offsetBufferSize = 16;
 layout(set = 0, binding = 1) readonly buffer OffsetsBuffer {vec4 OffsetData[];} lv_offsetBuffer;
 
 

@@ -98,16 +98,12 @@ namespace RenderCore
 		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
 		auto lv_framebuffer = lv_vkResManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);
 
-		transitionImageLayoutCmd(l_cmdBuffer, m_ssaoTextures[l_currentSwapchainIndex]->image.image
-			, m_ssaoTextures[l_currentSwapchainIndex]->format
-			, m_ssaoTextures[l_currentSwapchainIndex]->Layout
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		
 		transitionImageLayoutCmd(l_cmdBuffer, m_frameBufferTextures[l_currentSwapchainIndex]->image.image
 			, m_frameBufferTextures[l_currentSwapchainIndex]->format
 			, m_frameBufferTextures[l_currentSwapchainIndex]->Layout
 			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
-		m_ssaoTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		m_frameBufferTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1);
@@ -115,11 +111,6 @@ namespace RenderCore
 		vkCmdEndRenderPass(l_cmdBuffer);
 
 		m_frameBufferTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-		transitionImageLayoutCmd(l_cmdBuffer, m_frameBufferTextures[l_currentSwapchainIndex]->image.image
-			, m_frameBufferTextures[l_currentSwapchainIndex]->format
-			, m_frameBufferTextures[l_currentSwapchainIndex]->Layout
-			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	}
 

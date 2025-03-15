@@ -205,6 +205,14 @@ inline VkWriteDescriptorSet imageWriteDescriptorSet(VkDescriptorSet ds, const Vk
 
 void createInstance(VkInstance* instance);
 
+
+void DetermineBarrierPipelineStages(VkPipelineStageFlags& l_src, VkPipelineStageFlags& l_dst, VkImageLayout oldLayout, VkImageLayout newLayout);
+
+void GenerateImageMemBarrier(VkImageMemoryBarrier& l_memBarrierToFill, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount = 1, uint32_t mipLevels = 1, uint32_t l_baseArrayLayer = 0, uint32_t baseMipMap = 0);
+
+
+void TransitionImageLayoutsCmd(VkCommandBuffer l_cmdBuffer, std::vector<VulkanTexture*>& l_images, VkImageLayout l_newLayout, uint32_t layerCount = 1, uint32_t mipLevels = 1, uint32_t l_baseArrayLayer = 0, uint32_t baseMipMap = 0);
+
 VkResult createDevice(VkPhysicalDevice m_physicalDevice, VkPhysicalDeviceFeatures deviceFeatures, uint32_t m_mainFamily, VkDevice* m_device);
 
 VkResult createSwapchain(VkDevice m_device, VkPhysicalDevice m_physicalDevice, VkSurfaceKHR surface, uint32_t m_mainFamily, uint32_t width, uint32_t height, VkSwapchainKHR* m_swapchain, bool supportScreenshots = false);
