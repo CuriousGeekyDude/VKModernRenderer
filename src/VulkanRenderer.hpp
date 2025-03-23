@@ -17,6 +17,7 @@
 #include "ExtractBrightnessRenderer.hpp"
 #include "GaussianBlurRenderer.hpp"
 #include "BloomBlendBlurAndSceneRenderer.hpp"
+#include "WireframeDebugTiledDeferredRenderer.hpp"
 
 namespace VulkanEngine
 {
@@ -61,5 +62,8 @@ namespace VulkanEngine
 		RenderCore::GaussianBlurRenderer m_blurVert4;
 
 		RenderCore::BloomBlendBlurAndSceneRenderer m_bloomBlend;
+
+		RenderCore::WireframeDebugTiledDeferredRenderer m_debugTiled;
+
 	};
 }

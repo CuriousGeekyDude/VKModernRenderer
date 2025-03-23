@@ -205,8 +205,6 @@ void main()
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, lv_albedo, lv_metallic);
 
-    vec3 lv_lightPos = ubo.m_posSun.xyz;
-
     //vec3 lv_sunDir = normalize(lv_lightPos - lv_fragPos);
 
      float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal);
@@ -216,11 +214,13 @@ void main()
 
      vec3 Lo = vec3(0.0);
 	for(uint i = 0; i < m_totalNumLights; ++i) {
+        
+        vec3 lv_lightPos = lv_lights.lights[i].m_position.xyz;
 
         vec3 L = normalize(lv_lightPos - lv_fragPos);
         vec3 H = normalize(lv_dir + L);
         float distance = length(lv_lightPos - lv_fragPos);
-        float attenuation = 1.0 / ( distance * distance);
+        float attenuation = 1.0 / ( 1.f + lv_lights.lights[i].m_linear * distance + lv_lights.lights[i].m_quadratic*distance * distance);
         vec3 radiance = vec3(2000.f, 2000.f, 2000.f) * attenuation;
 
         // Cook-Torrance BRDF

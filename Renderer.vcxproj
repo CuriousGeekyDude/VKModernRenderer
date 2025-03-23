@@ -216,6 +216,7 @@
     <ClCompile Include="src\VulkanRenderer.cpp" />
     <ClCompile Include="src\VulkanRendererItem.cpp" />
     <ClCompile Include="src\VulkanResourceManager.cpp" />
+    <ClCompile Include="src\WireframeDebugTiledDeferredRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp" />
@@ -277,6 +278,7 @@
     <ClInclude Include="src\VulkanRenderer.hpp" />
     <ClInclude Include="src\VulkanRendererItem.hpp" />
     <ClInclude Include="src\VulkanResourceManager.hpp" />
+    <ClInclude Include="src\WireframeDebugTiledDeferredRenderer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

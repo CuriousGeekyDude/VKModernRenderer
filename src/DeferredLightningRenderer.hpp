@@ -14,7 +14,7 @@ namespace RenderCore
 	class DeferredLightningRenderer : public Renderbase
 	{
 
-		static constexpr uint32_t m_totalNumLights{ 16 };
+		static constexpr uint32_t m_totalNumLights{ 256 };
 	
 		struct Light
 		{

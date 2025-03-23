@@ -199,8 +199,13 @@ namespace RenderCore
 			l_totalNumClearValues,
 			lv_clearValues.data());
 
+
+
 		vkCmdBindPipeline(l_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
-		vkCmdBindDescriptorSets(l_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1, 
-			&m_descriptorSets[l_currentImage], 0, nullptr);
+
+		if (0 != m_descriptorSets.size()) {
+			vkCmdBindDescriptorSets(l_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1,
+				&m_descriptorSets[l_currentImage], 0, nullptr);
+		}
 	}
 }

@@ -450,7 +450,8 @@ namespace RenderCore
 	void DeferredLightningRenderer::InitializePositionData
 	(std::array<glm::vec4, m_totalNumLights>& l_positionData)
 	{
-		for (uint32_t i = 0; i < 8; ++i) {
+		l_positionData[0] = glm::vec4{ -13.f, 18.f, -2.f, 1.f};
+		for (uint32_t i = 1; i < 8; ++i) {
 			l_positionData[i] = glm::vec4{ -45.f + (float)20*i, 0.5f, 4.f, (float)i };
 		}
 

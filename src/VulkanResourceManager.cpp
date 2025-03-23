@@ -15,17 +15,17 @@ namespace RenderCore
 
 		auto lv_totalNumSwapchhains = l_renderDevice.m_swapchainImages.size();
 
-		m_buffers.reserve(16);
-		m_textures.reserve(256);
+		m_buffers.reserve(64);
+		m_textures.reserve(512);
 
-		m_frameBuffers.reserve(16);
-		m_renderPasses.reserve(16);
+		m_frameBuffers.reserve(32);
+		m_renderPasses.reserve(32);
 
 		m_descriptorPools.reserve(4);
 		m_descriptorSetLayouts.reserve(16);
 
-		m_pipelineLayouts.reserve(16);
-		m_Pipelines.reserve(16);
+		m_pipelineLayouts.reserve(32);
+		m_Pipelines.reserve(32);
 
 		for (size_t i = 0; i < lv_totalNumSwapchhains; ++i) {
 

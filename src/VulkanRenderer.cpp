@@ -59,6 +59,7 @@ namespace VulkanEngine
 		,m_blurVert4(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurVertical.frag", "Shaders/Spirv/GaussianBlur.spv", 1, false, "GaussianBlurVertical4")
 		
 		,m_bloomBlend(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/BloomBlend.frag", "Shaders/Spirv/BloomBlend.spv", 1)
+		,m_debugTiled(ctx_, "Shaders/WireframeDebugTiledDeferred.vert", "Shaders/WireframeDebugTiledDeferred.frag", nullptr)
 
 	{
 
@@ -80,7 +81,7 @@ namespace VulkanEngine
 		glm::vec3 lv_lightPos{ -13.f, 18.f, -2.f };
 
 		for (auto& l_pos : vertices) {
-			l_pos *= 2.5f;
+			l_pos *= 5.090127f;
 			l_pos += lv_lightPos;
 		}
 
@@ -115,7 +116,7 @@ namespace VulkanEngine
 	void VulkanRenderer::draw3D(uint32_t l_currentImageIndex)
 	{
 		const float lv_ratio = (float)ctx_.GetContextCreator().m_vkDev.m_framebufferWidth / (float)ctx_.GetContextCreator().m_vkDev.m_framebufferHeight;
-		auto proj = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.01f, 1000.f);
+		auto proj = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.1f, 145.f);
 
 
 		const CameraStructure lv_cameraStructure{

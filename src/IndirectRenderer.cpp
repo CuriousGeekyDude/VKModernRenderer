@@ -36,7 +36,7 @@ namespace RenderCore
 		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();
 
 		const float lv_ratio = (float)lv_contextCreator.m_vkDev.m_framebufferWidth / (float)lv_contextCreator.m_vkDev.m_framebufferHeight;
-		m_cameraFrustum.m_projectionMatrix = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.01f, 1000.f);
+		m_cameraFrustum.m_projectionMatrix = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.1f, 100.f);
 
 		LoadInstanceData(l_instanceDataFile);
 		m_instanceBufferSize = m_totalNumInstances * sizeof(InstanceData);

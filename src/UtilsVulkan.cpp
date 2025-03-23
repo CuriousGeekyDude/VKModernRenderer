@@ -2777,12 +2777,15 @@ bool createDepthResources(VulkanRenderDevice& vkDev, uint32_t width, uint32_t he
 
 bool createPipelineLayout(VkDevice m_device, VkDescriptorSetLayout dsLayout, VkPipelineLayout* pipelineLayout)
 {
+	uint32_t lv_totalNumSetLayouts{};
+	if (VK_NULL_HANDLE == dsLayout) { lv_totalNumSetLayouts = 0; }
+	else { lv_totalNumSetLayouts = 1; }
 	const VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
 		.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 		.pNext = nullptr,
 		.flags = 0,
-		.setLayoutCount = 1,
-		.pSetLayouts = &dsLayout,
+		.setLayoutCount = lv_totalNumSetLayouts,
+		.pSetLayouts = lv_totalNumSetLayouts == 0 ? nullptr : &dsLayout,
 		.pushConstantRangeCount = 0,
 		.pPushConstantRanges = nullptr
 	};
