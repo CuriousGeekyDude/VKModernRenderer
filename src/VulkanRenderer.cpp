@@ -59,7 +59,7 @@ namespace VulkanEngine
 		,m_blurVert4(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurVertical.frag", "Shaders/Spirv/GaussianBlur.spv", 1, false, "GaussianBlurVertical4")
 		
 		,m_bloomBlend(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/BloomBlend.frag", "Shaders/Spirv/BloomBlend.spv", 1)
-		,m_debugTiled(ctx_, "Shaders/WireframeDebugTiledDeferred.vert", "Shaders/WireframeDebugTiledDeferred.frag", nullptr)
+		//,m_debugTiled(ctx_, "Shaders/WireframeDebugTiledDeferred.vert", "Shaders/WireframeDebugTiledDeferred.frag", nullptr)
 
 	{
 

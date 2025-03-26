@@ -477,7 +477,7 @@ namespace VulkanEngine
                             else {
                                 if (std::string{ lv_attachmentNames[j] }.substr(0, 5) != "Depth") {
                                     lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateTexture(m_vkRenderContext.GetContextCreator().m_vkDev.m_maxAnisotropy, std::vformat(lv_formattedString, lv_formattedArgs).c_str(),
-                                        lv_attachmentDescriptions[j].format, 700, 700,VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER));
+                                        lv_attachmentDescriptions[j].format, 704, 704,VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER));
                                     lv_vkResManager.AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_framebufferTexturesHandles.back(), RenderCore::VulkanResourceManager::VulkanDataType::m_texture);
                                 }
                                 else {

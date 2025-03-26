@@ -63,7 +63,7 @@ namespace VulkanEngine
 
 		RenderCore::BloomBlendBlurAndSceneRenderer m_bloomBlend;
 
-		RenderCore::WireframeDebugTiledDeferredRenderer m_debugTiled;
+		
 
 	};
 }
