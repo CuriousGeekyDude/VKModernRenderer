@@ -244,7 +244,7 @@ namespace RenderCore
 		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo));
 
 
-		if (false == createTextureSampler(m_renderDevice.m_device, &lv_depthTextureToCreate.sampler
+		if (false == createTextureSampler(m_renderDevice.m_device, &lv_depthTextureToCreate.sampler ,1.f
 										, 1.f, VK_FILTER_LINEAR, VK_FILTER_LINEAR
 										, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER)) {
 			PRINT_EXIT("\nFailed to create image sampler for depth texture.\n");
@@ -444,6 +444,7 @@ namespace RenderCore
 		VulkanResourceManager::CreateTextureForOffscreenFrameBuffer(float l_maxAnistropy ,const std::string& l_nameTexture,
 		VkFormat l_colorFormat, 
 		uint32_t l_width, uint32_t l_height,
+		uint32_t l_mipLevels,
 		VkFilter l_minFilter,
 		VkFilter l_maxFilter,
 		VkSamplerAddressMode l_addressMode)
@@ -458,7 +459,7 @@ namespace RenderCore
 
 		if (false == createOffscreenImage(m_renderDevice, lv_textureToCreate.image.image,
 			lv_textureToCreate.image.imageMemory, lv_textureToCreate.width, lv_textureToCreate.height,
-			l_colorFormat, 1, 0)) {
+			l_colorFormat, 1, 0, l_mipLevels)) {
 			PRINT_EXIT(".\nFailed to create attachment for an offscreen framebuffer.\n");
 		}
 
@@ -490,7 +491,7 @@ namespace RenderCore
 
 		VULKAN_CHECK(vkSetDebugUtilsObjectNameEXT(m_renderDevice.m_device, &lv_objectNameInfo1));
 
-		if (false == createTextureSampler(m_renderDevice.m_device, &lv_textureToCreate.sampler, l_maxAnistropy,l_minFilter,
+		if (false == createTextureSampler(m_renderDevice.m_device, &lv_textureToCreate.sampler, (float)l_mipLevels,l_maxAnistropy,l_minFilter,
 			l_maxFilter, l_addressMode)) {
 			PRINT_EXIT(".\nFailed to create sampler for offscreen attachment.\n");
 		}
@@ -531,33 +532,95 @@ namespace RenderCore
 		using namespace ErrorCheck;
 
 		VulkanTexture lv_textureToCreate{};
+		uint32_t lv_mipLevel{std::numeric_limits<uint32_t>::max()};
 
+
+
+		VkFormatProperties formatProperties;
+		vkGetPhysicalDeviceFormatProperties(m_renderDevice.m_physicalDevice, VK_FORMAT_R8G8B8A8_UNORM,
+			&formatProperties);
+
+		if ((formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT) == 0) {
+			PRINT_EXIT("\nLinear filtering is not supported for VK_FORMAT_R8G8B8A8_UNORM format. Exitting...\n");
+		}
 
 		printf("\nAttempting to load : %s\n", l_textureFileName.c_str());
 
 		if (false == createTextureImage(m_renderDevice, l_textureFileName.c_str(),
 			lv_textureToCreate.image.image, lv_textureToCreate.image.imageMemory,
-			&lv_textureToCreate.width, &lv_textureToCreate.height)) {
+			&lv_textureToCreate.width, &lv_textureToCreate.height, &lv_mipLevel)) {
 
 			PRINT_EXIT("\nFailed to create texture image from texture file name.\n");
 
 		}
 
+		if (std::numeric_limits<uint32_t>::max() == lv_mipLevel) {
+			PRINT_EXIT("\nFailed to retrieve the mipmap level from loading texture.\n");
+
+		}
+
 		if (false == createImageView(m_renderDevice.m_device, lv_textureToCreate.image.image,
-			VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, &lv_textureToCreate.image.imageView0)) {
+			VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT, &lv_textureToCreate.image.imageView0, VK_IMAGE_VIEW_TYPE_2D, 1, lv_mipLevel)) {
 			PRINT_EXIT("\nFailed to create image view for the loaded 2D texture file.\n");
 		}
 
-		if (false == createTextureSampler(m_renderDevice.m_device, &lv_textureToCreate.sampler)) {
+		if (false == createTextureSampler(m_renderDevice.m_device, &lv_textureToCreate.sampler, (float)lv_mipLevel)) {
 			PRINT_EXIT("\nFailed to create sampler for loaded 2D texture.\n");
 		}
 
 		transitionImageLayout(m_renderDevice, lv_textureToCreate.image.image, VK_FORMAT_R8G8B8A8_UNORM,
-			VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,1, 1, 0);
+
+		
+		transitionImageLayout(m_renderDevice, lv_textureToCreate.image.image, VK_FORMAT_R8G8B8A8_UNORM,
+			VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, lv_mipLevel - 1, 1);
 
 
 		lv_textureToCreate.format = VK_FORMAT_R8G8B8A8_UNORM;
 		lv_textureToCreate.depth = 1U;
+
+		int32_t lv_srcMipmapWidth = (int32_t)lv_textureToCreate.width;
+		int32_t lv_srcMipmapHeight = (int32_t)lv_textureToCreate.height;
+
+		//Downsample from mip chain n-1 to n
+		for (uint32_t i = 1; i < lv_mipLevel; ++i) {
+
+			VkImageBlit lv_imageBlit{};
+
+			lv_imageBlit.srcOffsets[0] = {0,0,0};
+			lv_imageBlit.srcOffsets[1] = {lv_srcMipmapWidth, lv_srcMipmapHeight, 1};
+			lv_imageBlit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			lv_imageBlit.srcSubresource.baseArrayLayer = 0;
+			lv_imageBlit.srcSubresource.layerCount = 1;
+			lv_imageBlit.srcSubresource.mipLevel = i - 1;
+
+			lv_srcMipmapWidth = lv_srcMipmapWidth == 1 ? 1 : lv_srcMipmapWidth / 2;
+			lv_srcMipmapHeight = lv_srcMipmapHeight == 1 ? 1 : lv_srcMipmapHeight / 2;
+			lv_imageBlit.dstOffsets[0] = { 0,0,0 };
+			lv_imageBlit.dstOffsets[1] = {lv_srcMipmapWidth, lv_srcMipmapHeight, 1};
+			lv_imageBlit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			lv_imageBlit.dstSubresource.baseArrayLayer = 0;
+			lv_imageBlit.dstSubresource.layerCount = 1;
+			lv_imageBlit.dstSubresource.mipLevel = i;
+
+			VkCommandBuffer commandBuffer = beginSingleTimeCommands(m_renderDevice);
+			vkCmdBlitImage(commandBuffer, lv_textureToCreate.image.image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+						  , lv_textureToCreate.image.image,VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,1, &lv_imageBlit, VK_FILTER_LINEAR);
+			endSingleTimeCommands(m_renderDevice, commandBuffer);
+
+
+			transitionImageLayout(m_renderDevice, lv_textureToCreate.image.image
+				, lv_textureToCreate.format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
+				, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, 1, 1, i);
+
+		}
+
+		transitionImageLayout(m_renderDevice, lv_textureToCreate.image.image
+			, lv_textureToCreate.format, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL
+			, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, lv_mipLevel, 0);
+
+
+		
 		lv_textureToCreate.Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
 		m_textures.push_back(lv_textureToCreate);
@@ -661,11 +724,12 @@ namespace RenderCore
 	uint32_t VulkanResourceManager::CreateTexture(float l_maxAnistropy ,const char* l_nameTexture,
 		VkFormat l_colorFormat,
 		uint32_t l_width , uint32_t l_height,
+		uint32_t l_mipLevels,
 		VkFilter l_minFilter,
 		VkFilter l_maxFilter,
 		VkSamplerAddressMode l_addressMode)
 	{
-		CreateTextureForOffscreenFrameBuffer(l_maxAnistropy,l_nameTexture, l_colorFormat, l_width, l_height, l_minFilter, l_maxFilter, l_addressMode);
+		CreateTextureForOffscreenFrameBuffer(l_maxAnistropy,l_nameTexture, l_colorFormat, l_width, l_height, l_mipLevels,l_minFilter, l_maxFilter, l_addressMode);
 
 		return (uint32_t)m_textures.size()-1;
 	}

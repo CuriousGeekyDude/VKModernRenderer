@@ -221,7 +221,7 @@ size_t createSwapchainImages(VkDevice m_device, VkSwapchainKHR m_swapchain, std:
 
 VkResult createSemaphore(VkDevice m_device, VkSemaphore* outSemaphore);
 
-bool createTextureSampler(VkDevice m_device, VkSampler* sampler, float l_maxAnistropy = 1 ,VkFilter minFilter = VK_FILTER_LINEAR, VkFilter maxFilter = VK_FILTER_LINEAR, VkSamplerAddressMode addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
+bool createTextureSampler(VkDevice m_device, VkSampler* sampler, float l_mipLevels = 1.f,float l_maxAnistropy = 1 ,VkFilter minFilter = VK_FILTER_LINEAR, VkFilter maxFilter = VK_FILTER_LINEAR, VkSamplerAddressMode addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
 bool createDescriptorPool(VulkanRenderDevice& vkDev, uint32_t uniformBufferCount, uint32_t storageBufferCount, uint32_t samplerCount, VkDescriptorPool* descriptorPool);
 
@@ -278,7 +278,7 @@ bool createOffscreenImage(VulkanRenderDevice& vkDev,
 		VkImage& textureImage, VkDeviceMemory& textureImageMemory,
 		uint32_t texWidth, uint32_t texHeight,
 		VkFormat texFormat,
-		uint32_t layerCount, VkImageCreateFlags flags);
+		uint32_t layerCount, VkImageCreateFlags flags,uint32_t l_mipLevels = 1U);
 
 //bool createOffscreenImageFromData(VulkanRenderDevice& vkDev,
 //		VkImage& textureImage, VkDeviceMemory& textureImageMemory,
@@ -336,8 +336,8 @@ bool createDepthOnlyRenderPass(VulkanRenderDevice& vkDev, VkRenderPass* renderPa
 VkCommandBuffer beginSingleTimeCommands(VulkanRenderDevice& vkDev);
 void endSingleTimeCommands(VulkanRenderDevice& vkDev, VkCommandBuffer commandBuffer);
 void copyBuffer(VulkanRenderDevice& vkDev, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-void transitionImageLayout(VulkanRenderDevice& vkDev, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount = 1, uint32_t mipLevels = 1);
-void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount = 1, uint32_t mipLevels = 1, uint32_t l_baseArrayLayer = 0);
+void transitionImageLayout(VulkanRenderDevice& vkDev, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount = 1, uint32_t mipLevels = 1, uint32_t l_baseMipLevel = 0);
+void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount = 1, uint32_t mipLevels = 1, uint32_t l_baseArrayLayer = 0, uint32_t l_baseMipLevel = 0);
 
 bool initVulkanRenderDevice(VulkanInstance& vk, VulkanRenderDevice& vkDev, uint32_t width, uint32_t height, std::function<bool(VkPhysicalDevice)> selector, VkPhysicalDeviceFeatures deviceFeatures);
 bool initVulkanRenderDevice2(VulkanInstance& vk, VulkanRenderDevice& vkDev, uint32_t width, uint32_t height, std::function<bool(VkPhysicalDevice)> selector, VkPhysicalDeviceFeatures2 deviceFeatures2);
@@ -386,7 +386,7 @@ bool createTextureImageFromData(VulkanRenderDevice& vkDev,
 		VkImage& textureImage, VkDeviceMemory& textureImageMemory,
 		void* imageData, uint32_t texWidth, uint32_t texHeight,
 		VkFormat texFormat,
-		uint32_t layerCount = 1, VkImageCreateFlags flags = 0);
+		uint32_t layerCount = 1, VkImageCreateFlags flags = 0, uint32_t l_mipLevel = 1);
 
 bool createMIPTextureImageFromData(VulkanRenderDevice& vkDev,
 		VkImage& textureImage, VkDeviceMemory& textureImageMemory,
@@ -400,7 +400,7 @@ bool createTextureVolumeFromData(VulkanRenderDevice& vkDev,
 		VkFormat texFormat,
 		VkImageCreateFlags flags = 0);
 
-bool createTextureImage(VulkanRenderDevice& vkDev, const char* filename, VkImage& textureImage, VkDeviceMemory& textureImageMemory, uint32_t* outTexWidth = nullptr, uint32_t* outTexHeight = nullptr);
+bool createTextureImage(VulkanRenderDevice& vkDev, const char* filename, VkImage& textureImage, VkDeviceMemory& textureImageMemory, uint32_t* outTexWidth = nullptr, uint32_t* outTexHeight = nullptr, uint32_t* l_mipLevel = nullptr);
 
 bool createMIPTextureImage(VulkanRenderDevice& vkDev, const char* filename, uint32_t mipLevels, VkImage& textureImage, VkDeviceMemory& textureImageMemory, uint32_t* width = nullptr, uint32_t* height = nullptr);
 

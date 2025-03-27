@@ -167,7 +167,8 @@ namespace RenderCore
 
 		VulkanTexture& CreateTextureForOffscreenFrameBuffer(float l_maxAnistropy ,const std::string& l_nameTexture,
 			VkFormat l_colorFormat = VK_FORMAT_B8G8R8A8_UNORM,
-			uint32_t l_width = 1024, uint32_t l_height = 512,
+			uint32_t l_width = 704, uint32_t l_height = 704,
+			uint32_t l_mipLevels = 1U,
 			VkFilter l_minFilter = VK_FILTER_LINEAR,
 			VkFilter l_maxFilter = VK_FILTER_LINEAR,
 			VkSamplerAddressMode l_addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
@@ -176,7 +177,8 @@ namespace RenderCore
 		//Same as CreateTextureForOffscreenFrameBuffer() except this one returns the handle
 		uint32_t CreateTexture(float l_maxAnistropy ,const char* l_nameTexture,
 			VkFormat l_colorFormat = VK_FORMAT_B8G8R8A8_UNORM,
-			uint32_t l_width = 1024, uint32_t l_height = 512,
+			uint32_t l_width = 704, uint32_t l_height = 704,
+			uint32_t l_mipLevels = 1U,
 			VkFilter l_minFilter = VK_FILTER_LINEAR,
 			VkFilter l_maxFilter = VK_FILTER_LINEAR,
 			VkSamplerAddressMode l_addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);

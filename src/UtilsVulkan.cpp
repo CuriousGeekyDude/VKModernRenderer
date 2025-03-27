@@ -20,6 +20,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
 #include <assimp/version.h>
+#include <cmath>
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
@@ -1002,7 +1003,7 @@ void destroyVulkanInstance(VulkanInstance& vk)
 	vkDestroyInstance(vk.instance, nullptr);
 }
 
-bool createTextureSampler(VkDevice m_device, VkSampler* sampler, float l_maxAnistropy ,VkFilter minFilter, VkFilter maxFilter, VkSamplerAddressMode addressMode)
+bool createTextureSampler(VkDevice m_device, VkSampler* sampler, float l_mipLevels,float l_maxAnistropy ,VkFilter minFilter, VkFilter maxFilter, VkSamplerAddressMode addressMode)
 {
 	const VkSamplerCreateInfo samplerInfo = {
 		.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
@@ -1020,7 +1021,7 @@ bool createTextureSampler(VkDevice m_device, VkSampler* sampler, float l_maxAnis
 		.compareEnable = VK_FALSE,
 		.compareOp = VK_COMPARE_OP_ALWAYS,
 		.minLod = 0.0f,
-		.maxLod = 0.0f,
+		.maxLod = l_mipLevels,
 		.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 		.unnormalizedCoordinates = VK_FALSE
 	};
@@ -1885,11 +1886,11 @@ void copyBuffer(VulkanRenderDevice& vkDev, VkBuffer srcBuffer, VkBuffer dstBuffe
 	endSingleTimeCommands(vkDev, commandBuffer);
 }
 
-void transitionImageLayout(VulkanRenderDevice& vkDev, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount, uint32_t mipLevels)
+void transitionImageLayout(VulkanRenderDevice& vkDev, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount, uint32_t mipLevels, uint32_t l_baseMipLevel)
 {
 	VkCommandBuffer commandBuffer = beginSingleTimeCommands(vkDev);
 
-	transitionImageLayoutCmd(commandBuffer, image, format, oldLayout, newLayout, layerCount, mipLevels);
+	transitionImageLayoutCmd(commandBuffer, image, format, oldLayout, newLayout, layerCount, mipLevels, 0, l_baseMipLevel);
 
 	endSingleTimeCommands(vkDev, commandBuffer);
 }
@@ -2241,7 +2242,7 @@ void TransitionImageLayoutsCmd(VkCommandBuffer l_cmdBuffer, std::vector<VulkanTe
 }
 
 
-void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount, uint32_t mipLevels, uint32_t l_baseArrayLayer)
+void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layerCount, uint32_t mipLevels, uint32_t l_baseArrayLayer, uint32_t l_baseMipLevel)
 {
 	VkImageMemoryBarrier barrier = {
 		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
@@ -2255,7 +2256,7 @@ void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFo
 		.image = image,
 		.subresourceRange = VkImageSubresourceRange {
 			.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-			.baseMipLevel = 0,
+			.baseMipLevel = l_baseMipLevel,
 			.levelCount = mipLevels,
 			.baseArrayLayer = l_baseArrayLayer,
 			.layerCount = layerCount
@@ -2313,6 +2314,15 @@ void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFo
 		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 	}
+
+	if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+		barrier.srcAccessMask = 0;
+		barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+	}
+
 	/* Convert back from read-only to updateable */
 	else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
 		barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
@@ -2462,7 +2472,28 @@ void transitionImageLayoutCmd(VkCommandBuffer commandBuffer, VkImage image, VkFo
 		sourceStage = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
 		destinationStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 		}
+	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+		barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+		barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
+		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		}
+	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL  && newLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL) {
+		barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+		sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		}
+	
+	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			}
 
 	vkCmdPipelineBarrier(
 		commandBuffer,
@@ -2882,9 +2913,9 @@ bool createTextureImageFromData(VulkanRenderDevice& vkDev,
 		VkImage& textureImage, VkDeviceMemory& textureImageMemory,
 		void* imageData, uint32_t texWidth, uint32_t texHeight,
 		VkFormat texFormat,
-		uint32_t layerCount, VkImageCreateFlags flags)
+		uint32_t layerCount, VkImageCreateFlags flags, uint32_t l_mipLevel)
 {
-	createImage(vkDev.m_device, vkDev.m_physicalDevice, texWidth, texHeight, texFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory, flags);
+	createImage(vkDev.m_device, vkDev.m_physicalDevice, texWidth, texHeight, texFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory, flags, l_mipLevel);
 
 	return updateTextureImage(vkDev, textureImage, textureImageMemory, texWidth, texHeight, texFormat, layerCount, imageData);
 }
@@ -2947,7 +2978,7 @@ bool createMIPTextureImage(VulkanRenderDevice& vkDev, const char* filename, uint
 	return true;
 }
 
-bool createTextureImage(VulkanRenderDevice& vkDev, const char* filename, VkImage& textureImage, VkDeviceMemory& textureImageMemory, uint32_t* outTexWidth, uint32_t* outTexHeight)
+bool createTextureImage(VulkanRenderDevice& vkDev, const char* filename, VkImage& textureImage, VkDeviceMemory& textureImageMemory, uint32_t* outTexWidth, uint32_t* outTexHeight, uint32_t* l_mipLevel)
 {
 	int texWidth, texHeight, texChannels;
 	stbi_uc* pixels = stbi_load(filename, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -2958,14 +2989,17 @@ bool createTextureImage(VulkanRenderDevice& vkDev, const char* filename, VkImage
 		return false;
 	}
 
+	uint32_t lv_mipLevel = (uint32_t)std::floorf(std::log2(std::max(texWidth, texHeight)) + 1);
+
 	bool result = createTextureImageFromData(vkDev, textureImage, textureImageMemory,
-		pixels, texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM);
+		pixels, texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM, 1, 0, lv_mipLevel);
 
 	stbi_image_free(pixels);
 
 	if (outTexWidth && outTexHeight) {
 		*outTexWidth  = (uint32_t)texWidth;
 		*outTexHeight = (uint32_t)texHeight;
+		*l_mipLevel = (uint32_t)lv_mipLevel;
 	}
 
 	return result;
@@ -3331,9 +3365,9 @@ bool createOffscreenImage(VulkanRenderDevice& vkDev,
 		VkImage& textureImage, VkDeviceMemory& textureImageMemory,
 		uint32_t texWidth, uint32_t texHeight,
 		VkFormat texFormat,
-		uint32_t layerCount, VkImageCreateFlags flags)
+		uint32_t layerCount, VkImageCreateFlags flags, uint32_t l_mipLevels)
 {
-	return createImage(vkDev.m_device, vkDev.m_physicalDevice, texWidth, texHeight, texFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT /* necessary only for screenshot */ | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory, flags);
+	return createImage(vkDev.m_device, vkDev.m_physicalDevice, texWidth, texHeight, texFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT /* necessary only for screenshot */ | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory, flags, l_mipLevels);
 }
 
 bool createDepthSampler(VkDevice m_device, VkSampler* sampler)
