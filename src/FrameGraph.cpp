@@ -152,6 +152,16 @@ namespace VulkanEngine
                             lv_inputInfo.m_createOnGPU = true;
                         }
 
+
+                        if (true == lv_inputResources["TextureInfo"][0].HasMember("MipLevel")) {
+                            lv_inputInfo.m_mipLevels = (uint32_t)lv_inputResources["TextureInfo"][0]["MipLevel"].GetInt();
+                        }
+
+                        if (true == lv_inputResources["TextureInfo"][0].HasMember("SamplerMode")) {
+                            lv_inputInfo.m_addressMode = StringToVkSamplerAddressMode(lv_inputResources["TextureInfo"][0]["MipLevel"].GetString());
+                        }
+
+
                         lv_inputResource.m_nodeThatOwnsThisResourceHandle = i;
 
                         lv_inputInfo.m_loadOp = StringToLoadOp(lv_inputResources["TextureInfo"][0]["LoadOp"].GetString());
@@ -463,26 +473,35 @@ namespace VulkanEngine
                         for (size_t j = 0; j < lv_attachmentNames.size(); ++j) {
 
                             std::string lv_formattedString{ lv_attachmentNames[j] };
-                            lv_formattedString = lv_formattedString + " {}";
-                            auto lv_formattedArgs = std::make_format_args(i);
 
-                            if (lv_attachmentBits[j] == 0) {
-                                auto lv_textureMetaData = lv_vkResManager.RetrieveGpuResourceMetaData(std::vformat(lv_formattedString, lv_formattedArgs).c_str());
-                                if (UINT32_MAX == lv_textureMetaData.m_resourceHandle) {
-                                    std::cout << "Texture meta data has invalid handle. Exitting...." << std::endl;
-                                    exit(-1);
-                                }
-                                lv_framebufferTexturesHandles.push_back(lv_textureMetaData.m_resourceHandle);
-                            }
-                            else {
-                                if (std::string{ lv_attachmentNames[j] }.substr(0, 5) != "Depth") {
-                                    lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateTexture(m_vkRenderContext.GetContextCreator().m_vkDev.m_maxAnisotropy, std::vformat(lv_formattedString, lv_formattedArgs).c_str(),
-                                        lv_attachmentDescriptions[j].format,704, 704, 1,VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER));
-                                    lv_vkResManager.AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_framebufferTexturesHandles.back(), RenderCore::VulkanResourceManager::VulkanDataType::m_texture);
+                            for (auto l_inputResHandle : lv_node.m_inputResourcesHandles) {
+
+                                auto& lv_inputRes = m_frameGraphResources[l_inputResHandle];
+
+                                if (lv_inputRes.m_resourceName != lv_formattedString) { continue; }
+
+
+                                lv_formattedString = lv_formattedString + " {}";
+                                auto lv_formattedArgs = std::make_format_args(i);
+
+                                if (lv_attachmentBits[j] == 0) {
+                                    auto lv_textureMetaData = lv_vkResManager.RetrieveGpuResourceMetaData(std::vformat(lv_formattedString, lv_formattedArgs).c_str());
+                                    if (UINT32_MAX == lv_textureMetaData.m_resourceHandle) {
+                                        std::cout << "Texture meta data has invalid handle. Exitting...." << std::endl;
+                                        exit(-1);
+                                    }
+                                    lv_framebufferTexturesHandles.push_back(lv_textureMetaData.m_resourceHandle);
                                 }
                                 else {
-                                    lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateDepthTextureWithHandle(std::vformat(lv_formattedString, lv_formattedArgs).c_str()));
-                                    lv_vkResManager.AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_framebufferTexturesHandles.back(), RenderCore::VulkanResourceManager::VulkanDataType::m_texture);
+                                    if (std::string{ lv_attachmentNames[j] }.substr(0, 5) != "Depth") {
+                                        lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateTexture(m_vkRenderContext.GetContextCreator().m_vkDev.m_maxAnisotropy, std::vformat(lv_formattedString, lv_formattedArgs).c_str(),
+                                            lv_attachmentDescriptions[j].format, 704, 704,lv_inputRes.m_Info.m_mipLevels, VK_FILTER_LINEAR, VK_FILTER_LINEAR, lv_inputRes.m_Info.m_addressMode));
+                                        lv_vkResManager.AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_framebufferTexturesHandles.back(), RenderCore::VulkanResourceManager::VulkanDataType::m_texture);
+                                    }
+                                    else {
+                                        lv_framebufferTexturesHandles.push_back(lv_vkResManager.CreateDepthTextureWithHandle(std::vformat(lv_formattedString, lv_formattedArgs).c_str()));
+                                        lv_vkResManager.AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_framebufferTexturesHandles.back(), RenderCore::VulkanResourceManager::VulkanDataType::m_texture);
+                                    }
                                 }
                             }
                         }
@@ -498,7 +517,7 @@ namespace VulkanEngine
                             lv_textureHandles.push_back(lv_framebufferTexturesHandles[j]);
                         }
 
-                        std::string lv_formattedString{ " " + lv_node.m_nodeNames + "Framebuffer {} " };
+                        std::string lv_formattedString{ lv_node.m_nodeNames + "Framebuffer {}" };
                         auto lv_formattedArgs = std::make_format_args(i);
                         lv_node.m_frameBufferHandles[i] = lv_vkResManager.CreateFrameBuffer(lv_renderpass, lv_textureHandles, std::vformat(lv_formattedString, lv_formattedArgs).c_str());
 
@@ -566,6 +585,26 @@ namespace VulkanEngine
         }
         return VK_IMAGE_LAYOUT_UNDEFINED;
 
+    }
+
+
+
+    VkSamplerAddressMode FrameGraph::StringToVkSamplerAddressMode(const char* l_samplerMode)
+    {
+        if (strcmp(l_samplerMode, "VK_SAMPLER_ADDRESS_MODE_REPEAT") == true) {
+            return VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        }
+        else if (strcmp(l_samplerMode, "VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT") == true) {
+            return VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+        }
+        else if (strcmp(l_samplerMode, "VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE") == true) {
+            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        }
+        else if (strcmp(l_samplerMode, "VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER") == true) {
+            return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        }
+
+        return VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
     }
 
 

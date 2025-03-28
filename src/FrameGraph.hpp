@@ -31,6 +31,9 @@ namespace VulkanEngine
 		uint32_t	m_width = 0;
         uint32_t	m_height = 0;
         uint32_t	m_depth = 0;
+		uint32_t	m_mipLevels = 1;
+
+		VkSamplerAddressMode m_addressMode = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
 
         VkFormat	m_format = VK_FORMAT_UNDEFINED;
         VkImageUsageFlags	m_flags = 0;
@@ -112,6 +115,7 @@ namespace VulkanEngine
 
 		VkAttachmentStoreOp StringToStoreOp(const char* l_op);
 		VkImageLayout StringToVkImageLayout(const char* l_op);
+		VkSamplerAddressMode StringToVkSamplerAddressMode(const char* l_samplerMode);
 
 	private:
 

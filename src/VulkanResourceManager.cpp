@@ -18,14 +18,14 @@ namespace RenderCore
 		m_buffers.reserve(64);
 		m_textures.reserve(512);
 
-		m_frameBuffers.reserve(32);
-		m_renderPasses.reserve(32);
+		m_frameBuffers.reserve(64);
+		m_renderPasses.reserve(64);
 
 		m_descriptorPools.reserve(4);
-		m_descriptorSetLayouts.reserve(16);
+		m_descriptorSetLayouts.reserve(32);
 
-		m_pipelineLayouts.reserve(32);
-		m_Pipelines.reserve(32);
+		m_pipelineLayouts.reserve(64);
+		m_Pipelines.reserve(64);
 
 		for (size_t i = 0; i < lv_totalNumSwapchhains; ++i) {
 
@@ -131,6 +131,8 @@ namespace RenderCore
 
 		return (uint32_t)m_frameBuffers.size() - 1;
 	}
+
+
 
 
 	VulkanTexture& VulkanResourceManager::CreateDepthCubeMapTexture(const std::string& l_textureName, uint32_t l_height

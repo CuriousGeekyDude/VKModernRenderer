@@ -152,6 +152,7 @@ struct VulkanTexture final
 	VkImageLayout l_cubemapFace4Layout = VK_IMAGE_LAYOUT_UNDEFINED;
 	VkImageLayout l_cubemapFace5Layout = VK_IMAGE_LAYOUT_UNDEFINED;
 
+
 };
 
 void CHECK(bool check, const char* fileName, int lineNumber);

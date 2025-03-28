@@ -156,6 +156,7 @@ namespace RenderCore
 
 
 
+
 		void CopyDataToLocalBuffer(VkQueue l_queue, VkCommandBuffer l_cmdBuffer,
 			const uint32_t l_bufferHandle, const void* l_bufferData);
 

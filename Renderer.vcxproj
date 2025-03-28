@@ -189,6 +189,7 @@
     <ClCompile Include="src\MaterialLoaderAndSaver.cpp" />
     <ClCompile Include="src\overdrawanalyzer.cpp" />
     <ClCompile Include="src\overdrawoptimizer.cpp" />
+    <ClCompile Include="src\PhysicallyBasedBloomRenderer.cpp" />
     <ClCompile Include="src\PresentToColorAttachRenderer.cpp" />
     <ClCompile Include="src\ProcessSceneMetaData.cpp" />
     <ClCompile Include="src\Renderbase.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="src\Mesh.hpp" />
     <ClInclude Include="src\MeshFileHeader.hpp" />
     <ClInclude Include="src\meshoptimizer.h" />
+    <ClInclude Include="src\PhysicallyBasedBloomRenderer.hpp" />
     <ClInclude Include="src\PresentToColorAttachRenderer.hpp" />
     <ClInclude Include="src\ProcessSceneMetaData.hpp" />
     <ClInclude Include="src\Renderbase.hpp" />

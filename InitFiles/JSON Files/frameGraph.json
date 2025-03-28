@@ -706,6 +706,8 @@
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
               "Resolution": [ 720, 720, 0 ],
+              "MipLevel": 6,
+              "SamplerMode": "VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE",
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
               "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
             }
@@ -1508,8 +1510,7 @@
 
       ],
 
-      "TargetNodes": [
-      ]
+      "TargetNodes": []
 
     },
 

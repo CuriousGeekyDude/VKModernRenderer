@@ -171,6 +171,9 @@
     <ClCompile Include="src\WireframeDebugTiledDeferredRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
+    <ClCompile Include="src\PhysicallyBasedBloomRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp">
@@ -336,6 +339,9 @@
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="src\WireframeDebugTiledDeferredRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PhysicallyBasedBloomRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
   </ItemGroup>
