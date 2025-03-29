@@ -31,11 +31,11 @@ namespace RenderCore
 
 
 		GeneratePipelineFromSpirvBinaries(l_spvPath);
-		SetRenderPassAndFrameBuffer("PresentSwapchain");
-		SetNodeToAppropriateRenderpass("PresentSwapchain", this);
+		SetRenderPassAndFrameBuffer("FXAA");
+		SetNodeToAppropriateRenderpass("FXAA", this);
 		UpdateDescriptorSets();
 
-		auto* lv_node = lv_frameGraph.RetrieveNode("PresentSwapchain");
+		auto* lv_node = lv_frameGraph.RetrieveNode("FXAA");
 		lv_frameGraph.IncrementNumNodesPerCmdBuffer(2);
 
 		VulkanResourceManager::PipelineInfo lv_pipeInfo{};
@@ -50,7 +50,7 @@ namespace RenderCore
 
 
 		m_graphicsPipeline = lv_vkResManager.CreateGraphicsPipeline(m_renderPass, m_pipelineLayout
-			, { l_vtxShader, l_fragShader }, "GraphicsPipelinePresentSwapchain", lv_pipeInfo);
+			, { l_vtxShader, l_fragShader }, "GraphicsPipelineFXAA", lv_pipeInfo);
 	}
 
 

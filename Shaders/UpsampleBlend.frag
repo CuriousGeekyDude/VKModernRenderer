@@ -25,8 +25,8 @@ void main()
 
     // The filter kernel is applied with a radius, specified in texture
     // coordinates, so that the radius will vary across mip resolutions.
-    float x = lv_currentMipInfo.m_radius;
-    float y = lv_currentMipInfo.m_radius;
+    float x = 0.005f;
+    float y = 0.005f;
 
     // Take 9 samples around current texel:
     // a - b - c

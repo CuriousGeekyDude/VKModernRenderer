@@ -209,7 +209,7 @@ void main()
 
      float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal);
 
-     vec3 lv_lightning = lv_albedo*0.018f*lv_occlusion;
+     vec3 lv_lightning = lv_albedo*0.004f*lv_occlusion;
 
 
      vec3 Lo = vec3(0.0);
@@ -221,7 +221,7 @@ void main()
         vec3 H = normalize(lv_dir + L);
         float distance = length(lv_lightPos - lv_fragPos);
         float attenuation = 1.0 / ( 1.f + lv_lights.lights[i].m_linear * distance + lv_lights.lights[i].m_quadratic*distance * distance);
-        vec3 radiance = vec3(800.f, 800.f, 800.f) * attenuation;
+        vec3 radiance = vec3(1000.f, 1000.f, 1000.f) * attenuation;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(lv_normal, H, lv_roughness);   
@@ -244,14 +244,6 @@ void main()
 
 	}
 
-
-    //float diff = max(dot(lv_sunDir, lv_normal), 0.0);
-    //vec3 lv_diffuse = diff * vec3(0.5f, 0.5f, 0.5f);
-    // specular
-    //float spec = 0.0;
-    //vec3 halfwayDir = normalize(lv_sunDir + lv_dir);  
-    //spec = pow(max(dot(lv_normal, halfwayDir), 0.0), 64.0);
-    //vec3 specular = spec * vec3(0.5f, 0.5f, 0.5f);
 
 
 

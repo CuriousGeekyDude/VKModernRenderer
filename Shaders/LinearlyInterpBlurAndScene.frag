@@ -14,7 +14,7 @@ void main()
 {
 	vec3 hdrColor = texture(lv_hdrScene, lv_uv).rgb;      
     vec3 bloomColor = texture(lv_blurImage, lv_uv).rgb;
-    hdrColor = mix(hdrColor,bloomColor, 0.000065f);
+    hdrColor = mix(hdrColor,bloomColor, 0.000013f);
 
 
     outColor =  vec4(hdrColor, 1.f);

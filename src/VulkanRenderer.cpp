@@ -123,8 +123,8 @@ namespace VulkanEngine
 			, "Shaders/Spirv/LinearlyInterpBlurAndScene.spv")
 		, m_presentSwapchain(ctx_
 		, "Shaders/FullScreenQuad.vert"
-		, "Shaders/PresentSwapchain.frag"
-		, "Shaders/Spirv/PresentSwapchain.spv")
+		, "Shaders/FXAA.frag"
+		, "Shaders/Spirv/FXAA.spv")
 	{
 
 

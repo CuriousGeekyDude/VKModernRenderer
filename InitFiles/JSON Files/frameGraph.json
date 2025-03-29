@@ -1367,7 +1367,7 @@
       "TargetNodes": [
 
         {
-          "Name": "PresentSwapchain"
+          "Name": "FXAA"
         }
 
       ]
@@ -1378,7 +1378,7 @@
     {
       "Pipeline": "GRAPHIC",
 
-      "Name": "PresentSwapchain",
+      "Name": "FXAA",
 
       "RenderToCubemap": "FALSE",
       "CubemapFace": -1,
