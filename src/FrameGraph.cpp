@@ -158,7 +158,7 @@ namespace VulkanEngine
                         }
 
                         if (true == lv_inputResources["TextureInfo"][0].HasMember("SamplerMode")) {
-                            lv_inputInfo.m_addressMode = StringToVkSamplerAddressMode(lv_inputResources["TextureInfo"][0]["MipLevel"].GetString());
+                            lv_inputInfo.m_addressMode = StringToVkSamplerAddressMode(lv_inputResources["TextureInfo"][0]["SamplerMode"].GetString());
                         }
 
 

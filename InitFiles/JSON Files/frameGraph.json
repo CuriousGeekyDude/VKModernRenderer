@@ -820,7 +820,169 @@
       "TargetNodes": [
 
         {
-          "Name": "ExtractBrightness"
+          "Name": "DownsampleToMipmaps0"
+        }
+
+      ]
+
+    },
+
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DownsampleToMipmaps0",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 720, 720, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DownsampleToMipmaps1"
+        }
+
+      ]
+
+    },
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DownsampleToMipmaps1",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 720, 720, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DownsampleToMipmaps2"
+        }
+
+      ]
+
+    },
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DownsampleToMipmaps2",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 720, 720, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DownsampleToMipmaps3"
         }
 
       ]
@@ -832,7 +994,7 @@
     {
       "Pipeline": "GRAPHIC",
 
-      "Name": "ExtractBrightness",
+      "Name": "DownsampleToMipmaps3",
 
       "RenderToCubemap": "FALSE",
       "CubemapFace": -1,
@@ -840,15 +1002,343 @@
       "Input": [
 
         {
-          "Name": "ExtractBrightTexture",
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 720, 720, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "DownsampleToMipmaps4"
+        }
+
+      ]
+
+    },
+
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "DownsampleToMipmaps4",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 720, 720, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+        {
+          "Name": "UpsampleBlend4"
+        }
+
+      ]
+
+    },
+
+
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "UpsampleBlend4",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 720, 720, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "UpsampleBlend3"
+        }
+
+      ]
+
+    },
+
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "UpsampleBlend3",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 720, 720, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "UpsampleBlend2"
+        }
+
+      ]
+
+    },
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "UpsampleBlend2",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 720, 720, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "UpsampleBlend1"
+        }
+
+      ]
+
+    },
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "UpsampleBlend1",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 720, 720, 0 ],
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "LinInterpBlurScene"
+        }
+
+      ]
+
+    },
+
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "LinInterpBlurScene",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "BlurSceneLinearInterpolated",
           "CreateResourceOnGPU": "TRUE",
           "TextureInfo": [
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
+              "Resolution": [ 704, 704, 0 ],
+              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
             }
 
           ]
@@ -859,7 +1349,7 @@
       "Output": [
 
         {
-          "Name": "ExtractBrightTexture",
+          "Name": "BlurSceneLinearInterpolated",
           "CreateResourceOnGPU": "FALSE",
 
           "TextureInfo": [
@@ -877,7 +1367,7 @@
       "TargetNodes": [
 
         {
-          "Name": "GaussianBlurHorizontal0"
+          "Name": "PresentSwapchain"
         }
 
       ]
@@ -888,588 +1378,7 @@
     {
       "Pipeline": "GRAPHIC",
 
-      "Name": "GaussianBlurHorizontal0",
-
-      "RenderToCubemap": "FALSE",
-      "CubemapFace": -1,
-
-      "Input": [
-
-        {
-          "Name": "GaussianBlurTexture0",
-          "CreateResourceOnGPU": "TRUE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        }
-
-      ],
-
-      "Output": [
-
-        {
-          "Name": "GaussianBlurTexture0",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        }
-
-      ],
-
-      "TargetNodes": [
-
-        {
-          "Name": "GaussianBlurHorizontal1"
-        }
-
-      ]
-
-    },
-
-
-    {
-      "Pipeline": "GRAPHIC",
-
-      "Name": "GaussianBlurHorizontal1",
-
-      "RenderToCubemap": "FALSE",
-      "CubemapFace": -1,
-
-      "Input": [
-
-        {
-          "Name": "GaussianBlurTexture1",
-          "CreateResourceOnGPU": "TRUE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        }
-
-      ],
-
-      "Output": [
-
-        {
-          "Name": "GaussianBlurTexture1",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        }
-
-      ],
-
-      "TargetNodes": [
-
-        {
-          "Name": "GaussianBlurHorizontal2"
-        }
-
-      ]
-
-    },
-
-
-
-
-    {
-      "Pipeline": "GRAPHIC",
-
-      "Name": "GaussianBlurHorizontal2",
-
-      "RenderToCubemap": "FALSE",
-      "CubemapFace": -1,
-
-      "Input": [
-
-        {
-          "Name": "GaussianBlurTexture0",
-          "CreateResourceOnGPU": "FALSE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        }
-
-      ],
-
-      "Output": [
-
-        {
-          "Name": "GaussianBlurTexture0",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        }
-
-      ],
-
-      "TargetNodes": [
-
-        {
-          "Name": "GaussianBlurHorizontal3"
-        }
-
-      ]
-
-    },
-
-
-
-
-    {
-      "Pipeline": "GRAPHIC",
-
-      "Name": "GaussianBlurHorizontal3",
-
-      "RenderToCubemap": "FALSE",
-      "CubemapFace": -1,
-
-      "Input": [
-
-        {
-          "Name": "GaussianBlurTexture1",
-          "CreateResourceOnGPU": "FALSE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        }
-
-      ],
-
-      "Output": [
-
-        {
-          "Name": "GaussianBlurTexture1",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        }
-
-      ],
-
-      "TargetNodes": [
-
-        {
-          "Name": "GaussianBlurHorizontal4"
-        }
-
-      ]
-
-    },
-
-
-
-
-
-
-    {
-      "Pipeline": "GRAPHIC",
-
-      "Name": "GaussianBlurHorizontal4",
-
-      "RenderToCubemap": "FALSE",
-      "CubemapFace": -1,
-
-      "Input": [
-
-        {
-          "Name": "GaussianBlurTexture0",
-          "CreateResourceOnGPU": "FALSE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        }
-
-      ],
-
-      "Output": [
-
-        {
-          "Name": "GaussianBlurTexture0",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        }
-
-      ],
-
-      "TargetNodes": [
-
-        {
-          "Name": "GaussianBlurVertical0"
-        }
-
-      ]
-
-    },
-
-
-
-
-
-
-    {
-      "Pipeline": "GRAPHIC",
-
-      "Name": "GaussianBlurVertical0",
-
-      "RenderToCubemap": "FALSE",
-      "CubemapFace": -1,
-
-      "Input": [
-
-        {
-          "Name": "GaussianBlurTexture1",
-          "CreateResourceOnGPU": "FALSE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        }
-
-      ],
-
-      "Output": [
-
-        {
-          "Name": "GaussianBlurTexture1",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        }
-
-      ],
-
-      "TargetNodes": [
-
-        {
-          "Name": "GaussianBlurVertical1"
-        }
-
-      ]
-
-    },
-
-
-
-
-    {
-      "Pipeline": "GRAPHIC",
-
-      "Name": "GaussianBlurVertical1",
-
-      "RenderToCubemap": "FALSE",
-      "CubemapFace": -1,
-
-      "Input": [
-
-        {
-          "Name": "GaussianBlurTexture0",
-          "CreateResourceOnGPU": "FALSE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        }
-
-      ],
-
-      "Output": [
-
-        {
-          "Name": "GaussianBlurTexture0",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        }
-
-      ],
-
-      "TargetNodes": [
-
-        {
-          "Name": "GaussianBlurVertical2"
-        }
-
-      ]
-
-    },
-
-
-
-    {
-      "Pipeline": "GRAPHIC",
-
-      "Name": "GaussianBlurVertical2",
-
-      "RenderToCubemap": "FALSE",
-      "CubemapFace": -1,
-
-      "Input": [
-
-        {
-          "Name": "GaussianBlurTexture1",
-          "CreateResourceOnGPU": "FALSE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        }
-
-      ],
-
-      "Output": [
-
-        {
-          "Name": "GaussianBlurTexture1",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        }
-
-      ],
-
-      "TargetNodes": [
-
-        {
-          "Name": "GaussianBlurVertical3"
-        }
-
-      ]
-
-    },
-
-
-
-
-    {
-      "Pipeline": "GRAPHIC",
-
-      "Name": "GaussianBlurVertical3",
-
-      "RenderToCubemap": "FALSE",
-      "CubemapFace": -1,
-
-      "Input": [
-
-        {
-          "Name": "GaussianBlurTexture0",
-          "CreateResourceOnGPU": "FALSE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        }
-
-      ],
-
-      "Output": [
-
-        {
-          "Name": "GaussianBlurTexture0",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        }
-
-      ],
-
-      "TargetNodes": [
-
-        {
-          "Name": "GaussianBlurVertical4"
-        }
-
-      ]
-
-    },
-
-
-
-
-
-    {
-      "Pipeline": "GRAPHIC",
-
-      "Name": "GaussianBlurVertical4",
-
-      "RenderToCubemap": "FALSE",
-      "CubemapFace": -1,
-
-      "Input": [
-
-        {
-          "Name": "GaussianBlurTexture1",
-          "CreateResourceOnGPU": "FALSE",
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
-              "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
-            }
-
-          ]
-        }
-
-      ],
-
-      "Output": [
-
-        {
-          "Name": "GaussianBlurTexture1",
-          "CreateResourceOnGPU": "FALSE",
-
-          "TextureInfo": [
-
-            {
-              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
-              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
-            }
-
-          ]
-        }
-
-      ],
-
-      "TargetNodes": [
-
-        {
-          "Name": "BloomBlendBlurAndScene"
-        }
-
-      ]
-
-    },
-
-
-
-    {
-      "Pipeline": "GRAPHIC",
-
-      "Name": "BloomBlendBlurAndScene",
+      "Name": "PresentSwapchain",
 
       "RenderToCubemap": "FALSE",
       "CubemapFace": -1,
@@ -1483,7 +1392,6 @@
 
             {
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
-              "Resolution": [ 720, 720, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
             }
 
@@ -1513,6 +1421,9 @@
       "TargetNodes": []
 
     },
+
+
+
 
     {
       "Pipeline": "GRAPHIC",

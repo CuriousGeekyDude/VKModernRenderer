@@ -7,5 +7,9 @@ void main() {
   float u = float(((uint(gl_VertexIndex)+2u) / 3u) % 2u);
   float v = float(((uint(gl_VertexIndex)+1u) / 3u) % 2u);
   gl_Position = vec4(-1.0+u*2.0, -1.0+v*2.0, 0., 1.);
-  uv = vec2(u, v);
+  uv = vec2(u, v); 
+
+    //uv = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);
+    //gl_Position = vec4(uv * 2.0f + -1.0f, 0.0f, 1.0f);
 }
+

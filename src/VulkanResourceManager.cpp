@@ -514,7 +514,12 @@ namespace RenderCore
 
 
 		transitionImageLayout(m_renderDevice, lv_textureToCreate.image.image, l_colorFormat, VK_IMAGE_LAYOUT_UNDEFINED,
-			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+			VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,1, 1,0);
+
+		if (1 < l_mipLevels) {
+			transitionImageLayout(m_renderDevice, lv_textureToCreate.image.image, l_colorFormat, VK_IMAGE_LAYOUT_UNDEFINED,
+				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, l_mipLevels-1, 1);
+		}
 
 		lv_textureToCreate.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 

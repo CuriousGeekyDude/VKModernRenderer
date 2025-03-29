@@ -8,12 +8,12 @@
 
 namespace RenderCore
 {
-	class PhysicallyBasedBloomRenderer : public Renderbase
+	class DownsampleToMipmapsRenderer : public Renderbase
 	{
 
 		struct UniformBuffer
 		{
-			glm::vec4 m_mipchainDimensions{};
+			glm::vec4 m_mipchainDimensions{1.f};
 			uint32_t m_indexMipchain{};
 			uint32_t m_pad0{};
 			uint32_t m_pad1{};
@@ -23,10 +23,12 @@ namespace RenderCore
 	
 	public:
 
-		PhysicallyBasedBloomRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator
+		DownsampleToMipmapsRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator
 			, const char* l_vtxShader
 			, const char* l_fragShader
-			, const char* l_spvPath);
+			, const char* l_spvPath
+			, const char* l_rendererName
+			, uint32_t l_mipLevelTtoRenderTo);
 
 
 
@@ -39,15 +41,19 @@ namespace RenderCore
 		void UpdateDescriptorSets() override;
 
 
+
+		~DownsampleToMipmapsRenderer();
+
 	private:
 
 
 		std::vector<VulkanTexture*> m_mipMapInputOutputImages;
 		std::vector<VkFramebuffer> m_newFramebuffers;
 		std::vector<VkImageView> m_framebufferImageViews{};
+		std::vector<VkImageView> m_descriptorImageViews{};
 		std::vector<glm::vec2> m_mipchainDimensions{};
-		std::vector<uint32_t> m_currentMipchainIndexToSample{};
 		const uint32_t m_totalNumMipLevels{6};
+		const uint32_t m_mipLevelToRenderTo;
 		
 		VulkanBuffer* m_uniformBufferGpu;
 

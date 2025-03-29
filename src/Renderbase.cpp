@@ -171,7 +171,7 @@ namespace RenderCore
 	}*/
 
 	void Renderbase::BeginRenderPass(VkRenderPass l_rp, VkFramebuffer l_fb,
-		VkCommandBuffer l_commandBuffer, size_t l_currentImage, size_t l_totalNumClearValues)
+		VkCommandBuffer l_commandBuffer, size_t l_currentImage, size_t l_totalNumClearValues, uint32_t l_width, uint32_t l_height)
 	{
 		std::vector<VkClearValue> lv_clearValues;
 		lv_clearValues.resize(l_totalNumClearValues);
@@ -190,8 +190,8 @@ namespace RenderCore
 
 		const VkRect2D rect{
 			.offset = { 0, 0 },
-			.extent = {.width = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth, 
-			.height = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight}
+			.extent = {.width = l_width, 
+			.height = l_height}
 		};
 
 		m_vulkanRenderContext.BeginRenderPass(l_commandBuffer, l_rp, l_currentImage, rect,

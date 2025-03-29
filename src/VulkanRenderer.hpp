@@ -14,10 +14,15 @@
 #include "ClearSwapchainDepthRenderer.hpp"
 #include "DepthMapLightRenderer.hpp"
 #include "SingleModelRenderer.hpp"
-#include "ExtractBrightnessRenderer.hpp"
-#include "GaussianBlurRenderer.hpp"
-#include "BloomBlendBlurAndSceneRenderer.hpp"
-#include "WireframeDebugTiledDeferredRenderer.hpp"
+
+
+//Bloom effect sub-effects
+#include "DownsampleToMipmapsRenderer.hpp"
+#include "UpsampleBlendRenderer.hpp"
+#include "LinearlyInterpBlurAndSceneRenderer.hpp"
+
+
+#include "PresentSwapchainRenderer.hpp"
 
 namespace VulkanEngine
 {
@@ -46,24 +51,21 @@ namespace VulkanEngine
 		RenderCore::DepthMapLightRenderer m_depthMapLightMinusZ;
 		RenderCore::DeferredLightningRenderer m_deferredLightning;
 		RenderCore::SingleModelRenderer m_pointLightCube;
-		RenderCore::ExtractBrightnessRenderer m_extractBrightnessBloom;
 
-		RenderCore::GaussianBlurRenderer m_blurHor0;
-		RenderCore::GaussianBlurRenderer m_blurHor1;
-		RenderCore::GaussianBlurRenderer m_blurHor2;
-		RenderCore::GaussianBlurRenderer m_blurHor3;
-		RenderCore::GaussianBlurRenderer m_blurHor4;
+		RenderCore::DownsampleToMipmapsRenderer m_downsampleToMipmaps0;
+		RenderCore::DownsampleToMipmapsRenderer m_downsampleToMipmaps1;
+		RenderCore::DownsampleToMipmapsRenderer m_downsampleToMipmaps2;
+		RenderCore::DownsampleToMipmapsRenderer m_downsampleToMipmaps3;
+		RenderCore::DownsampleToMipmapsRenderer m_downsampleToMipmaps4;
+
+		RenderCore::UpsampleBlendRenderer m_upsampleBlend4;
+		RenderCore::UpsampleBlendRenderer m_upsampleBlend3;
+		RenderCore::UpsampleBlendRenderer m_upsampleBlend2;
+		RenderCore::UpsampleBlendRenderer m_upsampleBlend1;
+		RenderCore::LinearlyInterpBlurAndSceneRenderer m_linearlyInterpBlurScene;
 
 
-		RenderCore::GaussianBlurRenderer m_blurVert0;
-		RenderCore::GaussianBlurRenderer m_blurVert1;
-		RenderCore::GaussianBlurRenderer m_blurVert2;
-		RenderCore::GaussianBlurRenderer m_blurVert3;
-		RenderCore::GaussianBlurRenderer m_blurVert4;
-
-		RenderCore::BloomBlendBlurAndSceneRenderer m_bloomBlend;
-
-		
+		RenderCore::PresentSwapchainRenderer m_presentSwapchain;
 
 	};
 }

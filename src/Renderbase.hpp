@@ -48,7 +48,8 @@ namespace RenderCore
 		//RenderCore::VulkanResourceManager::RenderPass GetRenderPass() const;
 
 		void BeginRenderPass(VkRenderPass l_rp, VkFramebuffer l_fb, 
-			VkCommandBuffer l_commandBuffer, size_t l_currentImage, size_t l_totalNumClearValues);
+			VkCommandBuffer l_commandBuffer, size_t l_currentImage, size_t l_totalNumClearValues
+			, uint32_t l_width = 704, uint32_t l_height = 704);
 
 		static void InitDescriptorPoolForAllRenderers(VkDescriptorPool* l_pool,
 			VulkanEngine::VulkanRenderContext& l_renderContext);

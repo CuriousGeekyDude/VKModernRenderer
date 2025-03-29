@@ -41,7 +41,7 @@ namespace VulkanEngine
 		,"Shaders/Spirv/DeferredLightning.spv")
 		
 		,m_pointLightCube(ctx_)
-		,m_extractBrightnessBloom(ctx_
+		/*,m_extractBrightnessBloom(ctx_
 		 ,"Shaders/FullScreenQuad.vert"
 		, "Shaders/ExtractBrightness.frag"
 		,"Shaders/Spirv/ExtractBrightness.spv")
@@ -58,9 +58,73 @@ namespace VulkanEngine
 		,m_blurVert3(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurVertical.frag", "Shaders/Spirv/GaussianBlur.spv", 0, false, "GaussianBlurVertical3")
 		,m_blurVert4(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/GaussianBlurVertical.frag", "Shaders/Spirv/GaussianBlur.spv", 1, false, "GaussianBlurVertical4")
 		
-		,m_bloomBlend(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/BloomBlend.frag", "Shaders/Spirv/BloomBlend.spv", 1)
+		,m_bloomBlend(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/BloomBlend.frag", "Shaders/Spirv/BloomBlend.spv", 1)*/
 		//,m_debugTiled(ctx_, "Shaders/WireframeDebugTiledDeferred.vert", "Shaders/WireframeDebugTiledDeferred.frag", nullptr)
 
+
+		,m_downsampleToMipmaps0(ctx_
+		,"Shaders/FullScreenQuad.vert"
+		,"Shaders/DownsampleToMipmap.frag"
+		,"Shaders/Spirv/DownsampleToMipmaps.spv"
+		,"DownsampleToMipmaps0"
+		,1)
+		,m_downsampleToMipmaps1(ctx_
+			, "Shaders/FullScreenQuad.vert"
+			, "Shaders/DownsampleToMipmap.frag"
+			, "Shaders/Spirv/DownsampleToMipmaps.spv"
+			, "DownsampleToMipmaps1"
+			, 2)
+		, m_downsampleToMipmaps2(ctx_
+			, "Shaders/FullScreenQuad.vert"
+			, "Shaders/DownsampleToMipmap.frag"
+			, "Shaders/Spirv/DownsampleToMipmaps.spv"
+			, "DownsampleToMipmaps2"
+			, 3)
+		, m_downsampleToMipmaps3(ctx_
+			, "Shaders/FullScreenQuad.vert"
+			, "Shaders/DownsampleToMipmap.frag"
+			, "Shaders/Spirv/DownsampleToMipmaps.spv"
+			, "DownsampleToMipmaps3"
+			, 4)
+		, m_downsampleToMipmaps4(ctx_
+			, "Shaders/FullScreenQuad.vert"
+			, "Shaders/DownsampleToMipmap.frag"
+			, "Shaders/Spirv/DownsampleToMipmaps.spv"
+			, "DownsampleToMipmaps4"
+			, 5)
+		
+		, m_upsampleBlend4(ctx_
+			, "Shaders/FullScreenQuad.vert"
+			, "Shaders/UpsampleBlend.frag"
+			, "Shaders/Spirv/UpsampleBlend.spv"
+			, "UpsampleBlend4"
+			, 4)
+		, m_upsampleBlend3(ctx_
+			, "Shaders/FullScreenQuad.vert"
+			, "Shaders/UpsampleBlend.frag"
+			, "Shaders/Spirv/UpsampleBlend.spv"
+			, "UpsampleBlend3"
+			, 3)
+		, m_upsampleBlend2(ctx_
+			, "Shaders/FullScreenQuad.vert"
+			, "Shaders/UpsampleBlend.frag"
+			, "Shaders/Spirv/UpsampleBlend.spv"
+			, "UpsampleBlend2"
+			, 2)
+		, m_upsampleBlend1(ctx_
+			, "Shaders/FullScreenQuad.vert"
+			, "Shaders/UpsampleBlend.frag"
+			, "Shaders/Spirv/UpsampleBlend.spv"
+			, "UpsampleBlend1"
+			, 1)
+		, m_linearlyInterpBlurScene(ctx_
+			, "Shaders/FullScreenQuad.vert"
+			, "Shaders/LinearlyInterpBlurAndScene.frag"
+			, "Shaders/Spirv/LinearlyInterpBlurAndScene.spv")
+		, m_presentSwapchain(ctx_
+		, "Shaders/FullScreenQuad.vert"
+		, "Shaders/PresentSwapchain.frag"
+		, "Shaders/Spirv/PresentSwapchain.spv")
 	{
 
 

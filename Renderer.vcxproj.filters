@@ -171,7 +171,16 @@
     <ClCompile Include="src\WireframeDebugTiledDeferredRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="src\PhysicallyBasedBloomRenderer.cpp">
+    <ClCompile Include="src\DownsampleToMipmapsRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UpsampleBlendRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PresentSwapchainRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LinearlyInterpBlurAndSceneRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
   </ItemGroup>
@@ -341,7 +350,16 @@
     <ClInclude Include="src\WireframeDebugTiledDeferredRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="src\PhysicallyBasedBloomRenderer.hpp">
+    <ClInclude Include="src\DownsampleToMipmapsRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UpsampleBlendRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PresentSwapchainRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LinearlyInterpBlurAndSceneRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
   </ItemGroup>
