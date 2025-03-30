@@ -2990,7 +2990,7 @@ bool createTextureImage(VulkanRenderDevice& vkDev, const char* filename, VkImage
 	}
 
 	uint32_t lv_mipLevel = (uint32_t)std::floorf(std::log2(std::max(texWidth, texHeight)) + 1);
-
+	//lv_mipLevel = 2;
 	bool result = createTextureImageFromData(vkDev, textureImage, textureImageMemory,
 		pixels, texWidth, texHeight, VK_FORMAT_R8G8B8A8_UNORM, 1, 0, lv_mipLevel);
 

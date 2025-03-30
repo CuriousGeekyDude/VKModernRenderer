@@ -98,9 +98,9 @@ vec3(  0.000,  0.309, -0.951),
 vec3(  0.000, -0.309, -0.951)
 ); 
 
-float ShadowCalculation(vec3 lv_worldPos, vec3 lv_normal)
+float ShadowCalculation(vec3 lv_worldPos, vec3 lv_normal, vec3 lv_lightPos)
 {
-    vec3 lv_lightPos = ubo.m_posSun.xyz;
+    //vec3 lv_lightPos = ubo.m_posSun.xyz;
 
     vec3 lv_dirVector = lv_worldPos - lv_lightPos;
 
@@ -188,14 +188,23 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 
 
 
+float heaviside( float v ) {
+    if ( v > 0.0 ) return 1.0;
+    else return 0.0;
+}
+
+
+
 void main()
 {
 
     float lv_occlusion = texture(lv_occlusionFactor ,lv_uv).r;
-    float lv_metallic = texture(lv_gbufferMetallic ,lv_uv).g;
-    float lv_roughness = texture(lv_gbufferMetallic ,lv_uv).b;
+    float lv_metallic = texture(lv_gbufferMetallic ,lv_uv).b;
+    float lv_roughness = texture(lv_gbufferMetallic ,lv_uv).g;
     vec3 lv_normal = NormalSampleToWorldSpace(texture(lv_gbufferNormal, lv_uv).rgb, texture(lv_gbufferNormalVertex, lv_uv).rgb, texture(lv_gbufferTangent, lv_uv).rgb);
-    vec3 lv_albedo = texture(lv_gbufferAlbedoSpec, lv_uv).rgb;
+    vec4 lv_albedo = texture(lv_gbufferAlbedoSpec, lv_uv);
+    
+    
 
 	vec4 lv_worldPos = vec4(texture(lv_gbufferPos, lv_uv).xyz, 1.f);
     vec4 lv_viewPos = lv_cameraUniform.m_viewMatrix * lv_worldPos;
@@ -203,25 +212,70 @@ void main()
     vec3 lv_dir = normalize(lv_cameraUniform.m_cameraPos.xyz - lv_fragPos);
 
     vec3 F0 = vec3(0.04); 
-    F0 = mix(F0, lv_albedo, lv_metallic);
-
-    //vec3 lv_sunDir = normalize(lv_lightPos - lv_fragPos);
-
-     float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal);
-
-     vec3 lv_lightning = lv_albedo*0.004f*lv_occlusion;
+    F0 = mix(F0, lv_albedo.rgb, lv_metallic);
 
 
-     vec3 Lo = vec3(0.0);
+    float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal, lv_lights.lights[0].m_position.xyz);
+
+    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.006f;
+
+    vec3 Lo = vec3(0.0f);
+    //float alpha = pow(lv_roughness, 2.0);
 	for(uint i = 0; i < m_totalNumLights; ++i) {
         
         vec3 lv_lightPos = lv_lights.lights[i].m_position.xyz;
-
         vec3 L = normalize(lv_lightPos - lv_fragPos);
         vec3 H = normalize(lv_dir + L);
+   
+
+        // https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#specular-brdf
+        //float NdotH = dot(lv_normal, H);
+        //float alpha_squared = alpha * alpha;
+        //float d_denom = ( NdotH * NdotH ) * ( alpha_squared - 1.0 ) + 1.0;
+        //float distribution = ( alpha_squared * heaviside( NdotH ) ) / ( PI * d_denom * d_denom );
+
+        //float NdotL = clamp( dot(lv_normal, L), 0, 1 );
+
+        //if ( NdotL > 1e-5 ) {
+            //float NdotV = dot(lv_normal, lv_worldPos.xyz);
+            //float HdotL = dot(H, L);
+            //float HdotV = dot(H, lv_worldPos.xyz);
+
+            //float visibility = ( heaviside( HdotL ) / ( abs( NdotL ) + sqrt( alpha_squared + ( 1.0 - alpha_squared ) * ( NdotL * NdotL ) ) ) ) * ( heaviside( HdotV ) / ( abs( NdotV ) + sqrt( alpha_squared + ( 1.0 - alpha_squared ) * ( NdotV * NdotV ) ) ) );
+
+            //float specular_brdf = visibility * distribution;
+
+            //vec3 diffuse_brdf = (1 / PI) * lv_albedo.rgb;
+
+            // NOTE(marco): f0 in the formula notation refers to the base colour here
+            //vec3 conductor_fresnel = specular_brdf * ( lv_albedo.rgb + ( 1.0 - lv_albedo.rgb ) * pow( 1.0 - abs( HdotV ), 5 ) );
+
+            // NOTE(marco): f0 in the formula notation refers to the value derived from ior = 1.5
+            //float f0 = 0.04; // pow( ( 1 - ior ) / ( 1 + ior ), 2 )
+            //float fr = f0 + ( 1 - f0 ) * pow(1 - abs( HdotV ), 5 );
+            //vec3 fresnel_mix = mix( diffuse_brdf, vec3( specular_brdf ), fr );
+
+            //vec3 material_colour = mix( fresnel_mix, conductor_fresnel, lv_metallic );
+
+            //material_colour *= lv_occlusion;
+
+            //Lo += material_colour;
+        //} else {
+            //Lo += lv_albedo.rgb * lv_occlusion;
+        //}
+
+
+
+
+
+
+
+
+
+
         float distance = length(lv_lightPos - lv_fragPos);
-        float attenuation = 1.0 / ( 1.f + lv_lights.lights[i].m_linear * distance + lv_lights.lights[i].m_quadratic*distance * distance);
-        vec3 radiance = vec3(1000.f, 1000.f, 1000.f) * attenuation;
+        float attenuation = 1.0 / distance*distance;
+        vec3 radiance = vec3(1.f, 1.f, 1.f) * 0.28 * attenuation;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(lv_normal, H, lv_roughness);   
@@ -240,7 +294,7 @@ void main()
 
         float NdotL = max(dot(lv_normal, L), 0.0);        
 
-        Lo += (kD * lv_albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+        Lo += (kD * lv_albedo.rgb / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 
 	}
 
@@ -248,8 +302,7 @@ void main()
 
 
     //lv_finalColor = vec4(lv_lightning, 1.f);
-    lv_lightning += (1.f - lv_shadow) * Lo;
-   // lv_lightning += (lv_diffuse + specular)*lv_albedo;
+   // lv_lightning += (lv_diffuse + specular)*lv_albedo.rgb;
 
     //lv_lightning = vec3(1.f) - exp(-lv_lightning*2.5f);
 
@@ -257,7 +310,9 @@ void main()
     //lv_lightning /= (lv_lightning + vec3(1.f));
 
    //lv_finalColor.rgb = pow(lv_lightning, vec3(1.f/2.2f));
+
+   lv_lightning += (1.f - lv_shadow) * Lo;
    lv_finalColor.rgb = lv_lightning;
-    lv_finalColor.a = 1.f;
+   lv_finalColor.a = lv_albedo.a;
 
 }

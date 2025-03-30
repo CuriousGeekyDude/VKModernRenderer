@@ -105,7 +105,8 @@ void main()
 	lv_gBufferPosition = lv_worldPos;
 	lv_gBufferNormal = vec4(lv_normalSample.xyz, 1.f);
 	lv_gBufferAlbedoSpec.rgb = pow(lv_albedo.rgb, vec3(2.2f));
-	lv_gBufferAlbedoSpec.a = lv_matData.m_specular.r;
+	lv_gBufferAlbedoSpec.a = lv_albedo.a;
+	//lv_gBufferAlbedoSpec.a = lv_matData.m_specular.r; Check later whether it is .r or .a?
 	lv_gbufferNormalVertex = vec4(lv_n, 1.f);
 	lv_gbufferMetallicRoughness = lv_metallic;
 }

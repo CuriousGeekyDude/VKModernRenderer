@@ -145,7 +145,7 @@ namespace VulkanEngine
 		glm::vec3 lv_lightPos{ -13.f, 18.f, -2.f };
 
 		for (auto& l_pos : vertices) {
-			l_pos *= 5.090127f;
+			l_pos *= 3.5f;
 			l_pos += lv_lightPos;
 		}
 
