@@ -55,9 +55,9 @@ vec4 CreatePlaneEquation ( vec3 Q , vec3 R )
 
 
 
-float GetSignedDistanceFromPlane ( float3 p , float4 eqn )
+float GetSignedDistanceFromPlane(vec3 p, vec4 eqn)
 {
-	return dot( eqn.xyz , p );
+	return dot(eqn.xyz,p);
 }
 
 
@@ -152,8 +152,7 @@ void main()
 		if( ( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [0]) < lv_lightRadius ) &&
 			( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [1]) < lv_lightRadius ) &&
 			( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [2]) < lv_lightRadius ) &&
-			( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [3]) < lv_lightRadius ) &&
-			(−lv_viewPosLight.z + lv_min < lv_lightRadius ) && ( lv_viewPosLight.z − lv_max < lv_lightRadius )) {
+			(GetSignedDistanceFromPlane(lv_viewPosLight.xyz,lv_normalOfPlanesOfThisTile[3])<lv_lightRadius)&&(-lv_viewPosLight.z+lv_min<lv_lightRadius)&&(lv_viewPosLight.z-lv_max<lv_lightRadius)) {
 			
 			uint lv_dstIndex = atomicAdd(lv_counter, 1U);
 			lv_lightIndicesAffectingTile[lv_dstIndex] = i;
@@ -161,6 +160,11 @@ void main()
 		}
 
 	}
+
+	barrier();
+
+
+
 
 
 }

@@ -1,4 +1,4 @@
-#version 460 core
+﻿#version 460 core
 
 
 
@@ -9,12 +9,30 @@ layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
 layout(set = 0, binding = 0) uniform sampler2D lv_depthBuffer;
 
 
-layout(set = 0, binding = 1) buffer DebugBuffer{
-	float MaxMinValues[2*44*44];
-} lv_debugbuffer;
+layout(set = 0, binding = 1) readonly buffer Lights{
+	vec4 lv_lights[];
+} lv_lightsData;
 
 
+layout(set = 0, binding = 2) uniform UniformBuffer
+{
+
+	mat4   m_inMtx;
+	mat4   m_viewMatrix;
+	mat4   m_invProjMatrix;
+	vec4   m_cameraPos;
+
+}lv_matricesUniform;
+
+
+
+
+
+shared uint lv_counter;
 shared uint lv_minMaxValuesOfTile[2];
+shared uint lv_lightIndicesAffectingTile[256];
+
+
 
 
 //We are assuming near plane is 0.1f and far is 145.f
@@ -27,18 +45,53 @@ float TransformZndcToZview(float l_zNdc)
 }
 
 
+
+vec4 CreatePlaneEquation ( vec3 Q , vec3 R )
+{
+	vec3 N = normalize(cross(Q ,R));
+	return vec4(N,0.f) ;
+}
+
+
+
+
+float GetSignedDistanceFromPlane(vec3 p, vec4 eqn)
+{
+	return dot(eqn.xyz,p);
+}
+
+
+vec3 TransformNDCToViewSpace(vec4 l_p)
+{
+
+	vec4 lv_result = lv_matricesUniform.m_invProjMatrix * l_p;
+	lv_result = lv_result/lv_result.w;
+
+	return lv_result.xyz;
+
+}
+
+
+const uint lv_totalNumLights = 1;
+
+
 void main()
 {
 
 
 	uvec2 lv_uv = gl_GlobalInvocationID.xy;
 	uvec2 lv_localWorkId = gl_LocalInvocationID.xy;
+	uvec2 lv_globalWorkId = gl_WorkGroupID.xy;
+	uint lv_threadNum = lv_localWorkId.y * 15 + lv_localWorkId.x;
 
 	float lv_zNdc = texelFetch(lv_depthBuffer, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).r;
+
+	lv_zNdc = TransformZndcToZview(lv_zNdc);
 
 	uint lv_zNdcInUint = floatBitsToUint(lv_zNdc);
 
 	if (lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
+		
 		lv_minMaxValuesOfTile[0] = 0xFFFFFFFF;
 		lv_minMaxValuesOfTile[1] = 0;
 	}
@@ -50,10 +103,66 @@ void main()
 
 	barrier();
 
-	if (lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
-		lv_debugbuffer.MaxMinValues[lv_uv.y*43 + lv_uv.x*2] = uintBitsToFloat(lv_minMaxValuesOfTile[0]);
-		lv_debugbuffer.MaxMinValues[lv_uv.y*43 + lv_uv.x*2 + 1] = uintBitsToFloat(lv_minMaxValuesOfTile[1]);
+	float lv_max = uintBitsToFloat(lv_minMaxValuesOfTile[1]);
+	float lv_min = uintBitsToFloat(lv_minMaxValuesOfTile[0]);
+
+
+
+	float lv_x1 = float(16 * lv_globalWorkId.x);
+	float lv_x2 = float(16*(lv_globalWorkId.x + 1));
+	float lv_y1 = float(16*lv_globalWorkId.y);
+	float lv_y2 = float(16*(lv_globalWorkId.y+1));
+
+
+	vec4 lv_normalOfPlanesOfThisTile[4];
+	vec3 lv_coordOfFarPlanePoints[4];
+
+	lv_coordOfFarPlanePoints[0] = TransformNDCToViewSpace(vec4((2.f*lv_x1/704.f) - 1.f, (2.f * lv_y1/704.f) - 1.f, 1.f, 1.f));
+	lv_coordOfFarPlanePoints[1] = TransformNDCToViewSpace(vec4((2.f*lv_x2/704.f) - 1.f, (2.f * lv_y1/704.f) - 1.f, 1.f, 1.f));
+	lv_coordOfFarPlanePoints[2] = TransformNDCToViewSpace(vec4((2.f*lv_x2/704.f) - 1.f, (2.f * lv_y2/704.f) - 1.f, 1.f, 1.f));
+	lv_coordOfFarPlanePoints[3] = TransformNDCToViewSpace(vec4((2.f*lv_x1/704.f) - 1.f, (2.f * lv_y2/704.f) - 1.f, 1.f, 1.f));
+
+
+	for(int i = 0; i < 4; ++i) {
+		
+		lv_normalOfPlanesOfThisTile[i] = CreatePlaneEquation(lv_coordOfFarPlanePoints[i], lv_coordOfFarPlanePoints[(i+1) & 3]);
+
 	}
+
+
+
+	if (lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
+		lv_counter = 0;	
+	}
+
+
+	barrier();
+
+
+
+	for(uint i = lv_threadNum; i < lv_totalNumLights; i += 256) {
+	
+		vec4 lv_lightData = lv_lightsData.lv_lights[i];
+
+		vec4 lv_worldPosLight = vec4(lv_lightData.xyz, 1.f);
+		float lv_lightRadius = lv_lightData.w;
+
+		vec4 lv_viewPosLight = lv_matricesUniform.m_viewMatrix * lv_worldPosLight;
+
+		if( ( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [0]) < lv_lightRadius ) &&
+			( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [1]) < lv_lightRadius ) &&
+			( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [2]) < lv_lightRadius ) &&
+			(GetSignedDistanceFromPlane(lv_viewPosLight.xyz,lv_normalOfPlanesOfThisTile[3])<lv_lightRadius)&&(-lv_viewPosLight.z+lv_min<lv_lightRadius)&&(lv_viewPosLight.z-lv_max<lv_lightRadius)) {
+			
+			uint lv_dstIndex = atomicAdd(lv_counter, 1U);
+			lv_lightIndicesAffectingTile[lv_dstIndex] = i;
+
+		}
+
+	}
+
+	barrier();
+
 
 
 
