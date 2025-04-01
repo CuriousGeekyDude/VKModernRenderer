@@ -93,6 +93,7 @@ namespace VulkanEngine
 
                     lv_node.m_cubemapFace = lv_renderPass["CubemapFace"].GetInt();
 
+
                     for (size_t j = 0; j < lv_renderPass["Output"].Size(); ++j, ++lv_resourceIndex) {
 
                         lv_node.m_outputResourcesHandles[j] = lv_resourceIndex;

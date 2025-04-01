@@ -183,6 +183,9 @@
     <ClCompile Include="src\LinearlyInterpBlurAndSceneRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
+    <ClCompile Include="src\FindingMaxMinDepthOfEachTile.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp">
@@ -360,6 +363,9 @@
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="src\LinearlyInterpBlurAndSceneRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FindingMaxMinDepthOfEachTile.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
   </ItemGroup>

@@ -125,6 +125,12 @@ namespace VulkanEngine
 		, "Shaders/FullScreenQuad.vert"
 		, "Shaders/FXAA.frag"
 		, "Shaders/Spirv/FXAA.spv")
+
+		, m_minMaxDepthTiles(
+		ctx_
+		, "Shaders/FindingMaxMinDepthOfEachTile.comp"
+		, "Shaders/Spirv/FindingMaxMinDepthOfEachTile.spv"
+		)
 	{
 
 

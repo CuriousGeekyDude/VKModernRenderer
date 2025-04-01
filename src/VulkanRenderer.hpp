@@ -22,6 +22,8 @@
 #include "LinearlyInterpBlurAndSceneRenderer.hpp"
 
 
+#include "FindingMaxMinDepthOfEachTile.hpp"
+
 #include "PresentSwapchainRenderer.hpp"
 
 namespace VulkanEngine
@@ -66,6 +68,9 @@ namespace VulkanEngine
 
 
 		RenderCore::PresentSwapchainRenderer m_presentSwapchain;
+
+
+		RenderCore::FindingMaxMinDepthOfEachTile m_minMaxDepthTiles;
 
 	};
 }

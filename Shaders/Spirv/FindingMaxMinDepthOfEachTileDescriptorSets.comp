@@ -1,0 +1,61 @@
+#version 460 core
+
+
+
+layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+
+
+
+layout(set = 0, binding = 0) uniform sampler2D lv_depthBuffer;
+
+
+layout(set = 0, binding = 1) buffer DebugBuffer{
+	float MaxMinValues[2*44*44];
+} lv_debugbuffer;
+
+
+shared uint lv_minMaxValuesOfTile[2];
+
+
+//We are assuming near plane is 0.1f and far is 145.f
+
+float TransformZndcToZview(float l_zNdc)
+{
+
+	return 29.f / ((l_zNdc-1.f) * 144.9f);
+
+}
+
+
+void main()
+{
+
+
+	uvec2 lv_uv = gl_GlobalInvocationID.xy;
+	uvec2 lv_localWorkId = gl_LocalInvocationID.xy;
+
+	float lv_zNdc = texelFetch(lv_depthBuffer, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).r;
+
+	uint lv_zNdcInUint = floatBitsToUint(lv_zNdc);
+
+	if (lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
+		lv_minMaxValuesOfTile[0] = 0xFFFFFFFF;
+		lv_minMaxValuesOfTile[1] = 0;
+	}
+
+	barrier();
+
+	atomicMin(lv_minMaxValuesOfTile[0], lv_zNdcInUint);
+	atomicMax(lv_minMaxValuesOfTile[1], lv_zNdcInUint);
+
+	barrier();
+
+	if (lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
+		lv_debugbuffer.MaxMinValues[lv_uv.y*43 + lv_uv.x*2] = uintBitsToFloat(lv_minMaxValuesOfTile[0]);
+		lv_debugbuffer.MaxMinValues[lv_uv.y*43 + lv_uv.x*2 + 1] = uintBitsToFloat(lv_minMaxValuesOfTile[1]);
+	}
+
+
+
+
+}

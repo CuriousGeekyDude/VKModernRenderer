@@ -217,7 +217,7 @@ void main()
 
     float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal, lv_lights.lights[0].m_position.xyz);
 
-    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.006f;
+    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.01f;
 
     vec3 Lo = vec3(0.0f);
     //float alpha = pow(lv_roughness, 2.0);

@@ -1367,6 +1367,29 @@
       "TargetNodes": [
 
         {
+          "Name": "FindingMaxMinDepthOfEachTile"
+        }
+
+      ]
+
+    },
+
+
+    {
+      "Pipeline": "COMPUTE",
+
+      "Name": "FindingMaxMinDepthOfEachTile",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [],
+
+      "Output": [],
+
+      "TargetNodes": [
+
+        {
           "Name": "FXAA"
         }
 
@@ -1421,8 +1444,6 @@
       "TargetNodes": []
 
     },
-
-
 
 
     {
