@@ -283,7 +283,7 @@ void main()
         vec3 F    = fresnelSchlick(max(dot(H, lv_dir), 0.0), F0);
            
         vec3 numerator    = NDF * G * F; 
-        float denominator = 4.0 * max(dot(lv_normal, lv_dir), 0.0) * max(dot(lv_normal, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
+        float denominator = 4.0 * max(dot(lv_normal, lv_dir), 0.0) * max(dot(lv_normal, L), 0.0) + 0.000001f; // + 0.0001 to prevent divide by zero
         vec3 specular = numerator / denominator;
         
         vec3 kS = F;
