@@ -1,6 +1,6 @@
 ﻿#version 460 core
 
-const uint lv_totalNumLights = 16;
+const uint lv_totalNumLights = 104;
 const float PI = 3.14159265359;
 
 layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
@@ -196,7 +196,7 @@ vec3 calcPointLight(uint index, vec3 normal, vec3 fragPos,
                     float metal, vec3 F0){
 
     vec3 position = lv_lightsData.lv_lights[index].xyz;
-    vec3 color    = vec3(10.f);
+    vec3 color    = vec3(60.f);
     float radius  = lv_lightsData.lv_lights[index].w;
 
     //Stuff common to the BRDF subfunctions 
@@ -350,13 +350,20 @@ void main()
 	float lv_y2 = float(16*(lv_globalWorkId.y+1));
 
 
+    lv_x1 = (2.f*lv_x1/704.f) - 1.f;
+    lv_y1 = (2.f*lv_y1/704.f) - 1.f;
+    lv_x2 = (2.f*lv_x2/704.f) - 1.f;
+    lv_y2 = (2.f*lv_y2/704.f) - 1.f;
+
 	vec4 lv_normalOfPlanesOfThisTile[4];
 	vec3 lv_coordOfFarPlanePoints[4];
 
-	lv_coordOfFarPlanePoints[0] = TransformNDCToViewSpace(vec4((2.f*lv_x1/704.f) - 1.f, (2.f * (lv_y1)/704.f) - 1.f, 1.f, 1.f));
-	lv_coordOfFarPlanePoints[1] = TransformNDCToViewSpace(vec4((2.f*lv_x2/704.f) - 1.f, (2.f * (lv_y1)/704.f) - 1.f, 1.f, 1.f));
-	lv_coordOfFarPlanePoints[2] = TransformNDCToViewSpace(vec4((2.f*lv_x2/704.f) - 1.f, (2.f * (lv_y2)/704.f) - 1.f, 1.f, 1.f));
-	lv_coordOfFarPlanePoints[3] = TransformNDCToViewSpace(vec4((2.f*lv_x1/704.f) - 1.f, (2.f * (lv_y2)/704.f) - 1.f, 1.f, 1.f));
+    
+
+	lv_coordOfFarPlanePoints[0] = TransformNDCToViewSpace(vec4(lv_x1, lv_y2 , 1.f, 1.f));
+	lv_coordOfFarPlanePoints[1] = TransformNDCToViewSpace(vec4(lv_x2, lv_y2, 1.f, 1.f));
+	lv_coordOfFarPlanePoints[2] = TransformNDCToViewSpace(vec4(lv_x2, lv_y1 , 1.f, 1.f));
+	lv_coordOfFarPlanePoints[3] = TransformNDCToViewSpace(vec4(lv_x1, lv_y1, 1.f, 1.f));
 
 
 	for(int i = 0; i < 4; ++i) {
@@ -418,7 +425,7 @@ void main()
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, lv_albedo.rgb, lv_metallic);
 
-    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.01f;
+    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.035f;
 
     vec3 Lo = vec3(0.0f);
     for(uint i = 0; i < lv_counter; ++i) {
@@ -442,8 +449,8 @@ void main()
 
     
 
-    float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal, lv_lightsData.lv_lights[0].xyz);
-    lv_lightning += (1-lv_shadow)*Lo;
+    //float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal, lv_lightsData.lv_lights[0].xyz);
+    lv_lightning += Lo;
 
     imageStore(lv_colorOutput, ivec2(int(lv_uv.x), int(lv_uv.y)), vec4(lv_lightning, lv_albedo.a));
 

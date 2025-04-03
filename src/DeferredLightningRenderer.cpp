@@ -390,13 +390,21 @@ namespace RenderCore
 	(std::array<glm::vec4, m_totalNumLights>& l_positionData)
 	{
 		l_positionData[0] = glm::vec4{ -13.f, 18.f, -2.f, 1.f};
+
+
 		for (uint32_t i = 1; i < 8; ++i) {
-			l_positionData[i] = glm::vec4{ -45.f + (float)20*i, 0.5f, 4.f, (float)i };
+			l_positionData[i] = glm::vec4{ -45.f + (float)20*i, 0.5f, 30.f, (float)i };
 		}
 
-		for (uint32_t i = 0; i < 8; ++i) {
-			l_positionData[i + 8] = glm::vec4{ -45.f + (float)20*i, 0.5f, -6.f, (float)i };
+
+		for (uint32_t j = 0; j < 12; ++j) {
+			for (uint32_t i = 0; i < 8; ++i) {
+				l_positionData[6*j + i + 8] = glm::vec4{ -45.f + (float)20 * i, 0.5f, -30.f + (float)(12.f*j), (float)i };
+			}
 		}
+
+
+
 	}
 
 	void DeferredLightningRenderer::InitializeLightBuffer
