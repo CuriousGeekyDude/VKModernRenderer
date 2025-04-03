@@ -43,9 +43,14 @@ layout(set = 0, binding = 12) buffer debug{
 
 shared uint lv_counter;
 shared uint lv_counter2;
+
+shared uint lv_counterBlock1;
+shared uint lv_counterBlock2;
+
 shared uint lv_minMaxValuesOfTile[2];
 shared uint lv_lightIndicesAffectingTile[256];
 shared uint lv_secondlightIndicesAffectingTile[256];
+
 
 
 
@@ -233,7 +238,7 @@ vec3 calcPointLight(uint index, vec3 normal, vec3 fragPos,
 
 float TransformZndcToZview(float l_zNdc)
 {
-	return (14.5 / ((l_zNdc)*(144.9f) - 145.f));
+	return (100.f / ((l_zNdc)*(999.9f) - 1000.f));
 
 }
 
@@ -285,6 +290,10 @@ void main()
 		
 		lv_minMaxValuesOfTile[0] = 0xFFFFFFFF;
 		lv_minMaxValuesOfTile[1] = 0;
+        lv_counterBlock1 = 0;
+        lv_counterBlock2 = 0;
+        lv_counter = 0;
+        lv_counter2 = 0;
 	}
 
 	barrier();
@@ -300,13 +309,40 @@ void main()
 	float lv_min = uintBitsToFloat(lv_minMaxValuesOfTile[0]);
     float lv_inBetweenMinMax = (lv_min + lv_max) / 2.f;
 
-    //if (lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
+    if (lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
 		
-		//lv_debugMinMaxDepth.lv_debug[88*lv_globalWorkId.y + 2*lv_globalWorkId.x] = lv_min;
-		//lv_debugMinMaxDepth.lv_debug[88*lv_globalWorkId.y + 2*lv_globalWorkId.x + 1] = lv_max;
-	//}
-    //barrier();
+		lv_minMaxValuesOfTile[0] = 0xFFFFFFFF;
+		lv_minMaxValuesOfTile[1] = 0;
+       
+	}
 
+    if(lv_zNdc < lv_inBetweenMinMax) {
+        uint lv_index = 0;
+        lv_index = atomicAdd(lv_counterBlock2, 1U);
+        lv_lightIndicesAffectingTile[lv_index] = floatBitsToUint(lv_zNdc);
+    }
+    else if(lv_zNdc > lv_inBetweenMinMax){
+        uint lv_index = 0;
+        lv_index = atomicAdd(lv_counterBlock1, 1U);
+        lv_secondlightIndicesAffectingTile[lv_index] = floatBitsToUint(lv_zNdc);
+    }
+
+    barrier();
+
+    for(uint i = lv_threadNum; i < lv_counterBlock1; i+=256) {
+       atomicMax(lv_minMaxValuesOfTile[1], lv_secondlightIndicesAffectingTile[i]);
+            
+    }
+    for(uint i = lv_threadNum; i < lv_counterBlock2; i+= 256) {
+        
+       atomicMin(lv_minMaxValuesOfTile[0],lv_lightIndicesAffectingTile[i]);
+    }
+
+    barrier();
+
+    float lv_min1 = uintBitsToFloat(lv_minMaxValuesOfTile[1]);
+    float lv_max1 = uintBitsToFloat(lv_minMaxValuesOfTile[0]);
+    float lv_inBetweenMin1Min2 = (lv_min1 + lv_min)/2.f;
 
 	float lv_x1 = float(16 * lv_globalWorkId.x);
 	float lv_x2 = float(16*(lv_globalWorkId.x + 1));
@@ -329,20 +365,7 @@ void main()
 
 	}
 
-
-
-	if (lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
-		lv_counter = 0;	
-        lv_counter2 = 0;
-	}
-
-
-	barrier();
-
-
-
-
-
+    float lv_epsilon = 0.00001;
 	for(uint i = lv_threadNum; i < lv_totalNumLights; i += 256) {
 	
 		vec4 lv_lightData = lv_lightsData.lv_lights[i];
@@ -357,19 +380,20 @@ void main()
 			( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [2]) < lv_lightRadius ) &&
 			(GetSignedDistanceFromPlane(lv_viewPosLight.xyz,lv_normalOfPlanesOfThisTile[3])<lv_lightRadius)) {
             
-              if((-lv_viewPosLight.z+lv_min<lv_lightRadius)&&(lv_viewPosLight.z-lv_inBetweenMinMax<lv_lightRadius)) {
+              if((-lv_viewPosLight.z+lv_min<lv_lightRadius + lv_epsilon)&&(lv_viewPosLight.z-lv_min1<lv_lightRadius + lv_epsilon)) {
 			
 			    uint lv_dstIndex = atomicAdd(lv_counter, 1U);
 			    lv_lightIndicesAffectingTile[lv_dstIndex] = i;
                 
 		    }
         
-            else if((-lv_viewPosLight.z+lv_inBetweenMinMax<lv_lightRadius)&&(lv_viewPosLight.z-lv_max<lv_lightRadius)) {
+            else if((-lv_viewPosLight.z+lv_max1<lv_lightRadius + lv_epsilon)&&(lv_viewPosLight.z-lv_max<lv_lightRadius + lv_epsilon)) {
             
                 uint lv_dstIndex = atomicAdd(lv_counter2, 1U);
 			    lv_secondlightIndicesAffectingTile[lv_dstIndex] = i;
 
             }
+
         }
 
 	}
@@ -415,6 +439,7 @@ void main()
                     lv_metallic, F0);
 
     }
+
     
 
     float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal, lv_lightsData.lv_lights[0].xyz);

@@ -179,7 +179,7 @@ namespace VulkanEngine
 	void VulkanRenderer::draw3D(uint32_t l_currentImageIndex)
 	{
 		const float lv_ratio = (float)ctx_.GetContextCreator().m_vkDev.m_framebufferWidth / (float)ctx_.GetContextCreator().m_vkDev.m_framebufferHeight;
-		auto proj = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.1f, 145.f);
+		auto proj = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.1f, 1000.f);
 
 
 		glm::mat4 lv_correctionMatrix = glm::mat4
