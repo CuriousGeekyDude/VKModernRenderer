@@ -56,7 +56,7 @@ namespace RenderCore
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 			, "UniformBufferDeferredRenderpass");
 		
-		m_debugBuffer = &lv_vkResManager.CreateBuffer(sizeof(float) * 2*44*44, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
+		m_debugBuffer = &lv_vkResManager.CreateBuffer(sizeof(float) * 4*44*44, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			, "DebugBufferDeferredLightning");
 		
@@ -338,6 +338,7 @@ namespace RenderCore
 		lv_cameraUniform.m_viewMatrix = l_cameraStructure.m_viewMatrix;
 		lv_cameraUniform.m_inMtx = l_cameraStructure.m_projectionMatrix * l_cameraStructure.m_viewMatrix;
 		lv_cameraUniform.m_invProjMatrix = glm::inverse(l_cameraStructure.m_projectionMatrix);
+		lv_cameraUniform.m_projMatrix = l_cameraStructure.m_projectionMatrix;
 
 		auto& lv_uniformBufferGpu = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_uniformBufferGpuHandle);
 		memcpy(lv_uniformBufferGpu.ptr, &lv_cameraUniform, lv_uniformBufferGpu.size);
@@ -399,7 +400,7 @@ namespace RenderCore
 
 		for (uint32_t j = 0; j < 12; ++j) {
 			for (uint32_t i = 0; i < 8; ++i) {
-				l_positionData[6*j + i + 8] = glm::vec4{ -45.f + (float)20 * i, 0.5f, -30.f + (float)(12.f*j), (float)i };
+				l_positionData[8*j + i + 8] = glm::vec4{ -45.f + (float)20 * i, 0.5f, -30.f + (float)(12.f*j), (float)i };
 			}
 		}
 
@@ -412,7 +413,7 @@ namespace RenderCore
 	, const std::array<glm::vec4, m_totalNumLights>& l_positionData)
 	{
 		for (uint32_t i = 0; i < m_totalNumLights; ++i) {
-			l_lightBuffer[i].m_positionAndRadius = glm::vec4{ l_positionData[i].x,l_positionData[i].y , l_positionData[i].z, 25.f };
+			l_lightBuffer[i].m_positionAndRadius = glm::vec4{ l_positionData[i].x,l_positionData[i].y , l_positionData[i].z, 35.f };
 		}
 	}
 

@@ -28,6 +28,7 @@ namespace RenderCore
 			glm::mat4   m_inMtx;
 			glm::mat4   m_viewMatrix;
 			glm::mat4   m_invProjMatrix;
+			glm::mat4	m_projMatrix;
 			glm::vec4   m_cameraPos;
 		};
 
