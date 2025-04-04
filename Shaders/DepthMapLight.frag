@@ -14,7 +14,7 @@ layout(binding = 0) uniform  UniformBuffer {
 layout(location = 0) in vec4 lv_worldPos;
 
 
-const float lv_farPlane = 100.f;
+const float lv_farPlane = 145.f;
 
 void main()
 {

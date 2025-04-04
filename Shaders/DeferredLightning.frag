@@ -116,7 +116,7 @@ float ShadowCalculation(vec3 lv_worldPos, vec3 lv_normal, vec3 lv_lightPos)
     for(int i = 0; i < samples; ++i)
     {
         float closestDepth = texture(lv_depthMapLight, lv_dirVector + sampleOffsetDirections[i] * diskRadius).r;
-        closestDepth *= 100;   // undo mapping [0;1]
+        closestDepth *= 145;   // undo mapping [0;1]
         if(lv_depthFragToLight - bias > closestDepth)
             shadow += 1.0;
     }
