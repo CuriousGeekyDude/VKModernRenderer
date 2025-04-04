@@ -208,8 +208,7 @@ void main()
 
 	vec4 lv_worldPos = vec4(texture(lv_gbufferPos, lv_uv).xyz, 1.f);
     vec4 lv_viewPos = lv_cameraUniform.m_viewMatrix * lv_worldPos;
-    vec3 lv_fragPos = texture(lv_gbufferPos, lv_uv).rgb;
-    vec3 lv_dir = normalize(lv_cameraUniform.m_cameraPos.xyz - lv_fragPos);
+    vec3 lv_dir = normalize(lv_cameraUniform.m_cameraPos.xyz - lv_worldPos.xyz);
 
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, lv_albedo.rgb, lv_metallic);
@@ -224,7 +223,7 @@ void main()
 	for(uint i = 0; i < m_totalNumLights; ++i) {
         
         vec3 lv_lightPos = lv_lights.lights[i].m_position.xyz;
-        vec3 L = normalize(lv_lightPos - lv_fragPos);
+        vec3 L = normalize(lv_lightPos - lv_worldPos.xyz);
         vec3 H = normalize(lv_dir + L);
    
 
@@ -273,7 +272,7 @@ void main()
 
 
 
-        float distance = length(lv_lightPos - lv_fragPos);
+        float distance = length(lv_lightPos - lv_worldPos.xyz);
         float attenuation = 1.0 / distance*distance;
         vec3 radiance = vec3(1.f, 1.f, 1.f) * 0.28 * attenuation;
 
