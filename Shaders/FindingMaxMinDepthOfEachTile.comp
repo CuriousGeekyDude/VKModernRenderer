@@ -1,18 +1,20 @@
 ﻿#version 460 core
 
-const uint lv_totalNumLights = 16;
-const float PI = 3.14159265359;
+
 
 layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
 
 
 
-layout(set = 0, binding = 0) readonly buffer Lights{
+layout(set = 0, binding = 0) uniform sampler2D lv_depthBuffer;
+
+
+layout(set = 0, binding = 1) readonly buffer Lights{
 	vec4 lv_lights[];
 } lv_lightsData;
 
 
-layout(set = 0, binding = 1) uniform UniformBuffer
+layout(set = 0, binding = 2) uniform UniformBuffer
 {
 
 	mat4   m_inMtx;
@@ -25,206 +27,10 @@ layout(set = 0, binding = 1) uniform UniformBuffer
 
 
 
-layout(set = 0, binding = 2) uniform sampler2D lv_gbufferPos;
-layout(set = 0, binding = 3) uniform sampler2D lv_gbufferNormal;
-layout(set = 0, binding = 4) uniform sampler2D lv_gbufferAlbedoSpec;
-layout(set = 0, binding = 5) uniform sampler2D lv_gbufferTangent;
-layout(set = 0, binding = 6) uniform sampler2D lv_gbufferNormalVertex;
-layout(set = 0, binding = 7) uniform sampler2D lv_occlusionFactor;
-layout(set = 0, binding = 8) uniform sampler2D lv_gbufferMetallic;
-layout(set = 0, binding = 9) uniform samplerCube  lv_depthMapLight;
-layout(set = 0, binding = 10) uniform sampler2D lv_depthBuffer;
-layout(set = 0, binding = 11, rgba32f) uniform image2D lv_colorOutput;
-
-layout(set = 0, binding = 12) buffer debug{
-	float lv_debug[2*44*44];
-} lv_debugMinMaxDepth;
-
 
 shared uint lv_counter;
-shared uint lv_counter2;
 shared uint lv_minMaxValuesOfTile[2];
 shared uint lv_lightIndicesAffectingTile[256];
-shared uint lv_secondlightIndicesAffectingTile[256];
-
-
-
-
-
-
-vec3 sampleOffsetDirections[59] = vec3[]
-(
-   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
-   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
-   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
-   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
-   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1),
-   vec3(-1.f, -1.f, -1.f), vec3(-1.f, 1.f, 1.f), vec3(1.f, 1.f, -1.f),
-   vec3(1.f, -1.f, 1.f), vec3( 1,  2,  0), vec3(-1, -2,  0), vec3( 2,  1,  0),
-   vec3(-2, -1,  0), vec3( 1,  0,  2), vec3(-1,  0, -2), vec3( 0,  2,  1), vec3( 0, -2, -1),
-   vec3( 2,  0,  1),
-vec3(-2,  0, -1),
-vec3( 0,  1,  2),
-vec3( 0, -1, -2),
-vec3( 1,  2,  1),
-vec3(-1, -2, -1),
-vec3( 2,  1, -1),
-vec3(-2, -1,  1),
-vec3( 1, -2,  2),
-vec3(-1,  2, -2),
-vec3(  0.276,  0.447,  0.851),
-vec3( -0.724,  0.447,  0.526),
-vec3( -0.724,  0.447, -0.526),
-vec3(  0.276,  0.447, -0.851),
-vec3(  0.724, -0.447,  0.526),
-vec3( -0.276, -0.447,  0.851),
-vec3( -0.894, -0.447,  0.000),
-vec3( -0.276, -0.447, -0.851),
-vec3(  0.724, -0.447, -0.526),
-vec3(  0.309,  0.951,  0.000),
-vec3( -0.809,  0.588,  0.000),
-vec3(  0.809, -0.588,  0.000),
-vec3( -0.309, -0.951,  0.000),
-vec3(  0.000,  0.309,  0.951),
-vec3(  0.000, -0.309,  0.951),
-vec3(  0.000,  0.309, -0.951),
-vec3(  0.000, -0.309, -0.951)
-); 
-
-float ShadowCalculation(vec3 lv_worldPos, vec3 lv_normal, vec3 lv_lightPos)
-{
-
-    vec3 lv_dirVector = lv_worldPos - lv_lightPos;
-
-    float lv_depthFragToLight = length(lv_dirVector);
-
-
-
-    float shadow = 0.0;
-    float bias   = max(0.05 * (1.0 - dot(lv_normal, lv_dirVector)), 0.005);
-    int samples  = 59;
-    float viewDistance = length(lv_matricesUniform.m_cameraPos.xyz - lv_worldPos);
-    float diskRadius = (1.0 + (viewDistance / 100)) / 25.0;
-    for(int i = 0; i < samples; ++i)
-    {
-        float closestDepth = texture(lv_depthMapLight, lv_dirVector + sampleOffsetDirections[i] * diskRadius).r;
-        closestDepth *= 100;   // undo mapping [0;1]
-        if(lv_depthFragToLight - bias > closestDepth)
-            shadow += 1.0;
-    }
-    shadow /= float(samples); 
-
-    
-    
-    return shadow;
-}
-
-
-
-vec3 NormalSampleToWorldSpace(vec3 l_sampledNormal, vec3 l_normalVertex, vec3 l_tangent)
-{
-    vec3 lv_normalT = 2.f * l_sampledNormal - 1.f;
-
-    vec3 N = l_normalVertex;
-    vec3 T = normalize(l_tangent - dot(l_tangent, N)*N);
-    vec3 B = cross(N, T);
-
-    mat3 TBN = mat3(T, B, N);
-
-    return TBN*lv_normalT;
-    
-}
-
-
-
-float DistributionGGX(vec3 N, vec3 H, float roughness)
-{
-    float a = roughness*roughness;
-    float a2 = a*a;
-    float NdotH = max(dot(N, H), 0.0);
-    float NdotH2 = NdotH*NdotH;
-
-    float nom   = a2;
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-    denom = PI * denom * denom;
-
-    return nom / (denom+0.008f);
-}
-// ----------------------------------------------------------------------------
-float GeometrySchlickGGX(float NdotV, float roughness)
-{
-    float r = (roughness + 1.0);
-    float k = (r*r) / 8.0;
-
-    float nom   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-
-    return nom / (denom +0.008f);
-}
-// ----------------------------------------------------------------------------
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
-{
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1 = GeometrySchlickGGX(NdotL, roughness);
-
-    return ggx1 * ggx2;
-}
-// ----------------------------------------------------------------------------
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
-{
-    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
-}
-// ----------------------------------------------------------------------------
-
-
-
-float heaviside( float v ) {
-    if ( v > 0.0 ) return 1.0;
-    else return 0.0;
-}
-
-
-vec3 calcPointLight(uint index, vec3 normal, vec3 fragPos,
-                    vec3 viewDir, vec3 albedo, float rough,
-                    float metal, vec3 F0){
-
-    vec3 position = lv_lightsData.lv_lights[index].xyz;
-    vec3 color    = vec3(10.f);
-    float radius  = lv_lightsData.lv_lights[index].w;
-
-    //Stuff common to the BRDF subfunctions 
-    vec3 lightDir = normalize(position - fragPos);
-    vec3 halfway  = normalize(lightDir + viewDir);
-    float nDotV = max(dot(normal, viewDir), 0.0);
-    float nDotL = max(dot(normal, lightDir), 0.0);
-
-    //Attenuation calculation that is applied to all
-    float distance    = length(position - fragPos);
-    float attenuation = pow(clamp(1 - pow((distance / radius), 4.0), 0.0, 1.0), 2.0)/(1.0  + (distance * distance) );
-    vec3 radianceIn   = color * attenuation;
-
-    //Cook-Torrance BRDF
-    float NDF = DistributionGGX(normal, halfway, rough);
-    float G   = GeometrySmith(normal, viewDir, lightDir,rough);
-    vec3  F   = fresnelSchlick(max(dot(halfway,viewDir), 0.0), F0);
-
-    //Finding specular and diffuse component
-    vec3 kS = F;
-    vec3 kD = vec3(1.0) - kS;
-    kD *= 1.0 - metal;
-
-    vec3 numerator = NDF * G * F;
-    float denominator = 4.0 * nDotV * nDotL;
-    vec3 specular = numerator / max(denominator, 0.0000001);
-    // vec3 specular = numerator / denominator;
-
-    vec3 radiance = (kD * (albedo / PI) + specular ) * radianceIn * nDotL;
-    
-
-    return radiance;
-}
 
 
 
@@ -233,7 +39,8 @@ vec3 calcPointLight(uint index, vec3 normal, vec3 fragPos,
 
 float TransformZndcToZview(float l_zNdc)
 {
-	return (14.5 / ((l_zNdc)*(144.9f) - 145.f));
+
+	return 29.f / ((l_zNdc-1.f) * 144.9f);
 
 }
 
@@ -265,6 +72,8 @@ vec3 TransformNDCToViewSpace(vec4 l_p)
 }
 
 
+const uint lv_totalNumLights = 1;
+
 
 void main()
 {
@@ -273,7 +82,7 @@ void main()
 	uvec2 lv_uv = gl_GlobalInvocationID.xy;
 	uvec2 lv_localWorkId = gl_LocalInvocationID.xy;
 	uvec2 lv_globalWorkId = gl_WorkGroupID.xy;
-	uint lv_threadNum = lv_localWorkId.y * 16 + lv_localWorkId.x;
+	uint lv_threadNum = lv_localWorkId.y * 15 + lv_localWorkId.x;
 
 	float lv_zNdc = texelFetch(lv_depthBuffer, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).r;
 
@@ -289,23 +98,14 @@ void main()
 
 	barrier();
 
-    if(lv_zNdcInUint != 0) {
-	    atomicMin(lv_minMaxValuesOfTile[0], lv_zNdcInUint);
-	    atomicMax(lv_minMaxValuesOfTile[1], lv_zNdcInUint);
-    }
+	atomicMin(lv_minMaxValuesOfTile[0], lv_zNdcInUint);
+	atomicMax(lv_minMaxValuesOfTile[1], lv_zNdcInUint);
 
 	barrier();
 
 	float lv_max = uintBitsToFloat(lv_minMaxValuesOfTile[1]);
 	float lv_min = uintBitsToFloat(lv_minMaxValuesOfTile[0]);
-    float lv_inBetweenMinMax = (lv_min + lv_max) / 2.f;
 
-    //if (lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
-		
-		//lv_debugMinMaxDepth.lv_debug[88*lv_globalWorkId.y + 2*lv_globalWorkId.x] = lv_min;
-		//lv_debugMinMaxDepth.lv_debug[88*lv_globalWorkId.y + 2*lv_globalWorkId.x + 1] = lv_max;
-	//}
-    //barrier();
 
 
 	float lv_x1 = float(16 * lv_globalWorkId.x);
@@ -317,10 +117,10 @@ void main()
 	vec4 lv_normalOfPlanesOfThisTile[4];
 	vec3 lv_coordOfFarPlanePoints[4];
 
-	lv_coordOfFarPlanePoints[0] = TransformNDCToViewSpace(vec4((2.f*lv_x1/704.f) - 1.f, (2.f * (lv_y1)/704.f) - 1.f, 1.f, 1.f));
-	lv_coordOfFarPlanePoints[1] = TransformNDCToViewSpace(vec4((2.f*lv_x2/704.f) - 1.f, (2.f * (lv_y1)/704.f) - 1.f, 1.f, 1.f));
-	lv_coordOfFarPlanePoints[2] = TransformNDCToViewSpace(vec4((2.f*lv_x2/704.f) - 1.f, (2.f * (lv_y2)/704.f) - 1.f, 1.f, 1.f));
-	lv_coordOfFarPlanePoints[3] = TransformNDCToViewSpace(vec4((2.f*lv_x1/704.f) - 1.f, (2.f * (lv_y2)/704.f) - 1.f, 1.f, 1.f));
+	lv_coordOfFarPlanePoints[0] = TransformNDCToViewSpace(vec4((2.f*lv_x1/704.f) - 1.f, (2.f * lv_y1/704.f) - 1.f, 1.f, 1.f));
+	lv_coordOfFarPlanePoints[1] = TransformNDCToViewSpace(vec4((2.f*lv_x2/704.f) - 1.f, (2.f * lv_y1/704.f) - 1.f, 1.f, 1.f));
+	lv_coordOfFarPlanePoints[2] = TransformNDCToViewSpace(vec4((2.f*lv_x2/704.f) - 1.f, (2.f * lv_y2/704.f) - 1.f, 1.f, 1.f));
+	lv_coordOfFarPlanePoints[3] = TransformNDCToViewSpace(vec4((2.f*lv_x1/704.f) - 1.f, (2.f * lv_y2/704.f) - 1.f, 1.f, 1.f));
 
 
 	for(int i = 0; i < 4; ++i) {
@@ -333,13 +133,10 @@ void main()
 
 	if (lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
 		lv_counter = 0;	
-        lv_counter2 = 0;
 	}
 
 
 	barrier();
-
-
 
 
 
@@ -355,22 +152,12 @@ void main()
 		if( ( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [0]) < lv_lightRadius ) &&
 			( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [1]) < lv_lightRadius ) &&
 			( GetSignedDistanceFromPlane ( lv_viewPosLight.xyz , lv_normalOfPlanesOfThisTile [2]) < lv_lightRadius ) &&
-			(GetSignedDistanceFromPlane(lv_viewPosLight.xyz,lv_normalOfPlanesOfThisTile[3])<lv_lightRadius)) {
-            
-              if((-lv_viewPosLight.z+lv_min<lv_lightRadius)&&(lv_viewPosLight.z-lv_inBetweenMinMax<lv_lightRadius)) {
+			(GetSignedDistanceFromPlane(lv_viewPosLight.xyz,lv_normalOfPlanesOfThisTile[3])<lv_lightRadius)&&(-lv_viewPosLight.z+lv_min<lv_lightRadius)&&(lv_viewPosLight.z-lv_max<lv_lightRadius)) {
 			
-			    uint lv_dstIndex = atomicAdd(lv_counter, 1U);
-			    lv_lightIndicesAffectingTile[lv_dstIndex] = i;
-                
-		    }
-        
-            else if((-lv_viewPosLight.z+lv_inBetweenMinMax<lv_lightRadius)&&(lv_viewPosLight.z-lv_max<lv_lightRadius)) {
-            
-                uint lv_dstIndex = atomicAdd(lv_counter2, 1U);
-			    lv_secondlightIndicesAffectingTile[lv_dstIndex] = i;
+			uint lv_dstIndex = atomicAdd(lv_counter, 1U);
+			lv_lightIndicesAffectingTile[lv_dstIndex] = i;
 
-            }
-        }
+		}
 
 	}
 
@@ -379,47 +166,5 @@ void main()
 
 
 
-    float lv_occlusion = texelFetch(lv_occlusionFactor ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).r;
-    float lv_metallic = texelFetch(lv_gbufferMetallic ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).b;
-    float lv_roughness = texelFetch(lv_gbufferMetallic ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).g;
-    vec3 lv_normal = NormalSampleToWorldSpace(texelFetch(lv_gbufferNormal, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).rgb, texelFetch(lv_gbufferNormalVertex, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).rgb, texelFetch(lv_gbufferTangent, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).rgb);
-    vec4 lv_albedo = texelFetch(lv_gbufferAlbedoSpec, ivec2(int(lv_uv.x), int(lv_uv.y)), 0);
-    
-    
-
-	vec4 lv_worldPos = vec4(texelFetch(lv_gbufferPos, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).xyz, 1.f);
-    vec4 lv_viewPos = lv_matricesUniform.m_viewMatrix * lv_worldPos;
-    vec3 lv_dir = normalize(lv_matricesUniform.m_cameraPos.xyz - lv_worldPos.xyz);
-
-    vec3 F0 = vec3(0.04); 
-    F0 = mix(F0, lv_albedo.rgb, lv_metallic);
-
-    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.01f;
-
-    vec3 Lo = vec3(0.0f);
-    for(uint i = 0; i < lv_counter; ++i) {
-        
-        uint lv_lightIndex = lv_lightIndicesAffectingTile[i];
-
-        Lo += calcPointLight(lv_lightIndex, lv_normal, lv_worldPos.xyz,
-                    lv_dir, lv_albedo.rgb, lv_roughness,
-                    lv_metallic, F0);
-
-    }
-    for(uint i = 0; i < lv_counter2; ++i) {
-        
-        uint lv_lightIndex = lv_secondlightIndicesAffectingTile[i];
-
-        Lo += calcPointLight(lv_lightIndex, lv_normal, lv_worldPos.xyz,
-                    lv_dir, lv_albedo.rgb, lv_roughness,
-                    lv_metallic, F0);
-
-    }
-    
-
-    float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal, lv_lightsData.lv_lights[0].xyz);
-    lv_lightning += (1-lv_shadow)*Lo;
-
-    imageStore(lv_colorOutput, ivec2(int(lv_uv.x), int(lv_uv.y)), vec4(lv_lightning, lv_albedo.a));
 
 }

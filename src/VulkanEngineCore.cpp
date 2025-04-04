@@ -244,7 +244,7 @@ namespace VulkanEngine
 	CameraApp::CameraApp(int screenWidth, int screenHeight, const std::string& l_frameGraphPath) :
 		VulkanApp(screenWidth, screenHeight, l_frameGraphPath),
 
-		positioner(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f)),
+		positioner(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)),
 		camera(positioner)
 	{}
 

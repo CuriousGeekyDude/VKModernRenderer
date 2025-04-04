@@ -14,11 +14,17 @@ namespace RenderCore
 	class DeferredLightningRenderer : public Renderbase
 	{
 
-		static constexpr uint32_t m_totalNumLights{ 16 };
+		static constexpr uint32_t m_totalNumLights{ 256 };
 	
 		struct Light
 		{
-			glm::vec4 m_positionAndRadius;
+			glm::vec4 m_position;
+			glm::vec4 m_color{ 60.f, 60.f, 60.f, 1.f };
+
+			float m_linear{ 0.7f };
+			float m_quadratic{ 1.8f };
+			float m_radius{ 5.090127 };
+			float m_pad{ -1.f };
 		};
 
 
@@ -27,14 +33,15 @@ namespace RenderCore
 		{
 			glm::mat4   m_inMtx;
 			glm::mat4   m_viewMatrix;
-			glm::mat4   m_invProjMatrix;
-			glm::vec4   m_cameraPos;
+			glm::vec4	m_cameraPos;
+			glm::vec4   m_time;
 		};
 
 	public:
 		DeferredLightningRenderer
 		(VulkanEngine::VulkanRenderContext& l_vkContextCreator
-		,const char* l_computeShader
+		,const char* l_vtxShader
+		,const char* l_fragShader
 		,const char* l_spvPath);
 
 
@@ -68,7 +75,6 @@ namespace RenderCore
 		uint32_t m_indicesBufferGpuHandle;
 		uint32_t m_depthMapLightGpuHandle;
 		std::vector<VulkanTexture*> m_colorOutputTextures;
-		VulkanBuffer* m_debugBuffer;
 	};
 
 

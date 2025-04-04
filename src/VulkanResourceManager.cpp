@@ -48,29 +48,18 @@ namespace RenderCore
 		}
 
 		for (size_t i = 0; i < lv_totalNumSwapchhains; ++i) {
-			
-			auto lv_formattedArgs = std::make_format_args(i);
 
 			std::string lv_formattedString{ "Depth {}" };
+			auto lv_formattedArgs = std::make_format_args(i);
 
 			auto lv_depthHandle = CreateDepthTextureWithHandle(std::vformat(lv_formattedString, lv_formattedArgs).c_str());
 
 			AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_depthHandle,VulkanDataType::m_texture);
-
-			lv_formattedString = "DeferredLightningColorTexture {}";
-			auto lv_deferredLightningColor = CreateTexture(l_renderDevice.m_maxAnisotropy
-				, std::vformat(lv_formattedString, lv_formattedArgs).c_str()
-				, VK_FORMAT_R32G32B32A32_SFLOAT,l_renderDevice.m_framebufferWidth, l_renderDevice.m_framebufferHeight
-				, 6, VK_FILTER_LINEAR, VK_FILTER_LINEAR, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-			AddGpuResource(std::vformat(lv_formattedString, lv_formattedArgs).c_str(), lv_deferredLightningColor, VulkanDataType::m_texture);
-
 		}
 
 
 
 		CreateDepthCubeMapTexture("DepthMapPointLight", l_renderDevice.m_framebufferWidth , l_renderDevice.m_framebufferWidth);
-
-
 
 
 	}

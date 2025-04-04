@@ -36,8 +36,9 @@ namespace VulkanEngine
 		, m_boxBlur(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/BoxBlur.frag"
 					, "Shaders/Spirv/BoxBlur.spv")
 		,m_deferredLightning(ctx_
-			, "Shaders/FindingMaxMinDepthOfEachTile.comp"
-			, "Shaders/Spirv/FindingMaxMinDepthOfEachTile.spv")
+		,"Shaders/FullScreenQuad.vert"
+		,"Shaders/DeferredLightning.frag"
+		,"Shaders/Spirv/DeferredLightning.spv")
 		
 		,m_pointLightCube(ctx_)
 		/*,m_extractBrightnessBloom(ctx_
@@ -124,6 +125,12 @@ namespace VulkanEngine
 		, "Shaders/FullScreenQuad.vert"
 		, "Shaders/FXAA.frag"
 		, "Shaders/Spirv/FXAA.spv")
+
+		, m_minMaxDepthTiles(
+		ctx_
+		, "Shaders/FindingMaxMinDepthOfEachTile.comp"
+		, "Shaders/Spirv/FindingMaxMinDepthOfEachTile.spv"
+		)
 	{
 
 
@@ -181,14 +188,6 @@ namespace VulkanEngine
 		const float lv_ratio = (float)ctx_.GetContextCreator().m_vkDev.m_framebufferWidth / (float)ctx_.GetContextCreator().m_vkDev.m_framebufferHeight;
 		auto proj = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.1f, 145.f);
 
-
-		glm::mat4 lv_correctionMatrix = glm::mat4
-		(glm::vec4{ 1.f,0.f,0.f,0.f }
-		, glm::vec4{0.f, -1.f, 0.f, 0.f}
-		, glm::vec4{0.f, 0.f, 0.5f, 0.f}
-		, glm::vec4{0.f, 0.f, 0.5f, 1.f});
-
-		proj = lv_correctionMatrix * proj;
 
 		const CameraStructure lv_cameraStructure{
 			.m_cameraPos = camera.getPosition(),
