@@ -179,7 +179,6 @@
     <ClCompile Include="src\DeferredLightningRenderer.cpp" />
     <ClCompile Include="src\DepthMapLightRenderer.cpp" />
     <ClCompile Include="src\ExtractBrightnessRenderer.cpp" />
-    <ClCompile Include="src\FindingMaxMinDepthOfEachTile.cpp" />
     <ClCompile Include="src\FrameGraph.cpp" />
     <ClCompile Include="src\GaussianBlurRenderer.cpp" />
     <ClCompile Include="src\GeometryConverter.cpp" />
@@ -245,7 +244,6 @@
     <ClInclude Include="src\EasyProfilerWrapper.h" />
     <ClInclude Include="src\ErrorCheck.hpp" />
     <ClInclude Include="src\ExtractBrightnessRenderer.hpp" />
-    <ClInclude Include="src\FindingMaxMinDepthOfEachTile.hpp" />
     <ClInclude Include="src\FrameGraph.hpp" />
     <ClInclude Include="src\BoxBlurRenderer.hpp" />
     <ClInclude Include="src\GaussianBlurRenderer.hpp" />
