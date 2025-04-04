@@ -5,7 +5,8 @@
     "glm",
     "glslang",
     "meshoptimizer",
+    "stb",
     "volk",
-    "stb"
+    "imgui"
   ]
 }
