@@ -22,6 +22,9 @@
 #include "LinearlyInterpBlurAndSceneRenderer.hpp"
 
 
+#include "IMGUIRenderer.hpp"
+
+
 #include "PresentSwapchainRenderer.hpp"
 
 namespace VulkanEngine
@@ -67,5 +70,6 @@ namespace VulkanEngine
 
 		RenderCore::PresentSwapchainRenderer m_presentSwapchain;
 
+		RenderCore::IMGUIRenderer m_imgui;
 	};
 }

@@ -125,6 +125,8 @@ namespace VulkanEngine
 		, "Shaders/FullScreenQuad.vert"
 		, "Shaders/FXAA.frag"
 		, "Shaders/Spirv/FXAA.spv")
+
+		, m_imgui(ctx_)
 	{
 
 

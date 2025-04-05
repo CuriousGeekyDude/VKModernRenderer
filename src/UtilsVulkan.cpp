@@ -804,6 +804,19 @@ VkResult createSemaphore(VkDevice m_device, VkSemaphore* outSemaphore, bool l_ti
 	return vkCreateSemaphore(m_device, &lv_semaphoreCreateInfo, nullptr, outSemaphore);
 }
 
+
+
+void CheckVkResult(VkResult l_result)
+{
+	if (l_result != VK_SUCCESS) {
+		printf("Vulkan function in IMGUIRenderer failed. Exitting....\n");
+
+		exit(EXIT_FAILURE);
+	}
+}
+
+
+
 bool initVulkanRenderDevice2WithCompute(VulkanInstance& vk, VulkanRenderDevice& vkDev, uint32_t width, uint32_t height, std::function<bool(VkPhysicalDevice)> selector, VkPhysicalDeviceFeatures2 deviceFeatures2, bool supportScreenshots)
 {
 	vkDev.m_framebufferWidth = width;
