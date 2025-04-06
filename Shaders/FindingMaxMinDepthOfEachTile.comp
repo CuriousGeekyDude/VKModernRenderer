@@ -261,14 +261,44 @@ void main()
 	barrier();
 
 	
-    float lv_max = uintBitsToFloat(lv_minMaxValuesOfTile[1]);
-	float lv_min = uintBitsToFloat(lv_minMaxValuesOfTile[0]);
-
-    float lv_maxInView = TransformZndcToZview(lv_max);
-    float lv_minInView = TransformZndcToZview(lv_min);
-
+     float lv_max = uintBitsToFloat(lv_minMaxValuesOfTile[1]);
+	 float lv_min = uintBitsToFloat(lv_minMaxValuesOfTile[0]);
+     float lv_inBetween = (lv_min + lv_max) / 2.f;
 	
+     float lv_x1 = float(16 * lv_globalWorkId.x);
+	 float lv_x2 = float(16*(lv_globalWorkId.x + 1));
+	 float lv_y1 = float(16*lv_globalWorkId.y);
+	 float lv_y2 = float(16*(lv_globalWorkId.y+1));
 
+
+     lv_x1 = (2.f*lv_x1/704.f) - 1.f;
+     lv_y1 = (2.f*lv_y1/704.f) - 1.f;
+     lv_x2 = (2.f*lv_x2/704.f) - 1.f;
+     lv_y2 = (2.f*lv_y2/704.f) - 1.f;
+
+     vec3 lv_minMaxAABB[2];
+     vec3 lv_minMaxAABB2[2];
+
+            
+     vec3 lv_pointsView[8];
+     lv_pointsView[0] = TransformNDCToViewSpace(vec4(lv_x1, lv_y1 , lv_min, 1.f));
+     lv_pointsView[1] = TransformNDCToViewSpace(vec4(lv_x2, lv_y1 , lv_min, 1.f));
+     lv_pointsView[2] = TransformNDCToViewSpace(vec4(lv_x2, lv_y2 , lv_min, 1.f));
+     lv_pointsView[3] = TransformNDCToViewSpace(vec4(lv_x1, lv_y2 , lv_min, 1.f));
+
+     lv_pointsView[4] = TransformNDCToViewSpace(vec4(lv_x1, lv_y1 , lv_max, 1.f));
+     lv_pointsView[5] = TransformNDCToViewSpace(vec4(lv_x2, lv_y1 , lv_max, 1.f));
+     lv_pointsView[6] = TransformNDCToViewSpace(vec4(lv_x2, lv_y2 , lv_max, 1.f));
+     lv_pointsView[7] = TransformNDCToViewSpace(vec4(lv_x1, lv_y2 , lv_max, 1.f));
+
+
+     lv_minMaxAABB[0] = lv_pointsView[0];
+     lv_minMaxAABB[1] = lv_pointsView[1];
+
+     for(uint i = 1; i < 8; ++i) {
+        lv_minMaxAABB[0] = min(lv_minMaxAABB[0], lv_pointsView[i]);
+        lv_minMaxAABB[1] = max(lv_minMaxAABB[1], lv_pointsView[i]);
+     }
 
 	
 	for(uint i = lv_threadNum; i < lv_totalNumLights; i += 256) {
@@ -283,73 +313,19 @@ void main()
         float lv_minSphere = lv_viewPosLight.z + lv_lightRadius;
         float lv_maxSphere = lv_viewPosLight.z - lv_lightRadius;
 
-        //lv_maxInView <= lv_minSphere && lv_maxSphere <= lv_minInView
-        //SqrDistancePointAABB(lv_viewPosLight.xyz, lv_minMaxAABB[0], lv_minMaxAABB[1]) <= lv_lightRadius*lv_lightRadius
-        if(lv_maxInView <= lv_minSphere && lv_maxSphere <= lv_minInView) {
+        if(SqrDistancePointAABB(lv_viewPosLight.xyz, lv_minMaxAABB[0], lv_minMaxAABB[1]) <= lv_lightRadius*lv_lightRadius) {
             
 
+            
 
-
-            float lv_x1 = float(16 * lv_globalWorkId.x);
-	        float lv_x2 = float(16*(lv_globalWorkId.x + 1));
-	        float lv_y1 = float(16*lv_globalWorkId.y);
-	        float lv_y2 = float(16*(lv_globalWorkId.y+1));
-
-
-            lv_x1 = (2.f*lv_x1/704.f) - 1.f;
-            lv_y1 = (2.f*lv_y1/704.f) - 1.f;
-            lv_x2 = (2.f*lv_x2/704.f) - 1.f;
-            lv_y2 = (2.f*lv_y2/704.f) - 1.f;
-
-            vec3 lv_minMaxAABB[2];
-
-
-            float lv_maxY = 0.f;
-            float lv_minY = 0.f;
-            float lv_maxX = 0.f;
-            float lv_minX = 0.f;
-
-            vec3 lv_pointsView[8];
-            lv_pointsView[0] = TransformNDCToViewSpace(vec4(lv_x1, lv_y1 , lv_min, 1.f));
-            lv_pointsView[1] = TransformNDCToViewSpace(vec4(lv_x2, lv_y1 , lv_min, 1.f));
-            lv_pointsView[2] = TransformNDCToViewSpace(vec4(lv_x2, lv_y2 , lv_min, 1.f));
-            lv_pointsView[3] = TransformNDCToViewSpace(vec4(lv_x1, lv_y2 , lv_min, 1.f));
-
-            lv_pointsView[0] = TransformNDCToViewSpace(vec4(lv_x1, lv_y1 , lv_max, 1.f));
-            lv_pointsView[1] = TransformNDCToViewSpace(vec4(lv_x2, lv_y1 , lv_max, 1.f));
-            lv_pointsView[2] = TransformNDCToViewSpace(vec4(lv_x2, lv_y2 , lv_max, 1.f));
-            lv_pointsView[3] = TransformNDCToViewSpace(vec4(lv_x1, lv_y2 , lv_max, 1.f));
-
-            lv_maxY = max(max(max(lv_pointsView[0].y, lv_pointsView[1].y), max(lv_pointsView[2].y, lv_pointsView[3].y)), max(max(lv_pointsView[4].y, lv_pointsView[5].y), max(lv_pointsView[6].y, lv_pointsView[7].y)));
-            lv_minY = min(min(min(lv_pointsView[0].y, lv_pointsView[1].y), min(lv_pointsView[2].y, lv_pointsView[3].y)), min(min(lv_pointsView[4].y, lv_pointsView[5].y), min(lv_pointsView[6].y, lv_pointsView[7].y)));
-
-
-
-            lv_maxX = max(max(max(lv_pointsView[0].x, lv_pointsView[1].x), max(lv_pointsView[2].x, lv_pointsView[3].x)), max(max(lv_pointsView[4].x, lv_pointsView[5].x), max(lv_pointsView[6].x, lv_pointsView[7].x)));
-            lv_minX = min(min(min(lv_pointsView[0].x, lv_pointsView[1].x), min(lv_pointsView[2].x, lv_pointsView[3].x)), min(min(lv_pointsView[4].x, lv_pointsView[5].x), min(lv_pointsView[6].x, lv_pointsView[7].x)));
-
-
-            lv_minMaxAABB[0] = vec3(lv_minX, lv_minY, lv_minInView);
-            lv_minMaxAABB[1] = vec3(lv_maxX, lv_maxY, lv_maxInView);
-
-            vec2 lv_minMaxDelta = abs(lv_minMaxAABB[1].xy - lv_minMaxAABB[0].xy)/2.f;
-
-            vec2 lv_rectanglePos = lv_minMaxAABB[0].xy + lv_minMaxDelta;
-
-
-
-            float lv_rectangleRadius = distance(lv_minMaxAABB[0].xy, lv_minMaxAABB[1].xy)/2.f;
-            float lv_sqrSumOfRadiuses = (lv_lightRadius + lv_rectangleRadius) * (lv_lightRadius + lv_rectangleRadius);
-            vec2 lv_deltaLightRect = lv_viewPosLight.xy - lv_rectanglePos;
-
-		    if(dot(lv_deltaLightRect, lv_deltaLightRect) <=  lv_sqrSumOfRadiuses) {
+		    //if(dot(lv_deltaLightRect, lv_deltaLightRect) <=  lv_sqrSumOfRadiuses) {
             
                     uint lv_dstIndex = 0;
 			        lv_dstIndex = atomicAdd(lv_counter, 1U);
                     lv_lightIndicesAffectingTile[lv_dstIndex] = i;
 
 
-            }
+            //}
          }
 
 	}
