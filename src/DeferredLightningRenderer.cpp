@@ -56,7 +56,7 @@ namespace RenderCore
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 			, "UniformBufferDeferredRenderpass");
 		
-		m_debugBuffer = &lv_vkResManager.CreateBuffer(sizeof(float) * 4*44*44, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
+		m_debugBuffer = &lv_vkResManager.CreateBuffer(sizeof(float) * 44*44, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
 			, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT
 			, "DebugBufferDeferredLightning");
 		
@@ -413,7 +413,7 @@ namespace RenderCore
 	, const std::array<glm::vec4, m_totalNumLights>& l_positionData)
 	{
 		for (uint32_t i = 0; i < m_totalNumLights; ++i) {
-			l_lightBuffer[i].m_positionAndRadius = glm::vec4{ l_positionData[i].x,l_positionData[i].y , l_positionData[i].z, 22.f };
+			l_lightBuffer[i].m_positionAndRadius = glm::vec4{ l_positionData[i].x,l_positionData[i].y , l_positionData[i].z, 10.f };
 		}
 	}
 

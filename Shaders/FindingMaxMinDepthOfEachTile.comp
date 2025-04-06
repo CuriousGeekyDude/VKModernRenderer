@@ -38,7 +38,7 @@ layout(set = 0, binding = 10) uniform sampler2D lv_depthBuffer;
 layout(set = 0, binding = 11, rgba32f) uniform image2D lv_colorOutput;
 
 layout(set = 0, binding = 12) buffer debug{
-	float lv_debug[4*44*44];
+	float lv_debug[44*44];
 } lv_debugMinMaxDepth;
 
 
@@ -322,6 +322,10 @@ void main()
 	barrier();
 
     
+    if(lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
+        lv_debugMinMaxDepth.lv_debug[44*lv_globalWorkId.y + lv_globalWorkId.x] = float(lv_counter);
+    }
+
 
 
     float lv_occlusion = texelFetch(lv_occlusionFactor ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).r;
