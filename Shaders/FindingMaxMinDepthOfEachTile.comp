@@ -263,7 +263,6 @@ void main()
 	
      float lv_max = uintBitsToFloat(lv_minMaxValuesOfTile[1]);
 	 float lv_min = uintBitsToFloat(lv_minMaxValuesOfTile[0]);
-     float lv_inBetween = (lv_min + lv_max) / 2.f;
 	
      float lv_x1 = float(16 * lv_globalWorkId.x);
 	 float lv_x2 = float(16*(lv_globalWorkId.x + 1));
@@ -277,7 +276,6 @@ void main()
      lv_y2 = (2.f*lv_y2/704.f) - 1.f;
 
      vec3 lv_minMaxAABB[2];
-     vec3 lv_minMaxAABB2[2];
 
             
      vec3 lv_pointsView[8];
@@ -293,7 +291,7 @@ void main()
 
 
      lv_minMaxAABB[0] = lv_pointsView[0];
-     lv_minMaxAABB[1] = lv_pointsView[1];
+     lv_minMaxAABB[1] = lv_pointsView[0];
 
      for(uint i = 1; i < 8; ++i) {
         lv_minMaxAABB[0] = min(lv_minMaxAABB[0], lv_pointsView[i]);
@@ -310,22 +308,12 @@ void main()
 
 		vec4 lv_viewPosLight = lv_matricesUniform.m_viewMatrix * lv_worldPosLight;
 
-        float lv_minSphere = lv_viewPosLight.z + lv_lightRadius;
-        float lv_maxSphere = lv_viewPosLight.z - lv_lightRadius;
-
         if(SqrDistancePointAABB(lv_viewPosLight.xyz, lv_minMaxAABB[0], lv_minMaxAABB[1]) <= lv_lightRadius*lv_lightRadius) {
-            
+                        
+              uint lv_dstIndex = 0;
+			  lv_dstIndex = atomicAdd(lv_counter, 1U);
+              lv_lightIndicesAffectingTile[lv_dstIndex] = i;
 
-            
-
-		    //if(dot(lv_deltaLightRect, lv_deltaLightRect) <=  lv_sqrSumOfRadiuses) {
-            
-                    uint lv_dstIndex = 0;
-			        lv_dstIndex = atomicAdd(lv_counter, 1U);
-                    lv_lightIndicesAffectingTile[lv_dstIndex] = i;
-
-
-            //}
          }
 
 	}
