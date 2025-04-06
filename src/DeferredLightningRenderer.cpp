@@ -400,7 +400,7 @@ namespace RenderCore
 
 		for (uint32_t j = 0; j < 12; ++j) {
 			for (uint32_t i = 0; i < 8; ++i) {
-				l_positionData[8*j + i + 8] = glm::vec4{ -45.f + (float)20 * i, 0.5f, -30.f + (float)(12.f*j), (float)i };
+				l_positionData[8*j + i + 8] = glm::vec4{ -45.f + (float)20 * i, 0.5f, -30.f + (float)(15.f*j), (float)i };
 			}
 		}
 
@@ -413,7 +413,7 @@ namespace RenderCore
 	, const std::array<glm::vec4, m_totalNumLights>& l_positionData)
 	{
 		for (uint32_t i = 0; i < m_totalNumLights; ++i) {
-			l_lightBuffer[i].m_positionAndRadius = glm::vec4{ l_positionData[i].x,l_positionData[i].y , l_positionData[i].z, 35.f };
+			l_lightBuffer[i].m_positionAndRadius = glm::vec4{ l_positionData[i].x,l_positionData[i].y , l_positionData[i].z, 22.f };
 		}
 	}
 
