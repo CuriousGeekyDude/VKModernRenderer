@@ -1,5 +1,10 @@
 ﻿#version 460 core
 
+
+//If >= 512 point lights used then define HALF-Z-AABB for better perf
+//#define HALF_Z_AABB
+
+
 const uint lv_totalNumLights = 136;
 const float PI = 3.14159265359;
 
@@ -225,12 +230,19 @@ float SqrDistancePointAABB(vec3 l_p, vec3 l_minAABB, vec3 l_maxAABB)
 
 
 
-shared uint lv_counter;
-shared uint lv_counter2;
-
 shared uint lv_minMaxValuesOfTile[2];
+shared uint lv_counter;
 shared uint lv_lightIndicesAffectingTile[lv_totalNumLights];
-shared uint lv_lightIndicesAffectingTile2[lv_totalNumLights];
+
+
+#ifdef HALF_Z_AABB 
+
+    shared uint lv_counter2;
+    shared uint lv_lightIndicesAffectingTile2[lv_totalNumLights];
+
+#endif
+
+
 
 
 void main()
@@ -251,7 +263,10 @@ void main()
 		lv_minMaxValuesOfTile[0] = 0xFFFFFFFF;
 		lv_minMaxValuesOfTile[1] = 0;
         lv_counter = 0;
-        lv_counter2 = 0;
+
+        #ifdef HALF_Z_AABB
+            lv_counter2 = 0;
+        #endif
 
 	}
 
@@ -280,8 +295,6 @@ void main()
      lv_y2 = (2.f*lv_y2/704.f) - 1.f;
 
      vec3 lv_minMaxAABB[2];
-     vec3 lv_minMaxAABB2[2];
-
             
      vec3 lv_pointsView[8];
      lv_pointsView[0] = TransformNDCToViewSpace(vec4(lv_x1, lv_y1 , lv_min, 1.f));
@@ -304,14 +317,18 @@ void main()
      }
 
 
-     //2nd AABB
-     float lv_inBetweenMinMax = (lv_minMaxAABB[0].z + lv_minMaxAABB[1].z)/2.f;
-     lv_minMaxAABB2[0] = vec3(lv_minMaxAABB[0].xy, lv_inBetweenMinMax);
-     lv_minMaxAABB2[1] = lv_minMaxAABB[1];
+     #ifdef HALF_Z_AABB
 
-     //Now modify max point of 1st AABB 
-     lv_minMaxAABB[1] = vec3(lv_minMaxAABB[1].xy, lv_inBetweenMinMax);
+        //2nd AABB
+        vec3 lv_minMaxAABB2[2];
+        float lv_inBetweenMinMax = (lv_minMaxAABB[0].z + lv_minMaxAABB[1].z)/2.f;
+        lv_minMaxAABB2[0] = vec3(lv_minMaxAABB[0].xy, lv_inBetweenMinMax);
+        lv_minMaxAABB2[1] = lv_minMaxAABB[1];
 
+        //Now modify max point of 1st AABB 
+        lv_minMaxAABB[1] = vec3(lv_minMaxAABB[1].xy, lv_inBetweenMinMax);
+
+     #endif
 
 	
 	for(uint i = lv_threadNum; i < lv_totalNumLights; i += 256) {
@@ -332,13 +349,18 @@ void main()
               continue;
          }
 
-         if(SqrDistancePointAABB(lv_viewPosLight.xyz, lv_minMaxAABB2[0], lv_minMaxAABB2[1]) <= lv_lightRadius*lv_lightRadius) {
-                        
-              uint lv_dstIndex = 0;
-			  lv_dstIndex = atomicAdd(lv_counter2, 1U);
-              lv_lightIndicesAffectingTile2[lv_dstIndex] = i;
 
-         }
+         #ifdef HALF_Z_AABB
+
+            if(SqrDistancePointAABB(lv_viewPosLight.xyz, lv_minMaxAABB2[0], lv_minMaxAABB2[1]) <= lv_lightRadius*lv_lightRadius) {
+                        
+                uint lv_dstIndex = 0;
+			    lv_dstIndex = atomicAdd(lv_counter2, 1U);
+                lv_lightIndicesAffectingTile2[lv_dstIndex] = i;
+
+            }
+
+         #endif
 
 	}
 
@@ -368,7 +390,7 @@ void main()
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, lv_albedo.rgb, lv_metallic);
 
-    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.035f;
+    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.04f;
 
     vec3 Lo = vec3(0.0f);
     for(uint i = 0; i < lv_counter; ++i) {
@@ -380,15 +402,20 @@ void main()
                     lv_metallic, F0);
 
     }
-    for(uint i = 0; i < lv_counter2; ++i) {
-        
-        uint lv_lightIndex = lv_lightIndicesAffectingTile2[i];
 
-        Lo += calcPointLight(lv_lightIndex, lv_normal, lv_worldPos.xyz,
+    #ifdef HALF_Z_AABB
+
+        for(uint i = 0; i < lv_counter2; ++i) {
+        
+            uint lv_lightIndex = lv_lightIndicesAffectingTile2[i];
+
+            Lo += calcPointLight(lv_lightIndex, lv_normal, lv_worldPos.xyz,
                     lv_dir, lv_albedo.rgb, lv_roughness,
                     lv_metallic, F0);
 
-    }
+        }
+
+    #endif
 
     //float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal, lv_lightsData.lv_lights[0].xyz);
     lv_lightning += Lo;
