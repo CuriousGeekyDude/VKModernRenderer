@@ -226,9 +226,11 @@ float SqrDistancePointAABB(vec3 l_p, vec3 l_minAABB, vec3 l_maxAABB)
 
 
 shared uint lv_counter;
+shared uint lv_counter2;
 
 shared uint lv_minMaxValuesOfTile[2];
-shared uint lv_lightIndicesAffectingTile[256];
+shared uint lv_lightIndicesAffectingTile[lv_totalNumLights];
+shared uint lv_lightIndicesAffectingTile2[lv_totalNumLights];
 
 
 void main()
@@ -249,6 +251,7 @@ void main()
 		lv_minMaxValuesOfTile[0] = 0xFFFFFFFF;
 		lv_minMaxValuesOfTile[1] = 0;
         lv_counter = 0;
+        lv_counter2 = 0;
 
 	}
 
@@ -277,6 +280,7 @@ void main()
      lv_y2 = (2.f*lv_y2/704.f) - 1.f;
 
      vec3 lv_minMaxAABB[2];
+     vec3 lv_minMaxAABB2[2];
 
             
      vec3 lv_pointsView[8];
@@ -299,6 +303,16 @@ void main()
         lv_minMaxAABB[1] = max(lv_minMaxAABB[1], lv_pointsView[i]);
      }
 
+
+     //2nd AABB
+     float lv_inBetweenMinMax = (lv_minMaxAABB[0].z + lv_minMaxAABB[1].z)/2.f;
+     lv_minMaxAABB2[0] = vec3(lv_minMaxAABB[0].xy, lv_inBetweenMinMax);
+     lv_minMaxAABB2[1] = lv_minMaxAABB[1];
+
+     //Now modify max point of 1st AABB 
+     lv_minMaxAABB[1] = vec3(lv_minMaxAABB[1].xy, lv_inBetweenMinMax);
+
+
 	
 	for(uint i = lv_threadNum; i < lv_totalNumLights; i += 256) {
 	
@@ -314,6 +328,15 @@ void main()
               uint lv_dstIndex = 0;
 			  lv_dstIndex = atomicAdd(lv_counter, 1U);
               lv_lightIndicesAffectingTile[lv_dstIndex] = i;
+
+              continue;
+         }
+
+         if(SqrDistancePointAABB(lv_viewPosLight.xyz, lv_minMaxAABB2[0], lv_minMaxAABB2[1]) <= lv_lightRadius*lv_lightRadius) {
+                        
+              uint lv_dstIndex = 0;
+			  lv_dstIndex = atomicAdd(lv_counter2, 1U);
+              lv_lightIndicesAffectingTile2[lv_dstIndex] = i;
 
          }
 
@@ -356,7 +379,16 @@ void main()
                     lv_dir, lv_albedo.rgb, lv_roughness,
                     lv_metallic, F0);
 
-    }    
+    }
+    for(uint i = 0; i < lv_counter2; ++i) {
+        
+        uint lv_lightIndex = lv_lightIndicesAffectingTile2[i];
+
+        Lo += calcPointLight(lv_lightIndex, lv_normal, lv_worldPos.xyz,
+                    lv_dir, lv_albedo.rgb, lv_roughness,
+                    lv_metallic, F0);
+
+    }
 
     //float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal, lv_lightsData.lv_lights[0].xyz);
     lv_lightning += Lo;
