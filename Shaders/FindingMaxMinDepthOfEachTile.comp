@@ -5,7 +5,7 @@
 //#define HALF_Z_AABB
 
 
-const uint lv_totalNumLights = 136;
+const uint lv_totalNumLights = 232;
 const float PI = 3.14159265359;
 
 layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
@@ -168,7 +168,7 @@ vec3 calcPointLight(uint index, vec3 normal, vec3 fragPos,
     vec4 lv_light = lv_lightsData.lv_lights[index];
     vec3 position = lv_light.xyz;
     vec3 lv_absPos = abs(position);
-    vec3 color    = vec3(lv_absPos.x, lv_absPos.y+20.f, lv_absPos.z+10.f) * 5.f;
+    vec3 color    = vec3(lv_absPos.x, lv_absPos.y+20.f, lv_absPos.z+10.f) * 2.f;
     float radius  = lv_light.w;
     vec3 lightDir = normalize(position - fragPos);
     vec3 halfway  = normalize(lightDir + viewDir);

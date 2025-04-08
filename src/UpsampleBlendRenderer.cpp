@@ -147,7 +147,6 @@ namespace RenderCore
 		lv_frameGraph.IncrementNumNodesPerCmdBuffer(2);
 
 
-
 		VulkanResourceManager::PipelineInfo lv_pipeInfo{};
 		lv_pipeInfo.m_dynamicScissorState = false;
 		lv_pipeInfo.m_enableWireframe = false;

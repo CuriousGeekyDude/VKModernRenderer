@@ -449,7 +449,7 @@ namespace RenderCore
 		}
 
 
-		for (uint32_t j = 0; j < 4; ++j) {
+		for (uint32_t j = 0; j < 16; ++j) {
 
 
 			if (j == 0) {
@@ -480,6 +480,85 @@ namespace RenderCore
 
 				}
 			}
+
+
+
+			//Starts from here
+			if (j == 4) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)17 * i, 50.f, -5.2f, (float)i };
+
+				}
+			}
+			if (j == 5) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)17 * i, 50.f, 3.5f, (float)i };
+
+				}
+			}
+
+
+			if (j == 6) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)17 * i, 32.f, -5.2f, (float)i };
+
+				}
+			}
+			if (j == 7) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)21 * i, 6.f, 9.f, (float)i };
+
+				}
+			}
+			if (j == 8) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)21 * i, 6.f, -9.f, (float)i };
+
+				}
+			}
+			if (j == 9) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)17 * i, 36.f, -23.5f, (float)i };
+
+				}
+			}
+			if (j == 10) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)17 * i, 25.f, -8.5f, (float)i };
+
+				}
+			}
+			if (j == 11) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)17 * i, 25.f, 8.5f, (float)i };
+
+				}
+			}
+			if (j == 12) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)17 * i, 44.f, -5.2f, (float)i };
+
+				}
+			}
+			if (j == 13) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)17 * i, 44.f, 3.5f, (float)i };
+
+				}
+			}
+			if (j == 14) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)17 * i, 38.5f, -5.2f, (float)i };
+
+				}
+			}
+			if (j == 15) {
+				for (uint32_t i = 0; i < 8; ++i) {
+					l_positionData[8 * j + i + 104] = glm::vec4{ -65.f + (float)17 * i, 38.5f, 3.5f, (float)i };
+
+				}
+			}
+			
 		}
 
 
@@ -490,7 +569,7 @@ namespace RenderCore
 	, const std::array<glm::vec4, m_totalNumLights>& l_positionData)
 	{
 		for (uint32_t i = 0; i < m_totalNumLights; ++i) {
-			l_lightBuffer[i].m_positionAndRadius = glm::vec4{ l_positionData[i].x,l_positionData[i].y , l_positionData[i].z, 7.5f };
+			l_lightBuffer[i].m_positionAndRadius = glm::vec4{ l_positionData[i].x,l_positionData[i].y , l_positionData[i].z, 17.f };
 		}
 	}
 
