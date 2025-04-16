@@ -3,12 +3,10 @@
 
 
 #include "Renderbase.hpp"
+#include <GLFW/glfw3.h>
+#include "FrameGraph.hpp"
 
-
-namespace ImGui
-{
-	struct ImGuiIO;
-}
+struct ImGuiIO;
 
 namespace RenderCore
 {
@@ -17,7 +15,7 @@ namespace RenderCore
 
 	public:
 
-		IMGUIRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator);
+		IMGUIRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator, GLFWwindow* l_window);
 
 		void FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
 			uint32_t l_currentSwapchainIndex) override;
@@ -29,6 +27,8 @@ namespace RenderCore
 
 		void UpdateDescriptorSets() override;
 
+		void UpdateIncomingDataFromNodes();
+
 		
 		~IMGUIRenderer();
 
@@ -37,7 +37,10 @@ namespace RenderCore
 
 		std::vector<VulkanTexture*> m_swapchains;
 		VkDescriptorPool m_imguiPool = VK_NULL_HANDLE;
-		ImGui::ImGuiIO* m_io;
+		ImGuiIO* m_io;
 
+		
+		VulkanEngine::FrameGraphNode* m_indirectRenderer;
+		uint32_t m_totalNumVisibleMeshes{};
 	};
 }

@@ -126,7 +126,7 @@ namespace VulkanEngine
 		, "Shaders/FXAA.frag"
 		, "Shaders/Spirv/FXAA.spv")
 
-		, m_imgui(ctx_)
+		, m_imgui(ctx_, GetWindow())
 	{
 
 
@@ -177,6 +177,12 @@ namespace VulkanEngine
 		////ctx_.m_offScreenRenderers.emplace_back(m_interior, true, true);
 		//ctx_.m_offScreenRenderers.emplace_back(m_exterior, true, true);
 		//ctx_.m_offScreenRenderers.emplace_back(m_deferred, true, false);
+	}
+
+
+	GLFWwindow* VulkanRenderer::GetWindow()
+	{
+		return window_;
 	}
 
 	void VulkanRenderer::draw3D(uint32_t l_currentImageIndex)

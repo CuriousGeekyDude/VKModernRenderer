@@ -470,6 +470,9 @@ namespace RenderCore
 
 
 
+	uint32_t IndirectRenderer::GetTotalNumVisibleMeshes() const { return m_totalNumVisibleMeshes; }
+
+
 	const std::vector<InstanceData>& IndirectRenderer::GetInstanceData() const
 	{
 		return m_outputInstanceData;

@@ -34,6 +34,7 @@ namespace VulkanEngine
 	public:
 		VulkanRenderer(int l_width, int l_height, const std::string& l_frameGraphPath);
 
+		GLFWwindow* GetWindow();
 	protected:
 		virtual void update(float deltaSeconds) { CameraApp::update(deltaSeconds); }
 

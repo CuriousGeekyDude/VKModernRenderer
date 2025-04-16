@@ -3,8 +3,10 @@
 
 
 #include "IMGUIRenderer.hpp"
+#include "IndirectRenderer.hpp"
 
 #include "imgui_impl_glfw.h"
+#define IMGUI_IMPL_VULKAN_USE_VOLK
 #include "imgui_impl_vulkan.h"
 #include <array>
 
@@ -12,7 +14,7 @@ namespace RenderCore
 {
 
 
-	IMGUIRenderer::IMGUIRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator)
+	IMGUIRenderer::IMGUIRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator, GLFWwindow* l_window)
 		:Renderbase(l_vkContextCreator)
 	{
 
@@ -63,8 +65,10 @@ namespace RenderCore
 		m_io = &ImGui::GetIO();
 		m_io->ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 
-
+		ImGui_ImplGlfw_InitForVulkan( l_window,true);
 		ImGui_ImplVulkan_InitInfo lv_imguiVulkanInit;
+		memset(&lv_imguiVulkanInit, 0, sizeof(ImGui_ImplVulkan_InitInfo));
+		lv_imguiVulkanInit.ApiVersion = VK_API_VERSION_1_3;
 		lv_imguiVulkanInit.Allocator = nullptr;
 		lv_imguiVulkanInit.CheckVkResultFn = &CheckVkResult;
 		lv_imguiVulkanInit.DescriptorPool = m_imguiPool;
@@ -81,11 +85,26 @@ namespace RenderCore
 		lv_imguiVulkanInit.Subpass = 0;
 		lv_imguiVulkanInit.UseDynamicRendering = false;
 		lv_imguiVulkanInit.Instance = m_vulkanRenderContext.GetContextCreator().m_vulkanInstance.instance;
+		
 
 
 		ImGui_ImplVulkan_Init(&lv_imguiVulkanInit);
 
 
+		m_indirectRenderer = lv_frameGraph.RetrieveNode("IndirectGbuffer");
+
+
+	}
+
+
+	void IMGUIRenderer::UpdateIncomingDataFromNodes()
+	{
+		//Data from IndirectGbuffer renderer
+		{
+			IndirectRenderer* lv_indirect = (IndirectRenderer*)m_indirectRenderer->m_renderer;
+			m_totalNumVisibleMeshes = lv_indirect->GetTotalNumVisibleMeshes();
+			
+		}
 	}
 
 	void IMGUIRenderer::FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
@@ -99,10 +118,12 @@ namespace RenderCore
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		bool lv_showDemo = true;
-		bool lv_showAnotherWindow = true;
+		static bool lv_showDemo = true;
+		//static bool lv_showAnotherWindow = true;
 
-		ImGui::ShowDemoWindow(&lv_showDemo);
+		if (true == lv_showDemo) {
+			ImGui::ShowDemoWindow(&lv_showDemo);
+		}
 
 		std::array<float, 4> lv_tempClearColor{ 0.45f, 0.55f, 0.60f, 1.00f };
 
@@ -111,32 +132,35 @@ namespace RenderCore
 			static float f = 0.0f;
 			static int counter = 0;
 
-			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+			ImGui::Begin("Scene data");                          // Create a window called "Hello, world!" and append into it.
 
-			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-			ImGui::Checkbox("Demo Window", &lv_showDemo);      // Edit bools storing our window open/close state
-			ImGui::Checkbox("Another Window", &lv_showDemo);
+			//ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+			//ImGui::Checkbox("Demo Window", &lv_showDemo);      // Edit bools storing our window open/close state
+			//ImGui::Checkbox("Another Window", &lv_showAnotherWindow);
 
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-			ImGui::ColorEdit3("clear color", lv_tempClearColor.data()); // Edit 3 floats representing a color
+			//ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+			//ImGui::ColorEdit3("clear color", lv_tempClearColor.data()); // Edit 3 floats representing a color
 
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-				counter++;
-			ImGui::SameLine();
-			ImGui::Text("counter = %d", counter);
+			//if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+			//	counter++;
+			//ImGui::SameLine();
+			//ImGui::Text("counter = %d", counter);
+
+			ImGui::Text("There are %u visible meshes after frustum culling in the scene.", m_totalNumVisibleMeshes);
+
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / m_io->Framerate, m_io->Framerate);
 			ImGui::End();
 		}
 
-		if(true == lv_showAnotherWindow)
-		{
-			ImGui::Begin("Another Window", &lv_showAnotherWindow);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-			ImGui::Text("Hello from another window!");
-			if (ImGui::Button("Close Me"))
-				lv_showAnotherWindow = false;
-			ImGui::End();
-		}
+		//if(true == lv_showAnotherWindow)
+		//{
+		//	ImGui::Begin("Another Window", &lv_showAnotherWindow);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+		//	ImGui::Text("Hello from another window!");
+		//	if (ImGui::Button("Close Me"))
+		//		lv_showAnotherWindow = false;
+		//	ImGui::End();
+		//}
 
 		// Rendering
 		ImGui::Render();
@@ -175,7 +199,8 @@ namespace RenderCore
 	void IMGUIRenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
-
+		m_io->DisplaySize = ImVec2((float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth, (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight);
+		UpdateIncomingDataFromNodes();
 	}
 
 
