@@ -4,6 +4,8 @@
 
 #include "IMGUIRenderer.hpp"
 #include "IndirectRenderer.hpp"
+#include "SSAORenderer.hpp"
+#include "PresentSwapchainRenderer.hpp"
 
 #include "imgui_impl_glfw.h"
 #define IMGUI_IMPL_VULKAN_USE_VOLK
@@ -23,11 +25,16 @@ namespace RenderCore
 		auto lv_totalNumSwapchains = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_swapchainImages.size();
 
 
-
+		m_ssaoTextures.resize(lv_totalNumSwapchains);
 		m_swapchains.resize(lv_totalNumSwapchains);
+
+
+
+
 
 		for (size_t i = 0; i < lv_totalNumSwapchains; ++i) {
 			m_swapchains[i] = &lv_vkResManager.RetrieveGpuTexture("Swapchain", i);
+			m_ssaoTextures[i] = &lv_vkResManager.RetrieveGpuTexture("OcclusionFactor", i);
 		}
 
 
@@ -92,7 +99,13 @@ namespace RenderCore
 
 
 		m_indirectRenderer = lv_frameGraph.RetrieveNode("IndirectGbuffer");
+		m_ssaoRenderer = lv_frameGraph.RetrieveNode("SSAO");
+		m_fxxaRenderer = lv_frameGraph.RetrieveNode("FXAA");
 
+
+		m_ssaoSortedHandle = lv_frameGraph.FindSortedHandleFromGivenNodeName("SSAO");
+
+		assert(std::numeric_limits<uint32_t>::max() != m_ssaoSortedHandle);
 
 	}
 
@@ -105,6 +118,20 @@ namespace RenderCore
 			m_totalNumVisibleMeshes = lv_indirect->GetTotalNumVisibleMeshes();
 			
 		}
+	}
+
+
+
+	void IMGUIRenderer::UpdateSSAOUniform()
+	{
+		SSAORenderer::UniformBufferMatrices lv_newUniform{};
+		lv_newUniform.m_offsetBufferSize = m_offsetBufferSize;
+		lv_newUniform.m_radius = m_radiusSSAO;
+
+		SSAORenderer* lv_ssao = (SSAORenderer*)m_ssaoRenderer->m_renderer;
+
+		lv_ssao->SetUniformBuffer(lv_newUniform);
+
 	}
 
 	void IMGUIRenderer::FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
@@ -148,6 +175,10 @@ namespace RenderCore
 
 			ImGui::Text("There are %u visible meshes after frustum culling in the scene.", m_totalNumVisibleMeshes);
 
+			ImGui::Text("SSAO");
+			ImGui::SliderFloat("Radius", &m_radiusSSAO, 0.1f, 15.0f);
+			ImGui::SliderInt("OffsetBufferSize", &m_offsetBufferSize, 1.f, 64.0f);
+			ImGui::Checkbox("Show oclusion factor image without blur", &m_showSSAOTextureOnly);
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / m_io->Framerate, m_io->Framerate);
 			ImGui::End();
@@ -161,6 +192,9 @@ namespace RenderCore
 		//		lv_showAnotherWindow = false;
 		//	ImGui::End();
 		//}
+
+
+
 
 		// Rendering
 		ImGui::Render();
@@ -199,8 +233,23 @@ namespace RenderCore
 	void IMGUIRenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
+		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();
+		auto lv_totalNumSwapchains = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_swapchainImages.size();
+		PresentSwapchainRenderer* lv_fxxaaRenderer = (PresentSwapchainRenderer*)m_fxxaRenderer->m_renderer;
+
 		m_io->DisplaySize = ImVec2((float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth, (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight);
 		UpdateIncomingDataFromNodes();
+
+		UpdateSSAOUniform();
+
+		if (true == m_showSSAOTextureOnly) {
+			lv_frameGraph.DisableNodesAfterGivenNodeHandleUntilLast2(m_ssaoSortedHandle);
+			lv_fxxaaRenderer->UpdateInputDescriptorImages(m_ssaoTextures);
+		}
+		else {
+			lv_frameGraph.EnableAllNodes();
+			lv_fxxaaRenderer->UpdateDescriptorSets();
+		}
 	}
 
 

@@ -100,11 +100,19 @@ namespace VulkanEngine
 
 		FrameGraphNode* RetrieveNode(const std::string& l_nodeName);
 
+
+		void DisableNodesAfterGivenNodeHandleUntilLast2(const uint32_t l_nodeHandle);
+
 		void UpdateNodes(const uint32_t l_currentSwapchainIndex,
 			const VulkanEngine::CameraStructure& l_cameraStructure);
 
 		void RenderGraph(VkCommandBuffer l_cmdBuffer,
 			uint32_t l_currentSwapchainIndex);
+
+
+		uint32_t FindSortedHandleFromGivenNodeName(const std::string& l_nodeName);
+
+		void EnableAllNodes();
 
 	protected:
 

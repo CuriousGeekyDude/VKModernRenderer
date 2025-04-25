@@ -29,13 +29,17 @@ namespace RenderCore
 		void UpdateDescriptorSets() override;
 
 
-
+		void UpdateInputDescriptorImages(std::vector<VulkanTexture*>& l_newInputs);
 
 
 	private:
 
 		std::vector<VulkanTexture*> m_swapchains{};
 		std::vector<VulkanTexture*> m_bloomResults{};
+
+		std::vector<VkDescriptorImageInfo> m_imageInfo;
+		std::vector<VkWriteDescriptorSet> m_writes;
+
 
 	};
 }

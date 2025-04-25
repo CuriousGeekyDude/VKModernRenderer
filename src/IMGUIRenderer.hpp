@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include "FrameGraph.hpp"
 
+
+
 struct ImGuiIO;
 
 namespace RenderCore
@@ -30,6 +32,8 @@ namespace RenderCore
 		void UpdateIncomingDataFromNodes();
 
 		
+		void UpdateSSAOUniform();
+
 		~IMGUIRenderer();
 
 	private:
@@ -42,5 +46,16 @@ namespace RenderCore
 		
 		VulkanEngine::FrameGraphNode* m_indirectRenderer;
 		uint32_t m_totalNumVisibleMeshes{};
+
+		VulkanEngine::FrameGraphNode* m_ssaoRenderer;
+		uint32_t m_ssaoSortedHandle{};
+		float m_radiusSSAO{8.f};
+		int m_offsetBufferSize{16};
+		bool m_showSSAOTextureOnly{ false };
+		std::vector<VulkanTexture*> m_ssaoTextures;
+
+		VulkanEngine::FrameGraphNode* m_fxxaRenderer;
+
+
 	};
 }

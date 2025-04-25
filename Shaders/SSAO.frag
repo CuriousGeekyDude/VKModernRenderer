@@ -16,10 +16,15 @@ layout(set = 0, binding = 0) uniform UniformBufferMatrix
 	mat4 m_viewMatrix;
 	mat4 m_perspectiveMatrix;
 
+	float lv_radius;
+	int lv_offsetBufferSize;
+	float lv_padding0;
+	float lv_padding1;
+
 } uboMatrix;
 
 
-const uint lv_offsetBufferSize = 16;
+//const uint lv_offsetBufferSize = 16;
 layout(set = 0, binding = 1) readonly buffer OffsetsBuffer {vec4 OffsetData[];} lv_offsetBuffer;
 
 
@@ -28,7 +33,7 @@ layout(set = 0, binding = 3) uniform sampler2D lv_gbufferNormalVertex;
 layout(set = 0, binding = 4) uniform sampler2D lv_randomRotations;
 
 
-const float lv_radius = 8.f;
+//const float lv_radius = 8.f;
 
 void main()
 {
@@ -48,10 +53,13 @@ void main()
 
 	lv_occlusion = 0.f;
 
-	for(uint i = 0; i < lv_offsetBufferSize; ++i) {
+	float lv_radiusSSAO = uboMatrix.lv_radius;
+	uint lv_offsetBufferSizeSSAO = uboMatrix.lv_offsetBufferSize;
+
+	for(int i = 0; i < lv_offsetBufferSizeSSAO; ++i) {
 		
 		vec3 lv_offset = TBN * lv_offsetBuffer.OffsetData[i].xyz;
-		lv_offset = lv_posInView + lv_radius*lv_offset;
+		lv_offset = lv_posInView + lv_radiusSSAO*lv_offset;
 		
 		vec4 lv_texCoordOffset = vec4(lv_offset, 1.f);
 		lv_texCoordOffset = uboMatrix.m_perspectiveMatrix * lv_texCoordOffset;
@@ -60,10 +68,10 @@ void main()
 
 		float lv_sampleDepth = (uboMatrix.m_viewMatrix * texture(lv_gbufferPos, lv_texCoordOffset.xy)).z;
 
-		float lv_rangeCheck = smoothstep(0.f, 1.f, lv_radius / abs(lv_sampleDepth - lv_posInView.z));
+		float lv_rangeCheck = smoothstep(0.f, 1.f, lv_radiusSSAO / abs(lv_sampleDepth - lv_posInView.z));
 		lv_occlusion += (lv_sampleDepth >= lv_offset.z + 0.025f ? 1.f : 0.f) * lv_rangeCheck;
 
 	}
 
-	lv_occlusion = 1.f - (lv_occlusion/lv_offsetBufferSize);
+	lv_occlusion = 1.f - (lv_occlusion/lv_offsetBufferSizeSSAO);
 }
