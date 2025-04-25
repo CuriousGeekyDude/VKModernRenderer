@@ -6,6 +6,7 @@
 #include "IndirectRenderer.hpp"
 #include "SSAORenderer.hpp"
 #include "PresentSwapchainRenderer.hpp"
+#include "UpsampleBlendRenderer.hpp"
 
 #include "imgui_impl_glfw.h"
 #define IMGUI_IMPL_VULKAN_USE_VOLK
@@ -101,6 +102,11 @@ namespace RenderCore
 		m_indirectRenderer = lv_frameGraph.RetrieveNode("IndirectGbuffer");
 		m_ssaoRenderer = lv_frameGraph.RetrieveNode("SSAO");
 		m_fxxaRenderer = lv_frameGraph.RetrieveNode("FXAA");
+		m_upsampleBlendRenderer0 = lv_frameGraph.RetrieveNode("UpsampleBlend4");
+		m_upsampleBlendRenderer1 = lv_frameGraph.RetrieveNode("UpsampleBlend3");
+		m_upsampleBlendRenderer2 = lv_frameGraph.RetrieveNode("UpsampleBlend2");
+		m_upsampleBlendRenderer3 = lv_frameGraph.RetrieveNode("UpsampleBlend1");
+
 
 
 		m_ssaoSortedHandle = lv_frameGraph.FindSortedHandleFromGivenNodeName("SSAO");
@@ -120,7 +126,20 @@ namespace RenderCore
 		}
 	}
 
+	void IMGUIRenderer::UpdateRadiusUpsamples()
+	{
+		UpsampleBlendRenderer* lv_upsampleRenderer0 = (UpsampleBlendRenderer*)m_upsampleBlendRenderer0->m_renderer;
+		UpsampleBlendRenderer* lv_upsampleRenderer1 = (UpsampleBlendRenderer*)m_upsampleBlendRenderer1->m_renderer;
+		UpsampleBlendRenderer* lv_upsampleRenderer2 = (UpsampleBlendRenderer*)m_upsampleBlendRenderer2->m_renderer;
+		UpsampleBlendRenderer* lv_upsampleRenderer3 = (UpsampleBlendRenderer*)m_upsampleBlendRenderer3->m_renderer;
 
+
+		lv_upsampleRenderer0->SetRadius(m_upsampleRadius);
+		lv_upsampleRenderer1->SetRadius(m_upsampleRadius);
+		lv_upsampleRenderer2->SetRadius(m_upsampleRadius);
+		lv_upsampleRenderer3->SetRadius(m_upsampleRadius);
+
+	}
 
 	void IMGUIRenderer::UpdateSSAOUniform()
 	{
@@ -173,13 +192,21 @@ namespace RenderCore
 			//ImGui::SameLine();
 			//ImGui::Text("counter = %d", counter);
 
-			ImGui::Text("There are %u visible meshes after frustum culling in the scene.", m_totalNumVisibleMeshes);
 
+			ImGui::Text("Frustum culling\n");
+			ImGui::Text("There are %u visible meshes", m_totalNumVisibleMeshes);
+
+			ImGui::Text("\n");
 			ImGui::Text("SSAO");
 			ImGui::SliderFloat("Radius", &m_radiusSSAO, 0.1f, 15.0f);
 			ImGui::SliderInt("OffsetBufferSize", &m_offsetBufferSize, 1.f, 64.0f);
 			ImGui::Checkbox("Show oclusion factor image without blur", &m_showSSAOTextureOnly);
 
+			ImGui::Text("\nBloom");
+			ImGui::SliderFloat("RadiusUpsample", &m_upsampleRadius, 0.001f, 0.02f, "%.5f");
+
+
+			ImGui::Text("\nFPS");
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / m_io->Framerate, m_io->Framerate);
 			ImGui::End();
 		}
@@ -243,13 +270,20 @@ namespace RenderCore
 		UpdateSSAOUniform();
 
 		if (true == m_showSSAOTextureOnly) {
-			lv_frameGraph.DisableNodesAfterGivenNodeHandleUntilLast2(m_ssaoSortedHandle);
-			lv_fxxaaRenderer->UpdateInputDescriptorImages(m_ssaoTextures);
+			if (false == m_cachedShowSSAOTextureOnly) {
+				lv_frameGraph.DisableNodesAfterGivenNodeHandleUntilLast2(m_ssaoSortedHandle);
+				lv_fxxaaRenderer->UpdateInputDescriptorImages(m_ssaoTextures);
+				m_cachedShowSSAOTextureOnly = true;
+			}
 		}
-		else {
+		else if(true == m_cachedShowSSAOTextureOnly){
 			lv_frameGraph.EnableAllNodes();
 			lv_fxxaaRenderer->UpdateDescriptorSets();
+			m_cachedShowSSAOTextureOnly = false;
 		}
+
+
+		UpdateRadiusUpsamples();
 	}
 
 

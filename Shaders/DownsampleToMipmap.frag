@@ -91,13 +91,13 @@ void main()
     downsample += (j+k+l+m)*0.125;
     downsample.a = 1.f;
 
-    if(lv_currentMipInfo.m_indexMipchain == 1) {
+    //if(lv_currentMipInfo.m_indexMipchain == 1) {
     
-        if(downsample.r <= 1.f && downsample.g <= 1.f && downsample.b <= 1.f) {
-            downsample = vec4(0.f);
-        }
+        //if(downsample.r <= 1.f && downsample.g <= 1.f && downsample.b <= 1.f) {
+            //downsample = vec4(0.f);
+        //}
 
-    }
+    //}
 
     //downsample = max(downsample, 0.0001f);
 }

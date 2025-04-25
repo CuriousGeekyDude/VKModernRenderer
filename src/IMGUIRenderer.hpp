@@ -34,6 +34,8 @@ namespace RenderCore
 		
 		void UpdateSSAOUniform();
 
+		void UpdateRadiusUpsamples();
+
 		~IMGUIRenderer();
 
 	private:
@@ -52,10 +54,19 @@ namespace RenderCore
 		float m_radiusSSAO{8.f};
 		int m_offsetBufferSize{16};
 		bool m_showSSAOTextureOnly{ false };
+		bool m_cachedShowSSAOTextureOnly{ false };
 		std::vector<VulkanTexture*> m_ssaoTextures;
 
-		VulkanEngine::FrameGraphNode* m_fxxaRenderer;
 
+
+		VulkanEngine::FrameGraphNode* m_upsampleBlendRenderer0;
+		VulkanEngine::FrameGraphNode* m_upsampleBlendRenderer1;
+		VulkanEngine::FrameGraphNode* m_upsampleBlendRenderer2;
+		VulkanEngine::FrameGraphNode* m_upsampleBlendRenderer3;
+		float m_upsampleRadius{ 0.005f };
+
+
+		VulkanEngine::FrameGraphNode* m_fxxaRenderer;
 
 	};
 }

@@ -11,6 +11,8 @@ namespace RenderCore
 
 	class UpsampleBlendRenderer : public Renderbase
 	{
+	public:
+
 		struct UniformBuffer
 		{
 			glm::vec4 m_mipchainDimensions{ 1.f };
@@ -40,7 +42,7 @@ namespace RenderCore
 
 		void UpdateDescriptorSets() override;
 
-
+		void SetRadius(float l_radius);
 
 		~UpsampleBlendRenderer();
 
@@ -54,6 +56,8 @@ namespace RenderCore
 		std::vector<glm::vec2> m_mipchainDimensions{};
 		const uint32_t m_totalNumMipLevels{ 6 };
 		const uint32_t m_mipLevelToRenderTo;
+
+		UniformBuffer m_uniformCpu{};
 
 		VulkanBuffer* m_uniformBufferGpu;
 	};
