@@ -738,6 +738,28 @@
       "TargetNodes": [
 
         {
+          "Name": "TiledDeferredLightning"
+        }
+
+      ]
+
+    },
+
+    {
+      "Pipeline": "COMPUTE",
+
+      "Name": "TiledDeferredLightning",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [],
+
+      "Output": [],
+
+      "TargetNodes": [
+
+        {
           "Name": "PointLightCube"
         }
 

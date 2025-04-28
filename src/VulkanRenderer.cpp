@@ -39,6 +39,10 @@ namespace VulkanEngine
 		,"Shaders/FullScreenQuad.vert"
 		,"Shaders/DeferredLightning.frag"
 		,"Shaders/Spirv/DeferredLightning.spv")
+
+		, m_tiledDeferredLightning(ctx_
+			, "Shaders/FindingMaxMinDepthOfEachTile.comp"
+			, "Shaders/Spirv/FindingMaxMinDepthOfEachTile.spv")
 		
 		,m_pointLightCube(ctx_)
 		/*,m_extractBrightnessBloom(ctx_

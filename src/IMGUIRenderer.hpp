@@ -36,6 +36,8 @@ namespace RenderCore
 
 		void UpdateRadiusUpsamples();
 
+		void SwitchToTiledDeferred();
+
 		~IMGUIRenderer();
 
 	private:
@@ -57,6 +59,13 @@ namespace RenderCore
 		bool m_cachedShowSSAOTextureOnly{ false };
 		std::vector<VulkanTexture*> m_ssaoTextures;
 
+
+
+
+		VulkanEngine::FrameGraphNode* m_tiledDeferredLightningRenderer;
+		VulkanEngine::FrameGraphNode* m_deferredLightningRenderer;
+		bool m_switchToTiledDeferrred{ false };
+		bool m_cachedSwitchToTiledDeferred{ false };
 
 
 		VulkanEngine::FrameGraphNode* m_upsampleBlendRenderer0;

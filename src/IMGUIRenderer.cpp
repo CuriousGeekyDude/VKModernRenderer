@@ -7,6 +7,8 @@
 #include "SSAORenderer.hpp"
 #include "PresentSwapchainRenderer.hpp"
 #include "UpsampleBlendRenderer.hpp"
+#include "TiledDeferredLightningRenderer.hpp"
+#include "DeferredLightningRenderer.hpp"
 
 #include "imgui_impl_glfw.h"
 #define IMGUI_IMPL_VULKAN_USE_VOLK
@@ -101,6 +103,8 @@ namespace RenderCore
 
 		m_indirectRenderer = lv_frameGraph.RetrieveNode("IndirectGbuffer");
 		m_ssaoRenderer = lv_frameGraph.RetrieveNode("SSAO");
+		m_tiledDeferredLightningRenderer = lv_frameGraph.RetrieveNode("TiledDeferredLightning");
+		m_deferredLightningRenderer = lv_frameGraph.RetrieveNode("DeferredLightning");
 		m_fxxaRenderer = lv_frameGraph.RetrieveNode("FXAA");
 		m_upsampleBlendRenderer0 = lv_frameGraph.RetrieveNode("UpsampleBlend4");
 		m_upsampleBlendRenderer1 = lv_frameGraph.RetrieveNode("UpsampleBlend3");
@@ -139,6 +143,29 @@ namespace RenderCore
 		lv_upsampleRenderer2->SetRadius(m_upsampleRadius);
 		lv_upsampleRenderer3->SetRadius(m_upsampleRadius);
 
+	}
+
+	void IMGUIRenderer::SwitchToTiledDeferred()
+	{
+		if (m_switchToTiledDeferrred == true) {
+
+			if (m_cachedSwitchToTiledDeferred == false) {
+
+				m_tiledDeferredLightningRenderer->m_enabled = true;
+				m_deferredLightningRenderer->m_enabled = false;
+				m_cachedSwitchToTiledDeferred = true;
+
+			}
+
+
+		}
+		else {
+			if (m_cachedSwitchToTiledDeferred == true) {
+				m_tiledDeferredLightningRenderer->m_enabled = false;
+				m_deferredLightningRenderer->m_enabled = true;
+				m_cachedSwitchToTiledDeferred = false;
+			}
+		}
 	}
 
 	void IMGUIRenderer::UpdateSSAOUniform()
@@ -195,6 +222,12 @@ namespace RenderCore
 
 			ImGui::Text("Frustum culling\n");
 			ImGui::Text("There are %u visible meshes", m_totalNumVisibleMeshes);
+
+
+			ImGui::Text("\nTiled Deferred Lightning\n");
+			ImGui::Checkbox("Switch to tiled deferred lightning", &m_switchToTiledDeferrred);
+
+
 
 			ImGui::Text("\n");
 			ImGui::Text("SSAO");
@@ -284,6 +317,8 @@ namespace RenderCore
 
 
 		UpdateRadiusUpsamples();
+
+		SwitchToTiledDeferred();
 	}
 
 

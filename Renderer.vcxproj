@@ -212,6 +212,7 @@
     <ClCompile Include="src\spirv_reflect.c" />
     <ClCompile Include="src\SSAORenderer.cpp" />
     <ClCompile Include="src\stripifier.cpp" />
+    <ClCompile Include="src\TiledDeferredLightningRenderer.cpp" />
     <ClCompile Include="src\UpsampleBlendRenderer.cpp" />
     <ClCompile Include="src\Utils.cpp" />
     <ClCompile Include="src\UtilsCubemap.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="src\SpirvPipelineGenerator.hpp" />
     <ClInclude Include="src\spirv_reflect.h" />
     <ClInclude Include="src\SSAORenderer.hpp" />
+    <ClInclude Include="src\TiledDeferredLightningRenderer.hpp" />
     <ClInclude Include="src\Trackball.h" />
     <ClInclude Include="src\UpsampleBlendRenderer.hpp" />
     <ClInclude Include="src\Utils.h" />
