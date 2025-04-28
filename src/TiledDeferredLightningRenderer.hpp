@@ -37,6 +37,8 @@ namespace RenderCore
 		(VulkanEngine::VulkanRenderContext& l_vkContextCreator
 			, const char* l_computeShader
 			, const char* l_spvPath);
+		void SetSwitchToDebugTiled(bool l_switch);
+
 
 
 	protected:
@@ -61,6 +63,8 @@ namespace RenderCore
 		void FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
 			uint32_t l_currentSwapchainIndex) override;
 
+
+
 	private:
 
 		uint32_t m_uniformBufferGpuHandle;
@@ -70,6 +74,8 @@ namespace RenderCore
 		uint32_t m_depthMapLightGpuHandle;
 		std::vector<VulkanTexture*> m_colorOutputTextures;
 		VulkanBuffer* m_debugBuffer;
+		VkPipeline m_debugComputePipeline;
+		bool m_switchToDebug{ false };
 	};
 
 

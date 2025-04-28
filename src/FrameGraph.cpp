@@ -734,9 +734,9 @@ namespace VulkanEngine
 
     uint32_t FrameGraph::FindSortedHandleFromGivenNodeName(const std::string& l_nodeName)
     {
-        for (auto l_sortedHandle : m_nodeHandles) {
-            if (m_nodes[l_sortedHandle].m_nodeNames == l_nodeName) {
-                return l_sortedHandle;
+        for (uint32_t i = 0; i < m_nodeHandles.size(); ++i) {
+            if (m_nodes[m_nodeHandles[i]].m_nodeNames == l_nodeName) {
+                return i;
             }
         }
 
@@ -748,9 +748,18 @@ namespace VulkanEngine
         assert(l_nodeHandle < (uint32_t)(m_nodes.size()));
 
         for (uint32_t i = l_nodeHandle+1; i < (m_nodeHandles.size()-2); ++i) {
-            m_nodes[i].m_enabled = false;
+            m_nodes[m_nodeHandles[i]].m_enabled = false;
         }
 
+    }
+
+    void FrameGraph::DisableNodesAfterGivenNodeHandleUntilLast(const uint32_t l_nodeHandle)
+    {
+        assert(l_nodeHandle < (uint32_t)(m_nodes.size()));
+
+        for (uint32_t i = l_nodeHandle + 1; i < (m_nodeHandles.size() - 2); ++i) {
+            m_nodes[m_nodeHandles[i]].m_enabled = false;
+        }
     }
 
     void FrameGraph::EnableAllNodes()

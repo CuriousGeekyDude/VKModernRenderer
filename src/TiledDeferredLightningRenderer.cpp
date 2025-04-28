@@ -86,8 +86,19 @@ namespace RenderCore
 		m_computePipeline = lv_vkResManager.CreateComputePipeline
 		(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_device
 			, l_computeShader, m_pipelineLayout);
+
+		m_debugComputePipeline = lv_vkResManager.CreateComputePipeline
+		(m_vulkanRenderContext.GetContextCreator().m_vkDev.m_device
+			,"Shaders/DebugFindingMaxMinDepthOfEachTile.comp.comp", m_pipelineLayout);
+
 	}
 
+
+
+	void TiledDeferredLightningRenderer::SetSwitchToDebugTiled(bool l_switch)
+	{
+		m_switchToDebug = l_switch;
+	}
 
 	void TiledDeferredLightningRenderer::UpdateDescriptorSets()
 	{
@@ -368,7 +379,12 @@ namespace RenderCore
 
 
 
-		vkCmdBindPipeline(l_cmdBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_computePipeline);
+		if (true == m_switchToDebug) {
+			vkCmdBindPipeline(l_cmdBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_debugComputePipeline);
+		}
+		else {
+			vkCmdBindPipeline(l_cmdBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_computePipeline);
+		}
 		vkCmdBindDescriptorSets(l_cmdBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_pipelineLayout, 0, 1,
 			&m_descriptorSets[l_currentSwapchainIndex], 0, nullptr);
 

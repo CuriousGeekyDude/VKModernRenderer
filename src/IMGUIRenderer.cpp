@@ -30,14 +30,17 @@ namespace RenderCore
 
 		m_ssaoTextures.resize(lv_totalNumSwapchains);
 		m_swapchains.resize(lv_totalNumSwapchains);
-
-
+		m_tiledDeferredOutput.resize(lv_totalNumSwapchains);
+		m_fxaaInput.resize(lv_totalNumSwapchains);
 
 
 
 		for (size_t i = 0; i < lv_totalNumSwapchains; ++i) {
 			m_swapchains[i] = &lv_vkResManager.RetrieveGpuTexture("Swapchain", i);
 			m_ssaoTextures[i] = &lv_vkResManager.RetrieveGpuTexture("OcclusionFactor", i);
+			m_tiledDeferredOutput[i] = &lv_vkResManager.RetrieveGpuTexture("DeferredLightningColorTexture", i);
+			m_fxaaInput[i] = &lv_vkResManager.RetrieveGpuTexture("BlurSceneLinearInterpolated", i);
+			
 		}
 
 
@@ -114,8 +117,9 @@ namespace RenderCore
 
 
 		m_ssaoSortedHandle = lv_frameGraph.FindSortedHandleFromGivenNodeName("SSAO");
-
+		m_tiledDeferredSortedHandle = lv_frameGraph.FindSortedHandleFromGivenNodeName("TiledDeferredLightning");
 		assert(std::numeric_limits<uint32_t>::max() != m_ssaoSortedHandle);
+		assert(std::numeric_limits<uint32_t>::max() != m_tiledDeferredSortedHandle);
 
 	}
 
@@ -147,6 +151,12 @@ namespace RenderCore
 
 	void IMGUIRenderer::SwitchToTiledDeferred()
 	{
+
+		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();
+		auto lv_totalNumSwapchains = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_swapchainImages.size();
+		PresentSwapchainRenderer* lv_fxxaaRenderer = (PresentSwapchainRenderer*)m_fxxaRenderer->m_renderer;
+		TiledDeferredLightningRenderer* lv_tiledDeferred = (TiledDeferredLightningRenderer*)m_tiledDeferredLightningRenderer->m_renderer;
+
 		if (m_switchToTiledDeferrred == true) {
 
 			if (m_cachedSwitchToTiledDeferred == false) {
@@ -154,16 +164,42 @@ namespace RenderCore
 				m_tiledDeferredLightningRenderer->m_enabled = true;
 				m_deferredLightningRenderer->m_enabled = false;
 				m_cachedSwitchToTiledDeferred = true;
-
 			}
+
+
+				if (m_switchToDebugTiledDeferred == true) {
+
+
+					if (m_cacheSwitchToDebugTiledDeferred == false) {
+						lv_frameGraph.DisableNodesAfterGivenNodeHandleUntilLast2(m_tiledDeferredSortedHandle);
+						lv_fxxaaRenderer->UpdateInputDescriptorImages(m_tiledDeferredOutput);
+						lv_fxxaaRenderer->SetSwitchToDebugTiled(true);
+						lv_tiledDeferred->SetSwitchToDebugTiled(true);
+						m_cacheSwitchToDebugTiledDeferred = true;
+					}
+				}
+				else {
+					lv_frameGraph.EnableAllNodes();
+					m_tiledDeferredLightningRenderer->m_enabled = true;
+					m_deferredLightningRenderer->m_enabled = false;
+					lv_fxxaaRenderer->UpdateInputDescriptorImages(m_fxaaInput);
+					lv_fxxaaRenderer->SetSwitchToDebugTiled(false);
+					lv_tiledDeferred->SetSwitchToDebugTiled(false);
+					m_cacheSwitchToDebugTiledDeferred = false;
+
+				}
 
 
 		}
 		else {
 			if (m_cachedSwitchToTiledDeferred == true) {
+				lv_frameGraph.EnableAllNodes();
 				m_tiledDeferredLightningRenderer->m_enabled = false;
-				m_deferredLightningRenderer->m_enabled = true;
 				m_cachedSwitchToTiledDeferred = false;
+				m_cacheSwitchToDebugTiledDeferred = false;
+				lv_fxxaaRenderer->UpdateInputDescriptorImages(m_fxaaInput);
+				lv_fxxaaRenderer->SetSwitchToDebugTiled(false);
+				lv_tiledDeferred->SetSwitchToDebugTiled(false);
 			}
 		}
 	}
@@ -226,14 +262,21 @@ namespace RenderCore
 
 			ImGui::Text("\nTiled Deferred Lightning\n");
 			ImGui::Checkbox("Switch to tiled deferred lightning", &m_switchToTiledDeferrred);
+			ImGui::Checkbox("Switch to debug tiled deferred lightning", &m_switchToDebugTiledDeferred);
 
-
+			if (false == m_switchToTiledDeferrred) {
+				m_switchToDebugTiledDeferred = false;
+			}
 
 			ImGui::Text("\n");
 			ImGui::Text("SSAO");
 			ImGui::SliderFloat("Radius", &m_radiusSSAO, 0.1f, 15.0f);
 			ImGui::SliderInt("OffsetBufferSize", &m_offsetBufferSize, 1.f, 64.0f);
 			ImGui::Checkbox("Show oclusion factor image without blur", &m_showSSAOTextureOnly);
+
+			if (true == m_switchToTiledDeferrred) {
+				m_showSSAOTextureOnly = false;
+			}
 
 			ImGui::Text("\nBloom");
 			ImGui::SliderFloat("RadiusUpsample", &m_upsampleRadius, 0.001f, 0.02f, "%.5f");
@@ -296,13 +339,14 @@ namespace RenderCore
 		auto& lv_frameGraph = m_vulkanRenderContext.GetFrameGraph();
 		auto lv_totalNumSwapchains = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_swapchainImages.size();
 		PresentSwapchainRenderer* lv_fxxaaRenderer = (PresentSwapchainRenderer*)m_fxxaRenderer->m_renderer;
+		TiledDeferredLightningRenderer* lv_tiledDeferred = (TiledDeferredLightningRenderer*)m_tiledDeferredLightningRenderer->m_renderer;
 
 		m_io->DisplaySize = ImVec2((float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth, (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight);
 		UpdateIncomingDataFromNodes();
 
 		UpdateSSAOUniform();
 
-		if (true == m_showSSAOTextureOnly) {
+		if (true == m_showSSAOTextureOnly && false == m_switchToTiledDeferrred) {
 			if (false == m_cachedShowSSAOTextureOnly) {
 				lv_frameGraph.DisableNodesAfterGivenNodeHandleUntilLast2(m_ssaoSortedHandle);
 				lv_fxxaaRenderer->UpdateInputDescriptorImages(m_ssaoTextures);
@@ -311,6 +355,7 @@ namespace RenderCore
 		}
 		else if(true == m_cachedShowSSAOTextureOnly){
 			lv_frameGraph.EnableAllNodes();
+			m_tiledDeferredLightningRenderer->m_enabled = false;
 			lv_fxxaaRenderer->UpdateDescriptorSets();
 			m_cachedShowSSAOTextureOnly = false;
 		}

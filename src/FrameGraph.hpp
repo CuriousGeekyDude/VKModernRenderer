@@ -103,6 +103,9 @@ namespace VulkanEngine
 
 		void DisableNodesAfterGivenNodeHandleUntilLast2(const uint32_t l_nodeHandle);
 
+
+		void DisableNodesAfterGivenNodeHandleUntilLast(const uint32_t l_nodeHandle);
+
 		void UpdateNodes(const uint32_t l_currentSwapchainIndex,
 			const VulkanEngine::CameraStructure& l_cameraStructure);
 

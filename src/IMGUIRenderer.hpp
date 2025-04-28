@@ -64,8 +64,13 @@ namespace RenderCore
 
 		VulkanEngine::FrameGraphNode* m_tiledDeferredLightningRenderer;
 		VulkanEngine::FrameGraphNode* m_deferredLightningRenderer;
+		uint32_t m_tiledDeferredSortedHandle{};
 		bool m_switchToTiledDeferrred{ false };
+		bool m_switchToDebugTiledDeferred{ false };
 		bool m_cachedSwitchToTiledDeferred{ false };
+		bool m_cacheSwitchToDebugTiledDeferred{ false };
+		std::vector<VulkanTexture*> m_tiledDeferredOutput;
+		std::vector<VulkanTexture*> m_fxaaInput;
 
 
 		VulkanEngine::FrameGraphNode* m_upsampleBlendRenderer0;

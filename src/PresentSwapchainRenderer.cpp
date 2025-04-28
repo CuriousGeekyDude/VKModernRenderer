@@ -53,6 +53,17 @@ namespace RenderCore
 
 		m_graphicsPipeline = lv_vkResManager.CreateGraphicsPipeline(m_renderPass, m_pipelineLayout
 			, { l_vtxShader, l_fragShader }, "GraphicsPipelineFXAA", lv_pipeInfo);
+
+		m_debugTiledDeferredPresentSwapchain = lv_vkResManager.CreateGraphicsPipeline(m_renderPass, m_pipelineLayout
+			, { l_vtxShader, "Shaders/DebugPresentTiledDeferredSwapchain.frag"}, "GraphicsPipelineDebugTiledPresentSwapchain", lv_pipeInfo);
+	}
+
+
+
+
+	void PresentSwapchainRenderer::SetSwitchToDebugTiled(bool l_switch)
+	{
+		m_switchToDebugTiledPipeline = l_switch;
 	}
 
 
@@ -63,7 +74,33 @@ namespace RenderCore
 
 		auto lv_framebuffer = lv_vkResManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);
 
-		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1);
+
+		const VkRect2D rect{
+			.offset = { 0, 0 },
+			.extent = {.width = 704U,
+			.height = 704U}
+		};
+
+		m_vulkanRenderContext.BeginRenderPass(l_cmdBuffer, m_renderPass, l_currentSwapchainIndex, rect,
+			lv_framebuffer,
+			0,
+			nullptr);
+
+
+		if (false == m_switchToDebugTiledPipeline) {
+			vkCmdBindPipeline(l_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphicsPipeline);
+		}
+		else {
+			vkCmdBindPipeline(l_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_debugTiledDeferredPresentSwapchain);
+		}
+
+		if (0 != m_descriptorSets.size()) {
+			vkCmdBindDescriptorSets(l_cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1,
+				&m_descriptorSets[l_currentSwapchainIndex], 0, nullptr);
+		}
+
+
+
 		vkCmdDraw(l_cmdBuffer, 6, 1, 0, 0);
 		vkCmdEndRenderPass(l_cmdBuffer);
 
