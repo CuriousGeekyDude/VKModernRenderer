@@ -1,8 +1,8 @@
-﻿#version 460 core
+#version 460 core
 
 
 //If >= 512 point lights used then define HALF-Z-AABB for better perf
-//#define HALF_Z_AABB
+#define HALF_Z_AABB
 
 
 const uint lv_totalNumLights = 232;
@@ -367,59 +367,7 @@ void main()
 
 	barrier();
 
-    
-    //For debug
-    //if(lv_localWorkId.x == 0 && lv_localWorkId.y == 0) {
-        //lv_debugMinMaxDepth.lv_debug[44*lv_globalWorkId.y + lv_globalWorkId.x] = float(lv_counter);
-    //}
-
-
-
-    float lv_occlusion = texelFetch(lv_occlusionFactor ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).r;
-    float lv_metallic = texelFetch(lv_gbufferMetallic ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).b;
-    float lv_roughness = texelFetch(lv_gbufferMetallic ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).g;
-    vec3 lv_normal = NormalSampleToWorldSpace(texelFetch(lv_gbufferNormal, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).rgb, texelFetch(lv_gbufferNormalVertex, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).rgb, texelFetch(lv_gbufferTangent, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).rgb);
-    vec4 lv_albedo = texelFetch(lv_gbufferAlbedoSpec, ivec2(int(lv_uv.x), int(lv_uv.y)), 0);
-    
-    
-
-	vec4 lv_worldPos = vec4(texelFetch(lv_gbufferPos, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).xyz, 1.f);
-    vec4 lv_viewPos = lv_matricesUniform.m_viewMatrix * lv_worldPos;
-    vec3 lv_dir = normalize(lv_matricesUniform.m_cameraPos.xyz - lv_worldPos.xyz);
-
-    vec3 F0 = vec3(0.04); 
-    F0 = mix(F0, lv_albedo.rgb, lv_metallic);
-
-    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.04f;
-
-    vec3 Lo = vec3(0.0f);
-    for(uint i = 0; i < lv_counter; ++i) {
-        
-        uint lv_lightIndex = lv_lightIndicesAffectingTile[i];
-
-        Lo += calcPointLight(lv_lightIndex, lv_normal, lv_worldPos.xyz,
-                    lv_dir, lv_albedo.rgb, lv_roughness,
-                    lv_metallic, F0);
-
-    }
-
-    #ifdef HALF_Z_AABB
-
-        for(uint i = 0; i < lv_counter2; ++i) {
-        
-            uint lv_lightIndex = lv_lightIndicesAffectingTile2[i];
-
-            Lo += calcPointLight(lv_lightIndex, lv_normal, lv_worldPos.xyz,
-                    lv_dir, lv_albedo.rgb, lv_roughness,
-                    lv_metallic, F0);
-
-        }
-
-    #endif
-
-    //float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal, lv_lightsData.lv_lights[0].xyz);
-    lv_lightning += Lo;
-
-    imageStore(lv_colorOutput, ivec2(int(lv_uv.x), int(lv_uv.y)), vec4(lv_lightning, lv_albedo.a));
+    float lv_totalNumLightsInThisTile = float(lv_counter+lv_counter2);
+    imageStore(lv_colorOutput, ivec2(int(lv_uv.x), int(lv_uv.y)), vec4(lv_totalNumLightsInThisTile , 0.f, 0.f, 0.f));
 
 }

@@ -2,7 +2,7 @@
 
 
 #include "VulkanEngineCore.hpp"
-
+#include "imgui.h"
 
 
 namespace VulkanEngine
@@ -59,7 +59,12 @@ namespace VulkanEngine
 	}
 
 
-	bool VulkanApp::shouldHandleMouse() const { return false; /*return !ImGui::GetIO().WantCaptureMouse;*/ }
+	bool VulkanApp::shouldHandleMouse() const 
+	{
+		return !ImGui::GetIO().WantCaptureMouse;
+		//return false;
+	}
+
 	float VulkanApp::getFPS() const { return fpsCounter_.getFPS(); }
 
 	GLFWwindow* VulkanApp::initVulkanApp(int width, int height)
@@ -111,37 +116,6 @@ namespace VulkanEngine
 		composeFrameFunc(commandBuffer, imageIndex);
 
 
-		//const VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT }; // or even VERTEX_SHADER_STAGE
-
-		//const VkSubmitInfo si =
-		//{
-		//	.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-		//	.pNext = nullptr,
-		//	.waitSemaphoreCount = 1,
-		//	.pWaitSemaphores = &ctx_.GetContextCreator().m_vkDev.m_binarySemaphore,
-		//	.pWaitDstStageMask = waitStages,
-		//	.commandBufferCount = 1,
-		//	.pCommandBuffers = &ctx_.GetContextCreator().m_vkDev.m_mainCommandBuffers2[imageIndex],
-		//	.signalSemaphoreCount = 1,
-		//	.pSignalSemaphores = &ctx_.GetContextCreator().m_vkDev.m_binarySemaphore
-		//};
-
-		//VK_CHECK(vkQueueSubmit(ctx_.GetContextCreator().m_vkDev.m_mainQueue1, 1, &si, nullptr));
-
-		//const VkPresentInfoKHR pi =
-		//{
-		//	.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-		//	.pNext = nullptr,
-		//	.waitSemaphoreCount = 1,
-		//	.pWaitSemaphores = &ctx_.GetContextCreator().m_vkDev.m_binarySemaphore,
-		//	.swapchainCount = 1,
-		//	.pSwapchains = &ctx_.GetContextCreator().m_vkDev.m_swapchain,
-		//	.pImageIndices = &imageIndex
-		//};
-
-		//VK_CHECK(vkQueuePresentKHR(ctx_.GetContextCreator().m_vkDev.m_mainQueue1, &pi));
-		//VK_CHECK(vkDeviceWaitIdle(ctx_.GetContextCreator().m_vkDev.m_device));
-
 		return true;
 	}
 
@@ -152,14 +126,17 @@ namespace VulkanEngine
 			window_,
 			[](GLFWwindow* window, double x, double y)
 			{
-				//ImGui::GetIO().MousePos = ImVec2((float)x, (float)y);
+				ImGui::GetIO().MousePos = ImVec2((float)x, (float)y);
 				int width, height;
 				glfwGetFramebufferSize(window, &width, &height);
+				ImGui::GetIO().AddMousePosEvent(width, height);
 
-				void* ptr = glfwGetWindowUserPointer(window);
-				const float mx = static_cast<float>(x / width);
-				const float my = static_cast<float>(y / height);
-				reinterpret_cast<VulkanApp*>(ptr)->handleMouseMove(mx, my);
+				if (false == ImGui::GetIO().WantCaptureMouse) {
+					void* ptr = glfwGetWindowUserPointer(window);
+					const float mx = static_cast<float>(x / width);
+					const float my = static_cast<float>(y / height);
+					reinterpret_cast<VulkanApp*>(ptr)->handleMouseMove(mx, my);
+				}
 			}
 		);
 
@@ -167,12 +144,14 @@ namespace VulkanEngine
 			window_,
 			[](GLFWwindow* window, int button, int action, int mods)
 			{
-				/*auto& io = ImGui::GetIO();
+				auto& io = ImGui::GetIO();
 				const int idx = button == GLFW_MOUSE_BUTTON_LEFT ? 0 : button == GLFW_MOUSE_BUTTON_RIGHT ? 2 : 1;
-				io.MouseDown[idx] = action == GLFW_PRESS;*/
+				io.AddMouseButtonEvent(idx, action == GLFW_PRESS);
 
-				void* ptr = glfwGetWindowUserPointer(window);
-				reinterpret_cast<VulkanApp*>(ptr)->handleMouseClick(button, action == GLFW_PRESS);
+				if (false == ImGui::GetIO().WantCaptureMouse) {
+					void* ptr = glfwGetWindowUserPointer(window);
+					reinterpret_cast<VulkanApp*>(ptr)->handleMouseClick(button, action == GLFW_PRESS);
+				}
 			}
 		);
 
@@ -192,13 +171,6 @@ namespace VulkanEngine
 
 	void VulkanApp::updateBuffers(uint32_t imageIndex)
 	{
-		/*ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2((float)ctx_.GetContextCreator().m_vkDev.m_framebufferWidth, (float)ctx_.GetContextCreator().m_vkDev.m_framebufferHeight);
-		ImGui::NewFrame();
-
-		drawUI();
-
-		ImGui::Render();*/
 
 		draw3D(imageIndex);
 

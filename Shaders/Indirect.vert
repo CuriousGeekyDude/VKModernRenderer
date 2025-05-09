@@ -61,6 +61,4 @@ void main()
 //	mat4 xfrm(1.0); // = transpose(drawDataBuffer.data[gl_BaseInstance].xfrm);
 
 	gl_Position = ubo.inMtx * lv_worldPos;
-
-
 }

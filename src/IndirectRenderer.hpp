@@ -86,6 +86,9 @@ namespace RenderCore
 		const std::vector<InstanceData>& GetInstanceData() const;
 		const std::vector<MeshConverter::Mesh>& GetMeshData() const;
 
+
+		uint32_t GetTotalNumVisibleMeshes() const;
+
 	protected:
 
 		void UpdateGeometryBuffers(VkCommandBuffer l_cmdBuffer);
@@ -108,6 +111,8 @@ namespace RenderCore
 		void LoadInstanceData(const char* l_instanceFile);
 		MeshConverter::MeshFileHeader LoadMeshData(const char* l_meshFileHeader);
 		MeshConverter::GeometryConverter::BoundingBox LoadBoundingBoxData(const char* l_boundingBoxFile);
+
+
 
 	private:
 

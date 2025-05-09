@@ -49,7 +49,6 @@ public:
 		if (mousePressed)
 		{
 			const glm::vec2 delta = mousePos - mousePos_;
-			
 			const glm::quat deltaQuat = glm::quat(glm::vec3(mouseSpeed_ * delta.y, mouseSpeed_ * delta.x, 0.0f));
 			cameraOrientation_ = deltaQuat * cameraOrientation_;
 			cameraOrientation_ = glm::normalize(cameraOrientation_);

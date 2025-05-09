@@ -689,9 +689,66 @@
 
 
     {
-      "Pipeline": "COMPUTE",
+      "Pipeline": "GRAPHIC",
 
       "Name": "DeferredLightning",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "TRUE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "Resolution": [ 720, 720, 0 ],
+              "MipLevel": 6,
+              "SamplerMode": "VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD",
+              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "DeferredLightningColorTexture",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "TiledDeferredLightning"
+        }
+
+      ]
+
+    },
+
+    {
+      "Pipeline": "COMPUTE",
+
+      "Name": "TiledDeferredLightning",
 
       "RenderToCubemap": "FALSE",
       "CubemapFace": -1,
@@ -1340,11 +1397,62 @@
     },
 
 
-
     {
       "Pipeline": "GRAPHIC",
 
       "Name": "FXAA",
+
+      "RenderToCubemap": "FALSE",
+      "CubemapFace": -1,
+
+      "Input": [
+
+        {
+          "Name": "Swapchain",
+          "CreateResourceOnGPU": "FALSE",
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "LoadOp": "VK_ATTACHMENT_LOAD_OP_LOAD"
+            }
+
+          ]
+        }
+
+      ],
+
+      "Output": [
+
+        {
+          "Name": "Swapchain",
+          "CreateResourceOnGPU": "FALSE",
+
+          "TextureInfo": [
+
+            {
+              "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+              "StoreOp": "VK_ATTACHMENT_STORE_OP_STORE"
+            }
+
+          ]
+        }
+
+      ],
+
+      "TargetNodes": [
+
+        {
+          "Name": "IMGUI"
+        }
+      ]
+
+    },
+
+    {
+      "Pipeline": "GRAPHIC",
+
+      "Name": "IMGUI",
 
       "RenderToCubemap": "FALSE",
       "CubemapFace": -1,

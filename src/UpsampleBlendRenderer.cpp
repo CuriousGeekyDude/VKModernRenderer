@@ -37,7 +37,9 @@ namespace RenderCore
 			, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
 			, lv_uniformBufferName.c_str());
 
+		m_uniformCpu.m_radius = 0.005f;
 
+		memcpy(m_uniformBufferGpu->ptr, &m_uniformCpu,  sizeof(UniformBuffer));
 
 
 		for (size_t i = 0; i < lv_totalNumSwapchains; ++i) {
@@ -192,8 +194,15 @@ namespace RenderCore
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
 		
-
+		memcpy(m_uniformBufferGpu->ptr, &m_uniformCpu, sizeof(UniformBuffer));
 	}
+
+
+	void UpsampleBlendRenderer::SetRadius(float l_radius)
+	{
+		m_uniformCpu.m_radius = l_radius;
+	}
+
 
 	void UpsampleBlendRenderer::UpdateDescriptorSets()
 	{

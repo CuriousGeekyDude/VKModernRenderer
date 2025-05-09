@@ -31,6 +31,10 @@ namespace RenderCore
 		UniformBufferSSAOOffsets lv_offsets;
 
 
+
+		m_uniformCpu.m_offsetBufferSize = 16;
+		m_uniformCpu.m_radius = 8.f;
+
 		//Make sure l_a is smaller than l_b 
 		auto Lerp = [](float l_a, float l_b, float l_x) -> float
 			{
@@ -227,18 +231,20 @@ namespace RenderCore
 
 	}
 
-
+	void SSAORenderer::SetUniformBuffer(const UniformBufferMatrices& l_newUniform)
+	{
+		m_uniformCpu = l_newUniform;
+	}
 
 	void SSAORenderer::UpdateBuffers(const uint32_t l_currentSwapchainIndex,
 		const VulkanEngine::CameraStructure& l_cameraStructure)
 	{
 		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
 
-		UniformBufferMatrices lv_uniformBuffer;
-		lv_uniformBuffer.m_projectionMatrix = l_cameraStructure.m_projectionMatrix;
-		lv_uniformBuffer.m_viewMatrix = l_cameraStructure.m_viewMatrix;
+		m_uniformCpu.m_projectionMatrix = l_cameraStructure.m_projectionMatrix;
+		m_uniformCpu.m_viewMatrix = l_cameraStructure.m_viewMatrix;
 
-		memcpy(lv_vkResManager.RetrieveGpuBuffer(m_gpuUniformBufferHandle).ptr, &lv_uniformBuffer, sizeof(UniformBufferMatrices));
+		memcpy(lv_vkResManager.RetrieveGpuBuffer(m_gpuUniformBufferHandle).ptr, &m_uniformCpu, sizeof(UniformBufferMatrices));
 	}
 
 	void SSAORenderer::FillCommandBuffer(VkCommandBuffer l_cmdBuffer, uint32_t l_currentSwapchainIndex)

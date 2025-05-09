@@ -157,6 +157,9 @@ struct VulkanTexture final
 
 void CHECK(bool check, const char* fileName, int lineNumber);
 
+void CheckVkResult(VkResult l_result);
+
+
 bool setupDebugCallbacks(VkInstance instance, VkDebugUtilsMessengerEXT* messenger, VkDebugReportCallbackEXT* reportCallback);
 
 VkResult createShaderModule(VkDevice m_device, ShaderModule* shader, const char* fileName);

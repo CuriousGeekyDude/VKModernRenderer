@@ -5,7 +5,7 @@
     "glm",
     "glslang",
     "meshoptimizer",
-    "volk",
-    "stb"
+    "stb",
+    "volk"
   ]
 }

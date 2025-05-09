@@ -36,6 +36,11 @@ namespace VulkanEngine
 		, m_boxBlur(ctx_, "Shaders/FullScreenQuad.vert", "Shaders/BoxBlur.frag"
 					, "Shaders/Spirv/BoxBlur.spv")
 		,m_deferredLightning(ctx_
+		,"Shaders/FullScreenQuad.vert"
+		,"Shaders/DeferredLightning.frag"
+		,"Shaders/Spirv/DeferredLightning.spv")
+
+		, m_tiledDeferredLightning(ctx_
 			, "Shaders/FindingMaxMinDepthOfEachTile.comp"
 			, "Shaders/Spirv/FindingMaxMinDepthOfEachTile.spv")
 		
@@ -124,6 +129,8 @@ namespace VulkanEngine
 		, "Shaders/FullScreenQuad.vert"
 		, "Shaders/FXAA.frag"
 		, "Shaders/Spirv/FXAA.spv")
+
+		, m_imgui(ctx_, GetWindow())
 	{
 
 
@@ -176,17 +183,22 @@ namespace VulkanEngine
 		//ctx_.m_offScreenRenderers.emplace_back(m_deferred, true, false);
 	}
 
+
+	GLFWwindow* VulkanRenderer::GetWindow()
+	{
+		return window_;
+	}
+
 	void VulkanRenderer::draw3D(uint32_t l_currentImageIndex)
 	{
 		const float lv_ratio = (float)ctx_.GetContextCreator().m_vkDev.m_framebufferWidth / (float)ctx_.GetContextCreator().m_vkDev.m_framebufferHeight;
 		auto proj = glm::perspective((float)glm::radians(60.f), lv_ratio, 0.1f, 1000.f);
 
 
-		glm::mat4 lv_correctionMatrix = glm::mat4
-		(glm::vec4{ 1.f,0.f,0.f,0.f }
-		, glm::vec4{0.f, -1.f, 0.f, 0.f}
-		, glm::vec4{0.f, 0.f, 0.5f, 0.f}
-		, glm::vec4{0.f, 0.f, 0.5f, 1.f});
+		auto lv_correctionMatrix = glm::mat4{ glm::vec4{1.f, 0.f, 0.f, 0.f}
+											, glm::vec4{0.f, -1.f, 0.f, 0.f}
+											, glm::vec4{0.f, 0.f, 0.5f, 0.f}
+											, glm::vec4{0.f, 0.f, 0.5f, 1.f} };
 
 		proj = lv_correctionMatrix * proj;
 

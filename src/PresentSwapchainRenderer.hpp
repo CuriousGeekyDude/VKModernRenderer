@@ -29,7 +29,9 @@ namespace RenderCore
 		void UpdateDescriptorSets() override;
 
 
+		void UpdateInputDescriptorImages(std::vector<VulkanTexture*>& l_newInputs);
 
+		void SetSwitchToDebugTiled(bool l_switch);
 
 
 	private:
@@ -37,5 +39,15 @@ namespace RenderCore
 		std::vector<VulkanTexture*> m_swapchains{};
 		std::vector<VulkanTexture*> m_bloomResults{};
 
+		std::vector<VkDescriptorImageInfo> m_imageInfo;
+		std::vector<VkWriteDescriptorSet> m_writes;
+
+
+		VkPipeline m_debugTiledDeferredPresentSwapchain{};
+
+		bool m_switchToDebugTiledPipeline{ false };
+
 	};
+
+
 }

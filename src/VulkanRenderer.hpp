@@ -14,12 +14,16 @@
 #include "ClearSwapchainDepthRenderer.hpp"
 #include "DepthMapLightRenderer.hpp"
 #include "SingleModelRenderer.hpp"
+#include "TiledDeferredLightningRenderer.hpp"
 
 
 //Bloom effect sub-effects
 #include "DownsampleToMipmapsRenderer.hpp"
 #include "UpsampleBlendRenderer.hpp"
 #include "LinearlyInterpBlurAndSceneRenderer.hpp"
+
+
+#include "IMGUIRenderer.hpp"
 
 
 #include "PresentSwapchainRenderer.hpp"
@@ -31,6 +35,7 @@ namespace VulkanEngine
 	public:
 		VulkanRenderer(int l_width, int l_height, const std::string& l_frameGraphPath);
 
+		GLFWwindow* GetWindow();
 	protected:
 		virtual void update(float deltaSeconds) { CameraApp::update(deltaSeconds); }
 
@@ -50,6 +55,7 @@ namespace VulkanEngine
 		RenderCore::DepthMapLightRenderer m_depthMapLightPlusZ;
 		RenderCore::DepthMapLightRenderer m_depthMapLightMinusZ;
 		RenderCore::DeferredLightningRenderer m_deferredLightning;
+		RenderCore::TiledDeferredLightningRenderer m_tiledDeferredLightning;
 		RenderCore::SingleModelRenderer m_pointLightCube;
 
 		RenderCore::DownsampleToMipmapsRenderer m_downsampleToMipmaps0;
@@ -67,5 +73,6 @@ namespace VulkanEngine
 
 		RenderCore::PresentSwapchainRenderer m_presentSwapchain;
 
+		RenderCore::IMGUIRenderer m_imgui;
 	};
 }

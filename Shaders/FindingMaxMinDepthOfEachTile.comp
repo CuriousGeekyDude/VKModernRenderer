@@ -2,7 +2,7 @@
 
 
 //If >= 512 point lights used then define HALF-Z-AABB for better perf
-//#define HALF_Z_AABB
+#define HALF_Z_AABB
 
 
 const uint lv_totalNumLights = 232;

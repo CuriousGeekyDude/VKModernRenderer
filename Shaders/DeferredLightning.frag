@@ -59,7 +59,7 @@ layout(set = 0, binding = 11) uniform sampler2D lv_depth;
 
 
 
-vec3 sampleOffsetDirections[59] = vec3[]
+vec3 sampleOffsetDirections[27] = vec3[]
 (
    vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
    vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
@@ -67,36 +67,13 @@ vec3 sampleOffsetDirections[59] = vec3[]
    vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
    vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1),
    vec3(-1.f, -1.f, -1.f), vec3(-1.f, 1.f, 1.f), vec3(1.f, 1.f, -1.f),
-   vec3(1.f, -1.f, 1.f), vec3( 1,  2,  0), vec3(-1, -2,  0), vec3( 2,  1,  0),
-   vec3(-2, -1,  0), vec3( 1,  0,  2), vec3(-1,  0, -2), vec3( 0,  2,  1), vec3( 0, -2, -1),
-   vec3( 2,  0,  1),
-vec3(-2,  0, -1),
-vec3( 0,  1,  2),
-vec3( 0, -1, -2),
-vec3( 1,  2,  1),
-vec3(-1, -2, -1),
-vec3( 2,  1, -1),
-vec3(-2, -1,  1),
-vec3( 1, -2,  2),
-vec3(-1,  2, -2),
-vec3(  0.276,  0.447,  0.851),
-vec3( -0.724,  0.447,  0.526),
-vec3( -0.724,  0.447, -0.526),
-vec3(  0.276,  0.447, -0.851),
-vec3(  0.724, -0.447,  0.526),
-vec3( -0.276, -0.447,  0.851),
-vec3( -0.894, -0.447,  0.000),
-vec3( -0.276, -0.447, -0.851),
-vec3(  0.724, -0.447, -0.526),
-vec3(  0.309,  0.951,  0.000),
-vec3( -0.809,  0.588,  0.000),
-vec3(  0.809, -0.588,  0.000),
-vec3( -0.309, -0.951,  0.000),
-vec3(  0.000,  0.309,  0.951),
-vec3(  0.000, -0.309,  0.951),
-vec3(  0.000,  0.309, -0.951),
-vec3(  0.000, -0.309, -0.951)
+   vec3(1.f, -1.f, 1.f), vec3( 1,  2,  0), vec3(-1, -2,  0), vec3( 2,  1,  0)
 ); 
+
+
+
+
+
 
 float ShadowCalculation(vec3 lv_worldPos, vec3 lv_normal, vec3 lv_lightPos)
 {
@@ -110,13 +87,13 @@ float ShadowCalculation(vec3 lv_worldPos, vec3 lv_normal, vec3 lv_lightPos)
 
     float shadow = 0.0;
     float bias   = max(0.05 * (1.0 - dot(lv_normal, lv_dirVector)), 0.005);
-    int samples  = 59;
+    int samples  = 27;
     float viewDistance = length(lv_cameraUniform.m_cameraPos.xyz - lv_worldPos);
     float diskRadius = (1.0 + (viewDistance / 100)) / 25.0;
     for(int i = 0; i < samples; ++i)
     {
         float closestDepth = texture(lv_depthMapLight, lv_dirVector + sampleOffsetDirections[i] * diskRadius).r;
-        closestDepth *= 100;   // undo mapping [0;1]
+        closestDepth *= 145;   // undo mapping [0;1]
         if(lv_depthFragToLight - bias > closestDepth)
             shadow += 1.0;
     }
@@ -208,8 +185,7 @@ void main()
 
 	vec4 lv_worldPos = vec4(texture(lv_gbufferPos, lv_uv).xyz, 1.f);
     vec4 lv_viewPos = lv_cameraUniform.m_viewMatrix * lv_worldPos;
-    vec3 lv_fragPos = texture(lv_gbufferPos, lv_uv).rgb;
-    vec3 lv_dir = normalize(lv_cameraUniform.m_cameraPos.xyz - lv_fragPos);
+    vec3 lv_dir = normalize(lv_cameraUniform.m_cameraPos.xyz - lv_worldPos.xyz);
 
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, lv_albedo.rgb, lv_metallic);
@@ -217,14 +193,14 @@ void main()
 
     float lv_shadow = ShadowCalculation(lv_worldPos.xyz, lv_normal, lv_lights.lights[0].m_position.xyz);
 
-    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.01f;
+    vec3 lv_lightning = lv_albedo.rgb * lv_occlusion * 0.005f;
 
     vec3 Lo = vec3(0.0f);
     //float alpha = pow(lv_roughness, 2.0);
 	for(uint i = 0; i < m_totalNumLights; ++i) {
         
         vec3 lv_lightPos = lv_lights.lights[i].m_position.xyz;
-        vec3 L = normalize(lv_lightPos - lv_fragPos);
+        vec3 L = normalize(lv_lightPos - lv_worldPos.xyz);
         vec3 H = normalize(lv_dir + L);
    
 
@@ -273,9 +249,9 @@ void main()
 
 
 
-        float distance = length(lv_lightPos - lv_fragPos);
+        float distance = length(lv_lightPos - lv_worldPos.xyz);
         float attenuation = 1.0 / distance*distance;
-        vec3 radiance = vec3(1.f, 1.f, 1.f) * 0.28 * attenuation;
+        vec3 radiance = vec3(.5f, .5f, .5f) * 0.28 * attenuation;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(lv_normal, H, lv_roughness);   
@@ -283,7 +259,7 @@ void main()
         vec3 F    = fresnelSchlick(max(dot(H, lv_dir), 0.0), F0);
            
         vec3 numerator    = NDF * G * F; 
-        float denominator = 4.0 * max(dot(lv_normal, lv_dir), 0.0) * max(dot(lv_normal, L), 0.0) + 0.000001f; // + 0.0001 to prevent divide by zero
+        float denominator = 4.0 * max(dot(lv_normal, lv_dir), 0.0) * max(dot(lv_normal, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
         vec3 specular = numerator / denominator;
         
         vec3 kS = F;

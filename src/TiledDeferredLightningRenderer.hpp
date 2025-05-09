@@ -11,20 +11,14 @@ namespace RenderCore
 {
 
 
-	class DeferredLightningRenderer : public Renderbase
+	class TiledDeferredLightningRenderer : public Renderbase
 	{
 
-		static constexpr uint32_t m_totalNumLights{ 256 };
-	
+		static constexpr uint32_t m_totalNumLights{ 232 };
+
 		struct Light
 		{
-			glm::vec4 m_position;
-			glm::vec4 m_color{ 60.f, 60.f, 60.f, 1.f };
-
-			float m_linear{ 0.7f };
-			float m_quadratic{ 1.8f };
-			float m_radius{ 5.090127 };
-			float m_pad{ -1.f };
+			glm::vec4 m_positionAndRadius;
 		};
 
 
@@ -33,16 +27,18 @@ namespace RenderCore
 		{
 			glm::mat4   m_inMtx;
 			glm::mat4   m_viewMatrix;
-			glm::vec4	m_cameraPos;
-			glm::vec4   m_time;
+			glm::mat4   m_invProjMatrix;
+			glm::mat4	m_projMatrix;
+			glm::vec4   m_cameraPos;
 		};
 
 	public:
-		DeferredLightningRenderer
+		TiledDeferredLightningRenderer
 		(VulkanEngine::VulkanRenderContext& l_vkContextCreator
-		,const char* l_vtxShader
-		,const char* l_fragShader
-		,const char* l_spvPath);
+			, const char* l_computeShader
+			, const char* l_spvPath);
+		void SetSwitchToDebugTiled(bool l_switch);
+
 
 
 	protected:
@@ -52,12 +48,12 @@ namespace RenderCore
 
 		void InitializeLightBuffer
 		(std::array<Light, m_totalNumLights>& l_lightBuffer
-		, const std::array<glm::vec4, m_totalNumLights>& l_positionData);
+			, const std::array<glm::vec4, m_totalNumLights>& l_positionData);
 
 		void InitializeVertexBuffer
 		(const std::array<glm::vec4, m_totalNumLights>& l_positionData
-		, std::array<glm::vec4, 8*m_totalNumLights>& l_vertexBuffer
-		,const std::array<glm::vec4, 8>& l_unitCube);
+			, std::array<glm::vec4, 8 * m_totalNumLights>& l_vertexBuffer
+			, const std::array<glm::vec4, 8>& l_unitCube);
 
 		void UpdateDescriptorSets() override;
 
@@ -67,6 +63,8 @@ namespace RenderCore
 		void FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
 			uint32_t l_currentSwapchainIndex) override;
 
+
+
 	private:
 
 		uint32_t m_uniformBufferGpuHandle;
@@ -75,6 +73,9 @@ namespace RenderCore
 		uint32_t m_indicesBufferGpuHandle;
 		uint32_t m_depthMapLightGpuHandle;
 		std::vector<VulkanTexture*> m_colorOutputTextures;
+		VulkanBuffer* m_debugBuffer;
+		VkPipeline m_debugComputePipeline;
+		bool m_switchToDebug{ false };
 	};
 
 

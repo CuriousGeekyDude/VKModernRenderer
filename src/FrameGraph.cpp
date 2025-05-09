@@ -93,7 +93,6 @@ namespace VulkanEngine
 
                     lv_node.m_cubemapFace = lv_renderPass["CubemapFace"].GetInt();
 
-
                     for (size_t j = 0; j < lv_renderPass["Output"].Size(); ++j, ++lv_resourceIndex) {
 
                         lv_node.m_outputResourcesHandles[j] = lv_resourceIndex;
@@ -728,6 +727,45 @@ namespace VulkanEngine
                 std::cout << "Name: " << lv_outputResource.m_resourceName << std::endl;
             }
 
+        }
+    }
+
+
+
+    uint32_t FrameGraph::FindSortedHandleFromGivenNodeName(const std::string& l_nodeName)
+    {
+        for (uint32_t i = 0; i < m_nodeHandles.size(); ++i) {
+            if (m_nodes[m_nodeHandles[i]].m_nodeNames == l_nodeName) {
+                return i;
+            }
+        }
+
+        return std::numeric_limits<uint32_t>::max();
+    }
+
+    void FrameGraph::DisableNodesAfterGivenNodeHandleUntilLast2(const uint32_t l_nodeHandle)
+    {
+        assert(l_nodeHandle < (uint32_t)(m_nodes.size()));
+
+        for (uint32_t i = l_nodeHandle+1; i < (m_nodeHandles.size()-2); ++i) {
+            m_nodes[m_nodeHandles[i]].m_enabled = false;
+        }
+
+    }
+
+    void FrameGraph::DisableNodesAfterGivenNodeHandleUntilLast(const uint32_t l_nodeHandle)
+    {
+        assert(l_nodeHandle < (uint32_t)(m_nodes.size()));
+
+        for (uint32_t i = l_nodeHandle + 1; i < (m_nodeHandles.size() - 2); ++i) {
+            m_nodes[m_nodeHandles[i]].m_enabled = false;
+        }
+    }
+
+    void FrameGraph::EnableAllNodes()
+    {
+        for (auto& l_node : m_nodes) {
+            l_node.m_enabled = true;
         }
     }
 

@@ -31,7 +31,16 @@ namespace RenderCore
 
 		m_uniformBufferCpu.m_pos = glm::vec4{ l_lightPos, 1.f };
 		m_uniformBufferCpu.m_viewMatrix = glm::lookAt(l_lightPos, l_lookAtVector, l_up);
-		m_uniformBufferCpu.m_projMatrix = glm::perspective(glm::radians(90.f),lv_aspect, 0.1f, 100.f);
+		m_uniformBufferCpu.m_projMatrix = glm::perspective(glm::radians(90.f),lv_aspect, 0.1f, 145.f);
+
+
+		auto lv_correctionMatrix = glm::mat4{ glm::vec4{1.f, 0.f, 0.f, 0.f}
+											, glm::vec4{0.f, 1.f, 0.f, 0.f}
+											, glm::vec4{0.f, 0.f, 0.5f, 0.f}
+											, glm::vec4{0.f, 0.f, 0.5f, 1.f} };
+
+		m_uniformBufferCpu.m_projMatrix = lv_correctionMatrix * m_uniformBufferCpu.m_projMatrix;
+
 
 		m_uniformBufferGpuHandle = lv_vkResManager.CreateBufferWithHandle(sizeof(UniformBufferLight), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT
 																		 , VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT
