@@ -1,31 +1,42 @@
+﻿import os
 import subprocess
-import gdown
-import os
+import requests
 
-def run_batch_file(batch_file_path):
-    """Run a .bat file."""
-    try:
-        subprocess.run(batch_file_path, check=True, shell=True)
-        print(f"Successfully ran {batch_file_path}")
-    except subprocess.CalledProcessError as e:
-        print(f"Error running {batch_file_path}: {e}")
+# Step 1: Run the batch file to initialize folders
+batch_file = "InitializeRequiredFolders.bat"
+if os.path.exists(batch_file):
+    subprocess.run(batch_file, shell=True)
+    print("Folders initialized.")
+else:
+    print(f"Batch file {batch_file} not found. Skipping folder initialization.")
 
-def download_sponza_assets():
-    """Download files from a Google Drive folder into Assets\\Sponza."""
-    output_dir = os.path.join("Assets", "Sponza")
-    os.makedirs(output_dir, exist_ok=True)
+# Step 2: Download files from GitHub repo
+api_url = "https://api.github.com/repos/KhronosGroup/glTF-Sample-Models/contents/2.0/Sponza"
+download_folder = "Assets/Sponza"
 
-    folder_url = "https://drive.google.com/drive/folders/1xiEzRC06PI-Ivg7JI6mbctKK9wTozsym"
+# Ensure download directory exists
+os.makedirs(download_folder, exist_ok=True)
 
-    try:
-        gdown.download_folder(url=folder_url, output=output_dir, quiet=False, use_cookies=False)
-        print(f"Download completed. Files saved to: {output_dir}")
-    except Exception as e:
-        print(f"Error downloading folder: {e}")
+def download_file(file_url, save_path):
+    r = requests.get(file_url)
+    r.raise_for_status()
+    with open(save_path, 'wb') as f:
+        f.write(r.content)
+    print(f"Downloaded: {save_path}")
 
-if __name__ == "__main__":
-    # Run the batch file first
-    run_batch_file("InitializeRequiredFolders.bat")
+def process_directory(api_url, local_dir):
+    os.makedirs(local_dir, exist_ok=True)
+    response = requests.get(api_url)
+    response.raise_for_status()
+    files = response.json()
 
-    # Then download the Sponza assets
-    download_sponza_assets()
+    for file in files:
+        if file['type'] == 'file':
+            download_file(file['download_url'], os.path.join(local_dir, file['name']))
+        elif file['type'] == 'dir':
+            process_directory(file['url'], os.path.join(local_dir, file['name']))
+
+# Start downloading recursively
+print("Downloading files from KhronosGroup/glTF-Sample-Models 2.0/Sponza...")
+process_directory(api_url, download_folder)
+print("\nAll files downloaded successfully to:", download_folder)
