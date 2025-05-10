@@ -177,8 +177,8 @@ void main()
 {
 
     float lv_occlusion = texture(lv_occlusionFactor ,lv_uv).r;
-    float lv_metallic = texture(lv_gbufferMetallic ,lv_uv).b;
-    float lv_roughness = texture(lv_gbufferMetallic ,lv_uv).g;
+    float lv_metallic = texture(lv_gbufferMetallic ,lv_uv).g;
+    float lv_roughness = texture(lv_gbufferMetallic ,lv_uv).r;
     vec3 lv_normal = NormalSampleToWorldSpace(texture(lv_gbufferNormal, lv_uv).rgb, texture(lv_gbufferNormalVertex, lv_uv).rgb, texture(lv_gbufferTangent, lv_uv).rgb);
     vec4 lv_albedo = texture(lv_gbufferAlbedoSpec, lv_uv);
     

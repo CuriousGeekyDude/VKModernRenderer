@@ -293,8 +293,8 @@ void createInstance(VkInstance* instance)
 		.pNext = nullptr,
 		.flags = 0,
 		.pApplicationInfo = &appinfo,
-		.enabledLayerCount = static_cast<uint32_t>(ValidationLayers.size()),
-		.ppEnabledLayerNames = ValidationLayers.data(),
+		.enabledLayerCount = 0,
+		.ppEnabledLayerNames = nullptr,
 		.enabledExtensionCount = static_cast<uint32_t>(exts.size()),
 		.ppEnabledExtensionNames = exts.data()
 	};

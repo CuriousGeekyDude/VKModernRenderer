@@ -189,14 +189,11 @@ namespace VulkanEngine
 			deltaSeconds = static_cast<float>(newTimeStamp - timeStamp);
 			timeStamp = newTimeStamp;
 
-			fpsCounter_.tick(deltaSeconds);
-
 			bool frameRendered = drawFrame(
 				[this](uint32_t img) { this->updateBuffers(img); },
 				[this](auto cmd, auto img) { ctx_.CreateFrame(cmd, img); }
 			);
 
-			fpsCounter_.tick(deltaSeconds, frameRendered);
 
 			glfwPollEvents();
 

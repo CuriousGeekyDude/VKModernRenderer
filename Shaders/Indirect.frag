@@ -15,7 +15,7 @@ layout(location = 1) out vec4 lv_gBufferPosition;
 layout(location = 2) out vec4 lv_gBufferNormal;
 layout(location = 3) out vec4 lv_gBufferAlbedoSpec;
 layout(location = 4) out vec4 lv_gbufferNormalVertex;
-layout(location = 5) out vec4 lv_gbufferMetallicRoughness;
+layout(location = 5) out vec2 lv_gbufferMetallicRoughness;
 
 uint lv_ambientOcclusionMapIncluded = 4;
 uint lv_normalMapIncluded = 64;
@@ -108,5 +108,6 @@ void main()
 	lv_gBufferAlbedoSpec.a = lv_albedo.a;
 	//lv_gBufferAlbedoSpec.a = lv_matData.m_specular.r; Check later whether it is .r or .a?
 	lv_gbufferNormalVertex = vec4(lv_n, 1.f);
-	lv_gbufferMetallicRoughness = lv_metallic;
+	lv_gbufferMetallicRoughness.r = lv_metallic.g;
+	lv_gbufferMetallicRoughness.g = lv_metallic.b;
 }

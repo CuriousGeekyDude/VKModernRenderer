@@ -376,8 +376,8 @@ void main()
 
 
     float lv_occlusion = texelFetch(lv_occlusionFactor ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).r;
-    float lv_metallic = texelFetch(lv_gbufferMetallic ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).b;
-    float lv_roughness = texelFetch(lv_gbufferMetallic ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).g;
+    float lv_metallic = texelFetch(lv_gbufferMetallic ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).g;
+    float lv_roughness = texelFetch(lv_gbufferMetallic ,ivec2(int(lv_uv.x), int(lv_uv.y)), 0).r;
     vec3 lv_normal = NormalSampleToWorldSpace(texelFetch(lv_gbufferNormal, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).rgb, texelFetch(lv_gbufferNormalVertex, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).rgb, texelFetch(lv_gbufferTangent, ivec2(int(lv_uv.x), int(lv_uv.y)), 0).rgb);
     vec4 lv_albedo = texelFetch(lv_gbufferAlbedoSpec, ivec2(int(lv_uv.x), int(lv_uv.y)), 0);
     
