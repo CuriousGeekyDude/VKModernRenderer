@@ -447,7 +447,7 @@ namespace MeshConverter
 			exit(EXIT_FAILURE);
 		}
 
-
+		fclose(lv_boundingBoxFile);
 	}
 
 	void GeometryConverter::GenerateInstanceDataFile_TextureCoordNormalsTangents(const std::string& l_instanceDataFile)

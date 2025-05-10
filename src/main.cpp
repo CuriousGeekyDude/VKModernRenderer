@@ -7,15 +7,11 @@
 #include "SceneLoaderAndSaver.hpp"
 #include "MaterialLoaderAndSaver.hpp"
 #include <fstream>
+#include <filesystem>
 
 #include "VulkanRenderer.hpp"
 
 
-/*Before running the renderer, the scene conversion tool needs to run.
-To run the tool, define CONVERT_SCENE. Afterward, comment it out and 
-compile again and run the renderer.*/
-
-//#define CONVERT_SCENE
 
 
 void ConvertScene()
@@ -26,7 +22,7 @@ void ConvertScene()
 	MeshConverter::GeometryConverter lv_geometryConverter{};
 	auto lv_sceneMetaDatas = lv_sceneMetaDataProcessor.GetScenesMetaData();
 
-	
+
 	for (uint32_t i = 0; i < lv_sceneMetaDatas.size(); ++i) {
 
 		auto& l_sceneMetaData = lv_sceneMetaDatas[i];
@@ -46,12 +42,12 @@ void ConvertScene()
 		}
 
 		uint32_t lv_baseFilePathAssimpSceneCounter = l_sceneMetaData.m_assimpSceneFileName.find_last_of("/");
-		
-		std::string lv_baseFilePathAssimpScene1 = l_sceneMetaData.m_assimpSceneFileName.substr(0, lv_baseFilePathAssimpSceneCounter+1);
+
+		std::string lv_baseFilePathAssimpScene1 = l_sceneMetaData.m_assimpSceneFileName.substr(0, lv_baseFilePathAssimpSceneCounter + 1);
 
 
 
-		UtilTextureProcessing::convertAndDownscaleAllTextures(lv_materialLoaderAndSaver.GetMaterials(), 
+		UtilTextureProcessing::convertAndDownscaleAllTextures(lv_materialLoaderAndSaver.GetMaterials(),
 			lv_baseFilePathAssimpScene1, lv_materialLoaderAndSaver.GetFileNames(), lv_materialLoaderAndSaver.GetOpaqueMapsFiles());
 		lv_materialLoaderAndSaver.SaveMaterials();
 
@@ -63,11 +59,21 @@ void ConvertScene()
 int main()
 {
 
-#ifdef CONVERT_SCENE
+	std::string lv_path = "Assets/";
+	int lv_fileCount = 0;
 
-	ConvertScene();
+	if (std::filesystem::exists(lv_path) && std::filesystem::is_directory(lv_path)) {
+		for (const auto& entry : std::filesystem::directory_iterator(lv_path)) {
+			if (std::filesystem::is_regular_file(entry.status())) {
+				++lv_fileCount;
+			}
+		}
+	}
 
-#else 
+
+	if (lv_fileCount <= 0) {
+		ConvertScene();
+	}
 
 
 	VulkanEngine::VulkanRenderer lv_renderer(VulkanEngine::InitialValues::lv_initialWidthScreen,
@@ -75,7 +81,6 @@ int main()
 
 	lv_renderer.mainLoop();
 
-#endif
-
 	return 0;
 }
+
