@@ -80,6 +80,10 @@ namespace RenderCore
 		float m_upsampleRadius{ 0.005f };
 
 
+		VulkanEngine::FrameGraphNode* m_pointLightCubeRenderer;
+		float m_lightIntensity{ 12000.f };
+
+
 		VulkanEngine::FrameGraphNode* m_fxxaRenderer;
 
 	};

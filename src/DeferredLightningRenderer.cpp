@@ -114,6 +114,12 @@ namespace RenderCore
 	}
 
 
+	void DeferredLightningRenderer::SetPointLightIntensity(const float l_lightIntensity)
+	{
+		m_lightIntensity = l_lightIntensity;
+	}
+
+
 	void DeferredLightningRenderer::UpdateDescriptorSets()
 	{
 		auto& lv_vkResManager = m_vulkanRenderContext.GetResourceManager();
@@ -350,6 +356,7 @@ namespace RenderCore
 		lv_cameraUniform.m_viewMatrix = l_cameraStructure.m_viewMatrix;
 		lv_cameraUniform.m_inMtx = l_cameraStructure.m_projectionMatrix * l_cameraStructure.m_viewMatrix;
 		lv_cameraUniform.m_time = glm::vec4{ (float)glfwGetTime() };
+		lv_cameraUniform.m_pointLightCubeIntensity = glm::vec4{m_lightIntensity, 0.f, 0.f, 0.f};
 
 		auto& lv_uniformBufferGpu = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_uniformBufferGpuHandle);
 		memcpy(lv_uniformBufferGpu.ptr, &lv_cameraUniform, lv_uniformBufferGpu.size);

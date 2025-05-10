@@ -35,6 +35,7 @@ namespace RenderCore
 			glm::mat4   m_viewMatrix;
 			glm::vec4	m_cameraPos;
 			glm::vec4   m_time;
+			glm::vec4   m_pointLightCubeIntensity;
 		};
 
 	public:
@@ -44,6 +45,7 @@ namespace RenderCore
 		,const char* l_fragShader
 		,const char* l_spvPath);
 
+		void SetPointLightIntensity(const float l_lightIntensity);
 
 	protected:
 
@@ -67,6 +69,7 @@ namespace RenderCore
 		void FillCommandBuffer(VkCommandBuffer l_cmdBuffer,
 			uint32_t l_currentSwapchainIndex) override;
 
+
 	private:
 
 		uint32_t m_uniformBufferGpuHandle;
@@ -75,6 +78,7 @@ namespace RenderCore
 		uint32_t m_indicesBufferGpuHandle;
 		uint32_t m_depthMapLightGpuHandle;
 		std::vector<VulkanTexture*> m_colorOutputTextures;
+		float m_lightIntensity{ 12000.f };
 	};
 
 
