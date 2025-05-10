@@ -59,7 +59,7 @@ namespace RenderCore
 
 
 
-		CreateDepthCubeMapTexture("DepthMapPointLight", l_renderDevice.m_framebufferWidth , l_renderDevice.m_framebufferWidth);
+		CreateDepthCubeMapTexture("DepthMapPointLight", 1024 , 1024);
 
 
 	}
@@ -937,8 +937,8 @@ namespace RenderCore
 		using namespace ErrorCheck;
 
 		VulkanTexture lv_depthTextureToCreate{};
-		lv_depthTextureToCreate.height = m_renderDevice.m_framebufferHeight;
-		lv_depthTextureToCreate.width = m_renderDevice.m_framebufferWidth;
+		lv_depthTextureToCreate.height = 1024;
+		lv_depthTextureToCreate.width = 1024;
 		lv_depthTextureToCreate.format = findDepthFormat(m_renderDevice.m_physicalDevice);
 		lv_depthTextureToCreate.depth = 1U;
 

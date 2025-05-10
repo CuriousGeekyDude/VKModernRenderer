@@ -52,8 +52,8 @@ namespace VulkanEngine
 
 		const GLFWvidmode* info = glfwGetVideoMode(monitor);
 
-		const uint32_t windowW = width > 0 ? width : (uint32_t)(info->width * width / -100);
-		const uint32_t windowH = height > 0 ? height : (uint32_t)(info->height * height / -100);
+		const uint32_t windowW = width > 0 ? width : (uint32_t)(info->width);
+		const uint32_t windowH = height > 0 ? height : (uint32_t)(info->height-20U);
 
 		return Resolution{ .width = windowW, .height = windowH };
 	}

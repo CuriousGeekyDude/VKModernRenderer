@@ -14,12 +14,21 @@ namespace VulkanEngine
 		uint32_t l_screenWidth, uint32_t l_screenHeight, const std::string& l_frameGraphJSONFile)
 		: m_vulkanContextCreator(l_window, l_screenWidth, l_screenHeight),
 		m_vulkanResources(m_vulkanContextCreator.m_vkDev)
+		,m_fullScreenHeight(l_screenHeight)
+		,m_fullScreenWidth(l_screenWidth)
 	{
 		m_frameGraph.emplace(l_frameGraphJSONFile, *this);
 
 	}
 
-
+	uint32_t VulkanRenderContext::GetFullScreenWidth() const
+	{
+		return m_fullScreenWidth;
+	}
+	uint32_t VulkanRenderContext::GetFullScreenHeight() const
+	{
+		return m_fullScreenHeight;
+	}
 
 	VulkanEngine::VulkanContextCreator& VulkanRenderContext::GetContextCreator() { return m_vulkanContextCreator; }
 	RenderCore::VulkanResourceManager& VulkanRenderContext::GetResourceManager() { return m_vulkanResources; }

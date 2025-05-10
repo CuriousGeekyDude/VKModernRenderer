@@ -43,7 +43,7 @@ namespace VulkanEngine
 
 	private:
 		//RenderCore::PresentToColorAttachRenderer m_presentToColor;
-		RenderCore::ClearSwapchainDepthRenderer m_clearSwapchainDepth;
+		//RenderCore::ClearSwapchainDepthRenderer m_clearSwapchainDepth;	//Fix this!
 		RenderCore::IndirectRenderer m_indirectGbuffer;
 		//RenderCore::BoundingBoxWireframeRenderer m_boundingBoxWireframe;
 		RenderCore::SSAORenderer m_ssao;

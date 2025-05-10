@@ -13,7 +13,7 @@ namespace VulkanEngine
 
 	VulkanRenderer::VulkanRenderer(int l_width, int l_height, const std::string& l_frameGraphPath)
 		:CameraApp(l_width, l_height, l_frameGraphPath),
-		m_clearSwapchainDepth(ctx_),
+		//m_clearSwapchainDepth(ctx_),
 		m_depthMapLightPlusX(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight0", glm::vec3{ -13.f, 18.f, -2.f }, glm::vec3{ -13.f, 18.f, -2.f } + glm::vec3{ 1.f, 0.f, 0.f }, glm::vec3{0.f, -1.f, 0.f}, 0),
 		m_depthMapLightMinusX(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight1", glm::vec3{ -13.f, 18.f, -2.f }, glm::vec3{ -13.f, 18.f, -2.f } + glm::vec3{ -1.f, 0.f, 0.f }, glm::vec3{ 0.f, -1.f, 0.f }, 1),
 		m_depthMapLightPlusY(ctx_, "Shaders/DepthMapLight.vert", "Shaders/DepthMapLight.frag", "Shaders/Spirv/DepthMapLight.spv", "DepthMapOmnidirectionalPointLight2", glm::vec3{ -13.f, 18.f, -2.f }, glm::vec3{ -13.f, 18.f, -2.f } + glm::vec3{ 0.f, 1.f, 0.f }, glm::vec3{ 0.f, 0.f, 1.f }, 2),

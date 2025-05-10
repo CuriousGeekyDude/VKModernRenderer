@@ -388,8 +388,8 @@ namespace RenderCore
 		vkCmdBindDescriptorSets(l_cmdBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_pipelineLayout, 0, 1,
 			&m_descriptorSets[l_currentSwapchainIndex], 0, nullptr);
 
-		uint32_t lv_width = (uint32_t)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth;
-		uint32_t lv_height = (uint32_t)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
+		uint32_t lv_width = 1024;
+		uint32_t lv_height = 1024;
 
 
 		vkCmdDispatch(l_cmdBuffer, (uint32_t)lv_width / (uint32_t)16, (uint32_t)lv_height / (uint32_t)16, 1);

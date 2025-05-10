@@ -77,9 +77,15 @@ namespace RenderCore
 
 		const VkRect2D rect{
 			.offset = { 0, 0 },
-			.extent = {.width = 704U,
-			.height = 704U}
+			.extent = {.width = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth,
+			.height = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight}
 		};
+
+
+		transitionImageLayoutCmd(l_cmdBuffer, m_swapchains[l_currentSwapchainIndex]->image.image
+			, m_swapchains[l_currentSwapchainIndex]->format
+			, m_swapchains[l_currentSwapchainIndex]->Layout
+			, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 
 		m_vulkanRenderContext.BeginRenderPass(l_cmdBuffer, m_renderPass, l_currentSwapchainIndex, rect,
 			lv_framebuffer,
@@ -104,7 +110,6 @@ namespace RenderCore
 		vkCmdDraw(l_cmdBuffer, 6, 1, 0, 0);
 		vkCmdEndRenderPass(l_cmdBuffer);
 
-		m_swapchains[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 	}
 

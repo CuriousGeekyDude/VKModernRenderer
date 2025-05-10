@@ -103,8 +103,8 @@ namespace RenderCore
 		VulkanResourceManager::PipelineInfo lv_pipeInfo{};
 		lv_pipeInfo.m_dynamicScissorState = false;
 		lv_pipeInfo.m_enableWireframe = false;
-		lv_pipeInfo.m_height = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
-		lv_pipeInfo.m_width = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth;
+		lv_pipeInfo.m_height = 1024;
+		lv_pipeInfo.m_width = 1024;
 		lv_pipeInfo.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		lv_pipeInfo.m_useBlending = false;
 		lv_pipeInfo.m_useDepth = false;
@@ -263,7 +263,7 @@ namespace RenderCore
 		
 		lv_gpuOcclusionTexture.Layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1);
+		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1, 1024, 1024);
 		vkCmdDraw(l_cmdBuffer, 6, 1, 0, 0);
 		vkCmdEndRenderPass(l_cmdBuffer);
 

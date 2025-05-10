@@ -39,15 +39,12 @@ namespace VulkanEngine
 		VulkanEngine::VulkanContextCreator& GetContextCreator();
 		RenderCore::VulkanResourceManager& GetResourceManager();
 
-
-		std::vector<VkFramebuffer>& GetSwapchainFramebufferDepth();
-
-		
-		std::vector<VkFramebuffer>& GetSwapchainFramebufferNoDepth();
-
 		FrameGraph& GetFrameGraph();
 
 		VulkanEngine::CpuResourceServiceProvider& GetCpuResourceProvider();
+
+		uint32_t GetFullScreenWidth() const;
+		uint32_t GetFullScreenHeight() const;
 
 	public:
 
@@ -66,6 +63,9 @@ namespace VulkanEngine
 		RenderCore::VulkanResourceManager m_vulkanResources;
 		VulkanEngine::CpuResourceServiceProvider m_cpuResourceProvider;
 		std::optional<FrameGraph> m_frameGraph;
+
+		uint32_t m_fullScreenWidth{};
+		uint32_t m_fullScreenHeight{};
 
 	};
 }

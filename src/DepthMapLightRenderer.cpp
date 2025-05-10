@@ -27,12 +27,12 @@ namespace RenderCore
 		auto* lv_indirectRenderer = (IndirectRenderer*)lv_frameGraph.RetrieveNode("IndirectGbuffer")->m_renderer;
 
 
-		float lv_aspect = (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth / (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
+		//float lv_aspect = (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth / (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
 
 		m_uniformBufferCpu.m_pos = glm::vec4{ l_lightPos, 1.f };
 		m_uniformBufferCpu.m_viewMatrix = glm::lookAt(l_lightPos, l_lookAtVector, l_up);
-		m_uniformBufferCpu.m_projMatrix = glm::perspective(glm::radians(90.f),lv_aspect, 0.1f, 145.f);
-
+		m_uniformBufferCpu.m_projMatrix = glm::perspective(glm::radians(90.f), 1.f, 0.1f, 145.f);
+		
 
 		auto lv_correctionMatrix = glm::mat4{ glm::vec4{1.f, 0.f, 0.f, 0.f}
 											, glm::vec4{0.f, 1.f, 0.f, 0.f}
@@ -105,8 +105,8 @@ namespace RenderCore
 		VulkanResourceManager::PipelineInfo lv_pipeInfo{};
 		lv_pipeInfo.m_dynamicScissorState = false;
 		lv_pipeInfo.m_enableWireframe = false;
-		lv_pipeInfo.m_height = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
-		lv_pipeInfo.m_width = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth;
+		lv_pipeInfo.m_height = 1024;
+		lv_pipeInfo.m_width = 1024;
 		lv_pipeInfo.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		lv_pipeInfo.m_useBlending = false;
 		lv_pipeInfo.m_useDepth = true;
@@ -186,7 +186,7 @@ namespace RenderCore
 
 		auto lv_framebuffer = lv_vkResManager.RetrieveGpuFramebuffer(m_framebufferHandles[l_currentSwapchainIndex]);
 
-		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1);
+		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1, 1024, 1024);
 		vkCmdDrawIndirect(l_cmdBuffer, lv_indirectBuffer.buffer, 0, lv_totalNumInstances,
 			sizeof(VkDrawIndirectCommand));
 		vkCmdEndRenderPass(l_cmdBuffer);

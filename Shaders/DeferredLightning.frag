@@ -288,6 +288,7 @@ void main()
    //lv_finalColor.rgb = pow(lv_lightning, vec3(1.f/2.2f));
 
    lv_lightning += (1.f - lv_shadow) * Lo;
+   //lv_lightning += Lo;
    lv_finalColor.rgb = lv_lightning;
    lv_finalColor.a = lv_albedo.a;
 

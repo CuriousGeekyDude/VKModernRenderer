@@ -49,8 +49,8 @@ namespace RenderCore
 
 
 
-		m_mipchainDimensions[0].x = (uint32_t)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth;
-		m_mipchainDimensions[0].y = (uint32_t)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
+		m_mipchainDimensions[0].x = 1024;
+		m_mipchainDimensions[0].y = 1024;
 		for (uint32_t i = 1; i < m_totalNumMipLevels; ++i) {
 			m_mipchainDimensions[i].x = m_mipchainDimensions[i - 1].x / 2;
 			m_mipchainDimensions[i].y = m_mipchainDimensions[i - 1].y / 2;
