@@ -183,19 +183,29 @@ namespace VulkanEngine
 
 		do
 		{
+			glfwPollEvents();
+
 			update(deltaSeconds);
 
 			const double newTimeStamp = glfwGetTime();
 			deltaSeconds = static_cast<float>(newTimeStamp - timeStamp);
 			timeStamp = newTimeStamp;
 
-			bool frameRendered = drawFrame(
-				[this](uint32_t img) { this->updateBuffers(img); },
-				[this](auto cmd, auto img) { ctx_.CreateFrame(cmd, img); }
-			);
+			if (glfwGetWindowAttrib(window_, GLFW_ICONIFIED)) {
+				continue;
+			}
+			else {
+				
+
+				bool frameRendered = drawFrame(
+					[this](uint32_t img) { this->updateBuffers(img); },
+					[this](auto cmd, auto img) { ctx_.CreateFrame(cmd, img); }
+				);
 
 
-			glfwPollEvents();
+			}
+
+
 
 		} while (!glfwWindowShouldClose(window_));
 	}
