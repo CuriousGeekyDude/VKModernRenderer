@@ -22,6 +22,14 @@ namespace RenderCore
 
 		};
 
+		struct LightUniformBuffer
+		{
+			float m_lightIntensity{};
+			float m_pad1{};
+			float m_pad2{};
+			float m_pad3{};
+		};
+
 	public:
 
 		SingleModelRenderer(VulkanEngine::VulkanRenderContext& l_vkContextCreator);
@@ -39,8 +47,13 @@ namespace RenderCore
 
 		void UpdateDescriptorSets() override;
 
+		void SetLightIntensity(const float l_intensity);
+
 	private:
 		uint32_t m_uniformBufferGpuHandle;
+		uint32_t m_lightUniformBufferGpuHandle{};
+		float m_lightIntensity{ 12000.f };
+
 		uint32_t m_vertexBufferGpuHandle;
 		uint32_t m_indexBufferGpuHandle;
 		uint32_t m_indexCount;

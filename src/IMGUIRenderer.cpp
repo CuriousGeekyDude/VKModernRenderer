@@ -9,6 +9,8 @@
 #include "UpsampleBlendRenderer.hpp"
 #include "TiledDeferredLightningRenderer.hpp"
 #include "DeferredLightningRenderer.hpp"
+#include "SingleModelRenderer.hpp"
+#include "DepthMapLightRenderer.hpp"
 
 #include "imgui_impl_glfw.h"
 #define IMGUI_IMPL_VULKAN_USE_VOLK
@@ -113,6 +115,15 @@ namespace RenderCore
 		m_upsampleBlendRenderer1 = lv_frameGraph.RetrieveNode("UpsampleBlend3");
 		m_upsampleBlendRenderer2 = lv_frameGraph.RetrieveNode("UpsampleBlend2");
 		m_upsampleBlendRenderer3 = lv_frameGraph.RetrieveNode("UpsampleBlend1");
+		m_pointLightCubeRenderer = lv_frameGraph.RetrieveNode("PointLightCube");
+
+		m_omniDirectional0 = lv_frameGraph.RetrieveNode("DepthMapOmnidirectionalPointLight0");
+		m_omniDirectional1 = lv_frameGraph.RetrieveNode("DepthMapOmnidirectionalPointLight1");
+		m_omniDirectional2 = lv_frameGraph.RetrieveNode("DepthMapOmnidirectionalPointLight2");
+		m_omniDirectional3 = lv_frameGraph.RetrieveNode("DepthMapOmnidirectionalPointLight3");
+		m_omniDirectional4 = lv_frameGraph.RetrieveNode("DepthMapOmnidirectionalPointLight4");
+		m_omniDirectional5 = lv_frameGraph.RetrieveNode("DepthMapOmnidirectionalPointLight5");
+
 
 
 
@@ -149,6 +160,22 @@ namespace RenderCore
 
 	}
 
+
+	void IMGUIRenderer::DisableShadow()
+	{
+	
+
+		m_omniDirectional0->m_enabled = false;
+		m_omniDirectional1->m_enabled = false;
+		m_omniDirectional2->m_enabled = false;
+		m_omniDirectional3->m_enabled = false;
+		m_omniDirectional4->m_enabled = false;
+		m_omniDirectional5->m_enabled = false;
+
+
+	}
+
+
 	void IMGUIRenderer::SwitchToTiledDeferred()
 	{
 
@@ -180,6 +207,7 @@ namespace RenderCore
 				}
 				else {
 					lv_frameGraph.EnableAllNodes();
+					DisableShadow();
 					m_tiledDeferredLightningRenderer->m_enabled = true;
 					m_deferredLightningRenderer->m_enabled = false;
 					lv_fxxaaRenderer->UpdateInputDescriptorImages(m_fxaaInput);
@@ -194,6 +222,7 @@ namespace RenderCore
 		else {
 			if (m_cachedSwitchToTiledDeferred == true) {
 				lv_frameGraph.EnableAllNodes();
+				DisableShadow();
 				m_tiledDeferredLightningRenderer->m_enabled = false;
 				m_cachedSwitchToTiledDeferred = false;
 				m_cacheSwitchToDebugTiledDeferred = false;
@@ -282,6 +311,9 @@ namespace RenderCore
 			ImGui::SliderFloat("RadiusUpsample", &m_upsampleRadius, 0.001f, 0.02f, "%.5f");
 
 
+			ImGui::Text("\nPoint light cube");
+			ImGui::SliderFloat("Light intensity", &m_lightIntensity, 1000.f , 25000.f);
+
 			ImGui::Text("\nFPS");
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / m_io->Framerate, m_io->Framerate);
 			ImGui::End();
@@ -340,6 +372,8 @@ namespace RenderCore
 		auto lv_totalNumSwapchains = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_swapchainImages.size();
 		PresentSwapchainRenderer* lv_fxxaaRenderer = (PresentSwapchainRenderer*)m_fxxaRenderer->m_renderer;
 		TiledDeferredLightningRenderer* lv_tiledDeferred = (TiledDeferredLightningRenderer*)m_tiledDeferredLightningRenderer->m_renderer;
+		SingleModelRenderer* lv_pointLightCube = (SingleModelRenderer*)m_pointLightCubeRenderer->m_renderer;
+		DeferredLightningRenderer* lv_deferredLightning = (DeferredLightningRenderer*)m_deferredLightningRenderer->m_renderer;
 
 		m_io->DisplaySize = ImVec2((float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth, (float)m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight);
 		UpdateIncomingDataFromNodes();
@@ -364,6 +398,9 @@ namespace RenderCore
 		UpdateRadiusUpsamples();
 
 		SwitchToTiledDeferred();
+
+		lv_pointLightCube->SetLightIntensity(m_lightIntensity);
+		lv_deferredLightning->SetPointLightIntensity(m_lightIntensity);
 	}
 
 

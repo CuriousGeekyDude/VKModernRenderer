@@ -174,13 +174,9 @@
     <ClCompile Include="src\ClearSwapchainDepthRenderer.cpp" />
     <ClCompile Include="src\clusterizer.cpp" />
     <ClCompile Include="src\CpuResourceServiceProvider.cpp" />
-    <ClCompile Include="src\DeferredComputeRenderer.cpp" />
-    <ClCompile Include="src\DeferredForwardRenderer.cpp" />
     <ClCompile Include="src\DeferredLightningRenderer.cpp" />
     <ClCompile Include="src\DepthMapLightRenderer.cpp" />
-    <ClCompile Include="src\ExtractBrightnessRenderer.cpp" />
     <ClCompile Include="src\FrameGraph.cpp" />
-    <ClCompile Include="src\GaussianBlurRenderer.cpp" />
     <ClCompile Include="src\GeometryConverter.cpp" />
     <ClCompile Include="src\imgui.cpp" />
     <ClCompile Include="src\IMGUIRenderer.cpp" />
@@ -229,7 +225,6 @@
     <ClCompile Include="src\VulkanRenderer.cpp" />
     <ClCompile Include="src\VulkanRendererItem.cpp" />
     <ClCompile Include="src\VulkanResourceManager.cpp" />
-    <ClCompile Include="src\WireframeDebugTiledDeferredRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AllInitialValues.hpp" />
@@ -246,16 +241,12 @@
     <ClInclude Include="src\ClearSwapchainDepthRenderer.hpp" />
     <ClInclude Include="src\CpuResourceServiceProvider.hpp" />
     <ClInclude Include="src\debug.h" />
-    <ClInclude Include="src\DeferredComputeRenderer.hpp" />
-    <ClInclude Include="src\DeferredForwardRenderer.hpp" />
     <ClInclude Include="src\DeferredLightningRenderer.hpp" />
     <ClInclude Include="src\DepthMapLightRenderer.hpp" />
     <ClInclude Include="src\EasyProfilerWrapper.h" />
     <ClInclude Include="src\ErrorCheck.hpp" />
-    <ClInclude Include="src\ExtractBrightnessRenderer.hpp" />
     <ClInclude Include="src\FrameGraph.hpp" />
     <ClInclude Include="src\BoxBlurRenderer.hpp" />
-    <ClInclude Include="src\GaussianBlurRenderer.hpp" />
     <ClInclude Include="src\GeometryConverter.hpp" />
     <ClInclude Include="src\Graph.h" />
     <ClInclude Include="src\Hierarchy.hpp" />
@@ -305,7 +296,6 @@
     <ClInclude Include="src\VulkanRenderer.hpp" />
     <ClInclude Include="src\VulkanRendererItem.hpp" />
     <ClInclude Include="src\VulkanResourceManager.hpp" />
-    <ClInclude Include="src\WireframeDebugTiledDeferredRenderer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

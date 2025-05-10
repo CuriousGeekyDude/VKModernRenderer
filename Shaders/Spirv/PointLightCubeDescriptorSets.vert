@@ -14,6 +14,16 @@ layout(set = 0, binding = 0) uniform  UniformBuffer {
 
 
 
+layout(set = 0, binding = 1) uniform UniformBufferLight
+{
+
+	float m_lightIntensity;
+	float m_pad1;
+	float m_pad2;
+	float m_pad3;
+
+}lv_light;
+
 void main()
 {
 	vec4 lv_worldPos = vec4(lv_vertex, 1.f);

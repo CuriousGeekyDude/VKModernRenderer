@@ -101,8 +101,8 @@ namespace RenderCore
 		VulkanResourceManager::PipelineInfo lv_pipeInfo{};
 		lv_pipeInfo.m_dynamicScissorState = false;
 		lv_pipeInfo.m_enableWireframe = false;
-		lv_pipeInfo.m_height = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferHeight;
-		lv_pipeInfo.m_width = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_framebufferWidth;
+		lv_pipeInfo.m_height = 1024;
+		lv_pipeInfo.m_width = 1024;
 		lv_pipeInfo.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		lv_pipeInfo.m_useBlending = false;
 		lv_pipeInfo.m_useDepth = false;
@@ -111,6 +111,12 @@ namespace RenderCore
 
 		m_graphicsPipeline = lv_vkResManager.CreateGraphicsPipeline(m_renderPass, m_pipelineLayout
 			, {l_vtxShader, l_fragShader},"GraphicsPipelineDeferredLightning", lv_pipeInfo);
+	}
+
+
+	void DeferredLightningRenderer::SetPointLightIntensity(const float l_lightIntensity)
+	{
+		m_lightIntensity = l_lightIntensity;
 	}
 
 
@@ -350,6 +356,7 @@ namespace RenderCore
 		lv_cameraUniform.m_viewMatrix = l_cameraStructure.m_viewMatrix;
 		lv_cameraUniform.m_inMtx = l_cameraStructure.m_projectionMatrix * l_cameraStructure.m_viewMatrix;
 		lv_cameraUniform.m_time = glm::vec4{ (float)glfwGetTime() };
+		lv_cameraUniform.m_pointLightCubeIntensity = glm::vec4{m_lightIntensity, 0.f, 0.f, 0.f};
 
 		auto& lv_uniformBufferGpu = m_vulkanRenderContext.GetResourceManager().RetrieveGpuBuffer(m_uniformBufferGpuHandle);
 		memcpy(lv_uniformBufferGpu.ptr, &lv_cameraUniform, lv_uniformBufferGpu.size);
@@ -382,7 +389,9 @@ namespace RenderCore
 
 	
 
-		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1);
+		BeginRenderPass(m_renderPass, lv_framebuffer, l_cmdBuffer, l_currentSwapchainIndex, 1
+			, 1024
+			, 1024);
 		vkCmdDraw(l_cmdBuffer, 6, 1, 0, 0);
 		vkCmdEndRenderPass(l_cmdBuffer);
 		m_colorOutputTextures[l_currentSwapchainIndex]->Layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

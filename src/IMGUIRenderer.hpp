@@ -42,6 +42,10 @@ namespace RenderCore
 
 	private:
 
+		void DisableShadow();
+
+	private:
+
 
 		std::vector<VulkanTexture*> m_swapchains;
 		VkDescriptorPool m_imguiPool = VK_NULL_HANDLE;
@@ -78,6 +82,18 @@ namespace RenderCore
 		VulkanEngine::FrameGraphNode* m_upsampleBlendRenderer2;
 		VulkanEngine::FrameGraphNode* m_upsampleBlendRenderer3;
 		float m_upsampleRadius{ 0.005f };
+
+
+		VulkanEngine::FrameGraphNode* m_pointLightCubeRenderer;
+		float m_lightIntensity{ 12000.f };
+
+		VulkanEngine::FrameGraphNode* m_omniDirectional0{};
+		VulkanEngine::FrameGraphNode* m_omniDirectional1{};
+		VulkanEngine::FrameGraphNode* m_omniDirectional2{};
+		VulkanEngine::FrameGraphNode* m_omniDirectional3{};
+		VulkanEngine::FrameGraphNode* m_omniDirectional4{};
+		VulkanEngine::FrameGraphNode* m_omniDirectional5{};
+
 
 
 		VulkanEngine::FrameGraphNode* m_fxxaRenderer;

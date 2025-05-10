@@ -52,8 +52,8 @@ namespace VulkanEngine
 
 		const GLFWvidmode* info = glfwGetVideoMode(monitor);
 
-		const uint32_t windowW = width > 0 ? width : (uint32_t)(info->width * width / -100);
-		const uint32_t windowH = height > 0 ? height : (uint32_t)(info->height * height / -100);
+		const uint32_t windowW = width > 0 ? width : (uint32_t)(info->width);
+		const uint32_t windowH = height > 0 ? height : (uint32_t)(info->height-20U);
 
 		return Resolution{ .width = windowW, .height = windowH };
 	}
@@ -183,22 +183,29 @@ namespace VulkanEngine
 
 		do
 		{
+			glfwPollEvents();
+
 			update(deltaSeconds);
 
 			const double newTimeStamp = glfwGetTime();
 			deltaSeconds = static_cast<float>(newTimeStamp - timeStamp);
 			timeStamp = newTimeStamp;
 
-			fpsCounter_.tick(deltaSeconds);
+			if (glfwGetWindowAttrib(window_, GLFW_ICONIFIED)) {
+				continue;
+			}
+			else {
+				
 
-			bool frameRendered = drawFrame(
-				[this](uint32_t img) { this->updateBuffers(img); },
-				[this](auto cmd, auto img) { ctx_.CreateFrame(cmd, img); }
-			);
+				bool frameRendered = drawFrame(
+					[this](uint32_t img) { this->updateBuffers(img); },
+					[this](auto cmd, auto img) { ctx_.CreateFrame(cmd, img); }
+				);
 
-			fpsCounter_.tick(deltaSeconds, frameRendered);
 
-			glfwPollEvents();
+			}
+
+
 
 		} while (!glfwWindowShouldClose(window_));
 	}

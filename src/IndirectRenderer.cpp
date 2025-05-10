@@ -212,8 +212,8 @@ namespace RenderCore
 
 		VulkanResourceManager::PipelineInfo lv_pipelineInfo{};
 		lv_pipelineInfo.m_dynamicScissorState = false;
-		lv_pipelineInfo.m_height = lv_contextCreator.m_vkDev.m_framebufferHeight;
-		lv_pipelineInfo.m_width = lv_contextCreator.m_vkDev.m_framebufferWidth;
+		lv_pipelineInfo.m_height = 1024;
+		lv_pipelineInfo.m_width = 1024;
 		lv_pipelineInfo.m_useBlending = false;
 		lv_pipelineInfo.m_useDepth = true;
 		lv_pipelineInfo.m_topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -542,7 +542,7 @@ namespace RenderCore
 		lv_depthAttach.Layout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;*/
 		
 
-		BeginRenderPass(m_renderPass, lv_framebuffer, l_commandBuffer, l_currentSwapchainIndex, m_attachmentHandles.size());
+		BeginRenderPass(m_renderPass, lv_framebuffer, l_commandBuffer, l_currentSwapchainIndex, m_attachmentHandles.size(), 1024, 1024);
 		vkCmdDrawIndirect(l_commandBuffer, lv_indirectBuffer.buffer, 0, m_totalNumInstances,
 			sizeof(VkDrawIndirectCommand));
 		vkCmdEndRenderPass(l_commandBuffer);
