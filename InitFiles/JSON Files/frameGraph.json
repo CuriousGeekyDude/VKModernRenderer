@@ -392,7 +392,7 @@
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
               "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
+              "Format": "VK_FORMAT_R16G16B16A16_SFLOAT"
             }
 
           ]
@@ -409,7 +409,7 @@
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
               "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
+              "Format": "VK_FORMAT_R16G16B16A16_SFLOAT"
             }
 
           ]
@@ -425,7 +425,7 @@
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
               "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
+              "Format": "VK_FORMAT_R16G16B16A16_SFLOAT"
             }
 
           ]
@@ -456,7 +456,7 @@
               "ImageLayout": "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
               "Resolution": [ 1024, 1024, 0 ],
               "LoadOp": "VK_ATTACHMENT_LOAD_OP_CLEAR",
-              "Format": "VK_FORMAT_R32G32B32A32_SFLOAT"
+              "Format": "VK_FORMAT_R16G16B16A16_SFLOAT"
             }
 
           ]
