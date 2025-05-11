@@ -55,3 +55,4 @@ Make sure to have visual studio 2022 with a C++20 compiler and vcpkg installed a
 - Replace tiled deferred with clustered deferred
 - Frame graph to make transition layout between image layouts automatic
 - SSR
+- Tile based omnidirectional shadow mapping for generating shadows from 100s of point lights in real time
