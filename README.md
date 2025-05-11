@@ -6,9 +6,9 @@ Make sure to have visual studio 2022 with a C++20 compiler and vcpkg installed a
 
 - Install requests using pip: pip install requests
 
-- Run build.py found in root directory.
+- Run build.py found in the root directory.
 
-- Run the already present visual studio Renderer.sln and compile. Thats it. You can run the renderer now.
+- Run the already present visual studio Renderer.sln and compile. That's it.
 
 # Features
 - Indirect rendering
