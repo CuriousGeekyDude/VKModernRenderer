@@ -10,7 +10,7 @@ Make sure to have visual studio 2022 with a C++20 compiler and vcpkg installed a
 
 - Run the already present visual studio Renderer.sln and compile. That's it.
 
-# Features
+# Main Features
 - Indirect rendering
 - FXAA
 - SSAO
