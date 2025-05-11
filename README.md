@@ -21,27 +21,27 @@ Make sure to have visual studio 2022 with a C++20 compiler and vcpkg installed a
 - Bloom
 - HDR
 - Scene conversion for serializing geometry and material data of models for indirect rendering
-- Spirv-v reflection for spirv shader bytecode using Spirv-Reflect for easier pipeline creation
+- Spirv-v reflection for spirv shader bytecode using [Spirv-Reflect](https://github.com/KhronosGroup/SPIRV-Reflect) library for easier pipeline creation
 
 # Render samples
 
--Tiled deferred shading
+- Tiled deferred shading
 ![Alt Text](Media/FullScreenTiledDeferredShading.png)
 ![Alt Text](Media/FullScreenDebugTiledDeferred1.png)
 ![Alt Text](Media/FullScreenTiledDeferredShading2.png)
 ![Alt Text](Media/FullScreenDebugTiledDeferred2.png)
 
--SSAO
+- SSAO
 ![Alt Text](Media/FullScreenSSAO.png)
 
--Bloom
+- Bloom
 ![Alt Text](Media/FullScreenBloom.png)
 ![Alt Text](Media/Bloom2.png)
 
--Frustum culling on cpu
+- Frustum culling on cpu
 ![Demo](Media/FrustumCullingDebugCPU.gif)
 
--Static Omnidirectional shadow map
+- Static Omnidirectional shadow map
 ![Alt Text](Media/FullScreenOmniDirectional.png)
 ![Alt Text](Media/FullScreenOmniDirectional2.png)
 
