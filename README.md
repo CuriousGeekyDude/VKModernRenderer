@@ -8,7 +8,7 @@ Make sure to have visual studio 2022 with a C++20 compiler and vcpkg installed a
 
 - Run build.py found in root directory.
 
-- Run the already present visual studio .sln and compile. Thats it. You can run the renderer now.
+- Run the already present visual studio Renderer.sln and compile. Thats it. You can run the renderer now.
 
 # Features
 - Indirect rendering
