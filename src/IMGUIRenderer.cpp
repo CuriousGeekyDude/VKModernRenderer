@@ -183,6 +183,7 @@ namespace RenderCore
 		auto lv_totalNumSwapchains = m_vulkanRenderContext.GetContextCreator().m_vkDev.m_swapchainImages.size();
 		PresentSwapchainRenderer* lv_fxxaaRenderer = (PresentSwapchainRenderer*)m_fxxaRenderer->m_renderer;
 		TiledDeferredLightningRenderer* lv_tiledDeferred = (TiledDeferredLightningRenderer*)m_tiledDeferredLightningRenderer->m_renderer;
+		SingleModelRenderer* lv_pointLightCube = (SingleModelRenderer*)m_pointLightCubeRenderer->m_renderer;
 
 		if (m_switchToTiledDeferrred == true) {
 
@@ -210,6 +211,7 @@ namespace RenderCore
 					DisableShadow();
 					m_tiledDeferredLightningRenderer->m_enabled = true;
 					m_deferredLightningRenderer->m_enabled = false;
+					m_pointLightCubeRenderer->m_enabled = false;
 					lv_fxxaaRenderer->UpdateInputDescriptorImages(m_fxaaInput);
 					lv_fxxaaRenderer->SetSwitchToDebugTiled(false);
 					lv_tiledDeferred->SetSwitchToDebugTiled(false);
@@ -222,7 +224,8 @@ namespace RenderCore
 		else {
 			if (m_cachedSwitchToTiledDeferred == true) {
 				lv_frameGraph.EnableAllNodes();
-				DisableShadow();
+				//DisableShadow();
+				//m_pointLightCubeRenderer->m_enabled = false;
 				m_tiledDeferredLightningRenderer->m_enabled = false;
 				m_cachedSwitchToTiledDeferred = false;
 				m_cacheSwitchToDebugTiledDeferred = false;
@@ -308,7 +311,7 @@ namespace RenderCore
 			}
 
 			ImGui::Text("\nBloom");
-			ImGui::SliderFloat("RadiusUpsample", &m_upsampleRadius, 0.001f, 0.02f, "%.5f");
+			ImGui::SliderFloat("RadiusUpsample", &m_upsampleRadius, 0.0001f, 0.015f, "%.5f");
 
 
 			ImGui::Text("\nPoint light cube");
