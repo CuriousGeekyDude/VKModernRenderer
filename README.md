@@ -20,6 +20,8 @@ Make sure to have visual studio 2022 with a C++20 compiler and vcpkg installed a
 - CPU Frustum culling
 - Bloom
 - HDR
+- Exposure based tone mapping
+- Tangent space normal mapping
 - Scene conversion for serializing geometry and material data of models for indirect rendering
 - Spirv-v reflection for spirv shader bytecode using [Spirv-Reflect](https://github.com/KhronosGroup/SPIRV-Reflect) library for easier pipeline creation
 
