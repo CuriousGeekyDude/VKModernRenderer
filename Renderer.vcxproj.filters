@@ -27,12 +27,6 @@
     <ClCompile Include="src\IndirectRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="src\DeferredComputeRenderer.cpp">
-      <Filter>src\VulkanRenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="src\DeferredForwardRenderer.cpp">
-      <Filter>src\VulkanRenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="src\GeometryConverter.cpp">
       <Filter>src\Utilities\SceneConversionTool</Filter>
     </ClCompile>
@@ -159,16 +153,7 @@
     <ClCompile Include="src\SingleModelRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="src\ExtractBrightnessRenderer.cpp">
-      <Filter>src\VulkanRenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GaussianBlurRenderer.cpp">
-      <Filter>src\VulkanRenderPasses</Filter>
-    </ClCompile>
     <ClCompile Include="src\BloomBlendBlurAndSceneRenderer.cpp">
-      <Filter>src\VulkanRenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WireframeDebugTiledDeferredRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
     <ClCompile Include="src\DownsampleToMipmapsRenderer.cpp">
@@ -183,15 +168,31 @@
     <ClCompile Include="src\LinearlyInterpBlurAndSceneRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
-    <ClCompile Include="src\imgui.cpp" />
-    <ClCompile Include="src\IMGUIRenderer.cpp" />
-    <ClCompile Include="src\imgui_demo.cpp" />
-    <ClCompile Include="src\imgui_draw.cpp" />
-    <ClCompile Include="src\imgui_impl_glfw.cpp" />
-    <ClCompile Include="src\imgui_impl_vulkan.cpp" />
-    <ClCompile Include="src\imgui_tables.cpp" />
-    <ClCompile Include="src\imgui_widgets.cpp" />
     <ClCompile Include="src\TiledDeferredLightningRenderer.cpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_demo.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_draw.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_impl_glfw.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_impl_vulkan.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_tables.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui_widgets.cpp">
+      <Filter>src\VulkanEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IMGUIRenderer.cpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClCompile>
   </ItemGroup>
@@ -200,12 +201,6 @@
       <Filter>src\InitialValues</Filter>
     </ClInclude>
     <ClInclude Include="src\IndirectRenderer.hpp">
-      <Filter>src\VulkanRenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DeferredComputeRenderer.hpp">
-      <Filter>src\VulkanRenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="src\DeferredForwardRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="src\GeometryConverter.hpp">
@@ -349,16 +344,7 @@
     <ClInclude Include="src\SingleModelRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="src\ExtractBrightnessRenderer.hpp">
-      <Filter>src\VulkanRenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GaussianBlurRenderer.hpp">
-      <Filter>src\VulkanRenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="src\BloomBlendBlurAndSceneRenderer.hpp">
-      <Filter>src\VulkanRenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WireframeDebugTiledDeferredRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
     <ClInclude Include="src\DownsampleToMipmapsRenderer.hpp">
@@ -373,16 +359,34 @@
     <ClInclude Include="src\LinearlyInterpBlurAndSceneRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
-    <ClInclude Include="src\imconfig.h" />
-    <ClInclude Include="src\imgui.h" />
-    <ClInclude Include="src\IMGUIRenderer.hpp" />
-    <ClInclude Include="src\imgui_impl_glfw.h" />
-    <ClInclude Include="src\imgui_impl_vulkan.h" />
-    <ClInclude Include="src\imgui_internal.h" />
-    <ClInclude Include="src\imstb_rectpack.h" />
-    <ClInclude Include="src\imstb_textedit.h" />
-    <ClInclude Include="src\imstb_truetype.h" />
     <ClInclude Include="src\TiledDeferredLightningRenderer.hpp">
+      <Filter>src\VulkanRenderPasses</Filter>
+    </ClInclude>
+    <ClInclude Include="src\imconfig.h">
+      <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\imgui.h">
+      <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\imgui_impl_glfw.h">
+      <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\imgui_impl_vulkan.h">
+      <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\imgui_internal.h">
+      <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\imstb_rectpack.h">
+      <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\imstb_textedit.h">
+      <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\imstb_truetype.h">
+      <Filter>src\VulkanEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IMGUIRenderer.hpp">
       <Filter>src\VulkanRenderPasses</Filter>
     </ClInclude>
   </ItemGroup>

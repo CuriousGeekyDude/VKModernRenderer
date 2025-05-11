@@ -208,7 +208,7 @@ void main()
 
         float distance = length(lv_lightPos - lv_worldPos.xyz);
         float attenuation = 1.0 / distance*distance;
-        vec3 radiance = vec3(1.f, 1.f, 1.f) * 0.00001f * lv_cameraUniform.m_pointLightCubeIntensity.x * attenuation;
+        vec3 radiance = vec3(1.f, 1.f, 1.f) * 0.00002f * lv_cameraUniform.m_pointLightCubeIntensity.x * attenuation;
 
         // Cook-Torrance BRDF
         float NDF = DistributionGGX(lv_normal, H, lv_roughness);   

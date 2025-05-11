@@ -40,7 +40,7 @@ layout(set = 0, binding = 7) uniform sampler2D lv_occlusionFactor;
 layout(set = 0, binding = 8) uniform sampler2D lv_gbufferMetallic;
 layout(set = 0, binding = 9) uniform samplerCube  lv_depthMapLight;
 layout(set = 0, binding = 10) uniform sampler2D lv_depthBuffer;
-layout(set = 0, binding = 11, rgba32f) uniform image2D lv_colorOutput;
+layout(set = 0, binding = 11, rgba16f) uniform image2D lv_colorOutput;
 
 layout(set = 0, binding = 12) buffer debug{
 	float lv_debug[44*44];
@@ -289,10 +289,10 @@ void main()
 	 float lv_y2 = float(16*(lv_globalWorkId.y+1));
 
 
-     lv_x1 = (2.f*lv_x1/704.f) - 1.f;
-     lv_y1 = (2.f*lv_y1/704.f) - 1.f;
-     lv_x2 = (2.f*lv_x2/704.f) - 1.f;
-     lv_y2 = (2.f*lv_y2/704.f) - 1.f;
+     lv_x1 = (2.f*lv_x1/1024.f) - 1.f;
+     lv_y1 = (2.f*lv_y1/1024.f) - 1.f;
+     lv_x2 = (2.f*lv_x2/1024.f) - 1.f;
+     lv_y2 = (2.f*lv_y2/1024.f) - 1.f;
 
      vec3 lv_minMaxAABB[2];
             
