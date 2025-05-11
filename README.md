@@ -45,3 +45,8 @@ Make sure to have visual studio 2022 with a C++20 compiler and vcpkg installed a
 ![Alt Text](Media/FullScreenOmniDirectional.png)
 ![Alt Text](Media/FullScreenOmniDirectional2.png)
 
+# TODO
+- Volumetric fog
+- Replace tiled deferred with clustered deferred
+- Frame graph to make transition layout between image layouts automatic
+- SSR
