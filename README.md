@@ -29,8 +29,8 @@ Make sure to have visual studio 2022 with a C++20 compiler and vcpkg installed a
 # General project layout
 
 - The effects are all inside source files that end with renderer. The Gbuffer, frustum culling, and indirect rendering are done in IndirectRenderer, the omnidirectional effect happens in 6 renderpasses all of which are named DepthMapLightRenderer, tiled deferred shading is done in TiledDeferredLightningRenderer, and finally the bloom happens in several passes that are done in DownsampleToMipmapsRenderer, UpsampleBlendRenderer, and LinearlyInterpBlurAndSceneRenderer.
-- The renderer is defined in VulkanRenderer file but the core rendering loop happens in drawFrame() methos of the VulkanApp struct defined in VulkanEngineCore file.
-- It is worth mentioning that the file FrameGraph is not a full fledged frame graph yet. It parses the JSON file InitFiles/JSON Files/framegraph.json where we define out input and output resources for that particular renderpass and it generates the vulkan renderpass and vulkan frame graph objects for them. It removes the burden of defining these objects for every renderpass ourselves.
+- The renderer is defined in VulkanRenderer file but the core rendering loop happens in drawFrame() method of the VulkanApp struct defined in VulkanEngineCore file.
+- It is worth mentioning that the file FrameGraph is not a full fledged frame graph yet. It parses the JSON file InitFiles/JSON Files/framegraph.json where we define out input and output resources for that particular renderpass and it generates the vulkan renderpass and vulkan frame graph objects for them. It removes the burden of defining these objects for every renderpass ourselves. Additionally, the FrameGraph generates nodes each of which represent a single renderpass in our pipeline. Using the FrameGraph we can access them and do various things like enabling, disabling them, or access the resources that are originally defined in them such as textures etc. This was quite useful while trying to integrate ImGui in the IMGUIRenderer file.
 
 # Render samples
 
